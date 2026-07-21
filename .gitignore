@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Env / secrets
+.env
+
+# Data
+data/raw/
+
+# Model artifacts
+*.pkl
+*.joblib
+
+# Scratch work
+/temp/
