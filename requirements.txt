@@ -1,3 +1,4 @@
-# Phase 0
-fastapi
-uvicorn
+requests
+pandas
+numpy
+jupyter
