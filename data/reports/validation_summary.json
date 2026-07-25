@@ -1,0 +1,34 @@
+{
+  "phishing_candidates": {
+    "openphish": {
+      "total": 1500,
+      "valid": 1500,
+      "rejected": 0,
+      "rejection_reasons": {}
+    },
+    "phishtank": {
+      "total": 131595,
+      "valid": 131587,
+      "rejected": 8,
+      "rejection_reasons": {
+        "too_long": 8
+      }
+    },
+    "phishtank_kaggle": {
+      "total": 64280,
+      "valid": 64276,
+      "rejected": 4,
+      "rejection_reasons": {
+        "too_long": 4
+      }
+    }
+  },
+  "legitimate_candidates": {
+    "tranco": {
+      "total": 1000000,
+      "valid": 1000000,
+      "rejected": 0,
+      "rejection_reasons": {}
+    }
+  }
+}
