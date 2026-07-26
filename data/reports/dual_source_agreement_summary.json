@@ -1,0 +1,11 @@
+{
+  "match_mode": "domain",
+  "total_candidates": 84963,
+  "exact_url_agreement_count": 13,
+  "domain_level_agreement_count": 410,
+  "manual_verification_count": 0,
+  "overlap_between_feed_and_manual": 0,
+  "final_confirmed_count": 410,
+  "agreement_rate_exact": 0.00015300777985711428,
+  "agreement_rate_domain": 0.0048256299801089884
+}
