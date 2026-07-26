@@ -1,17 +1,17 @@
 {
   "phishing_candidates": {
     "openphish": {
-      "total": 1500,
-      "valid": 1500,
+      "total": 1800,
+      "valid": 1800,
       "rejected": 0,
       "rejection_reasons": {}
     },
     "phishtank": {
-      "total": 131595,
-      "valid": 131587,
-      "rejected": 8,
+      "total": 197559,
+      "valid": 197547,
+      "rejected": 12,
       "rejection_reasons": {
-        "too_long": 8
+        "too_long": 12
       }
     },
     "phishtank_kaggle": {
