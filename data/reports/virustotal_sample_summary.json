@@ -1,0 +1,7 @@
+{
+  "pool_size": 410,
+  "target_sample_size": 500,
+  "actual_sample_size": 410,
+  "sampled_entire_pool": true,
+  "random_seed": 42
+}
