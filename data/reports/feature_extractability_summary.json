@@ -1,0 +1,15 @@
+{
+  "phishing_candidates": {
+    "total": 25,
+    "extractable": 25,
+    "failed": 0,
+    "error_breakdown": {}
+  },
+  "legitimate_candidates": {
+    "total": 1000000,
+    "extractable": 1000000,
+    "failed": 0,
+    "error_breakdown": {}
+  },
+  "note": "Only cheap, string-only Layer 1 features tested (no network calls). domain_age_days, tranco_rank_bucket, and brand_distance_score are excluded -- they require Phase 4 infrastructure not yet built."
+}
