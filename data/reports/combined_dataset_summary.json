@@ -1,0 +1,11 @@
+{
+  "total": 1000025,
+  "phishing": 25,
+  "legitimate": 1000000,
+  "class_ratio_legitimate_to_phishing": 40000.0,
+  "by_source": {
+    "tranco": 1000000,
+    "openphish": 16,
+    "openphish,phishtank": 9
+  }
+}
