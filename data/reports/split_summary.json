@@ -1,0 +1,19 @@
+{
+  "split_mode": "random_stratified_TEMPORARY",
+  "warning": "TEMPORARY random-stratified split, not the temporal split this project requires, and not yet domain-grouped -- the same domain's URLs can currently land in different splits (leakage risk). Re-run after date-tracking is added upstream and domain-grouping is added here (see temp/TODOS.md) before treating this as final.",
+  "train": {
+    "total": 700017,
+    "phishing": 17,
+    "legitimate": 700000
+  },
+  "validation": {
+    "total": 150003,
+    "phishing": 3,
+    "legitimate": 150000
+  },
+  "test": {
+    "total": 150005,
+    "phishing": 5,
+    "legitimate": 150000
+  }
+}
