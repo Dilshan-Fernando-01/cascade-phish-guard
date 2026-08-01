@@ -1,0 +1,32 @@
+{
+  "warning": "TEMPORARY small-sample run",
+  "splits": {
+    "train": {
+      "split": "train",
+      "sampled": 67,
+      "phishing_in_sample": 17,
+      "legitimate_in_sample": 50,
+      "succeeded": 67,
+      "failed": 0,
+      "errors": []
+    },
+    "validation": {
+      "split": "validation",
+      "sampled": 53,
+      "phishing_in_sample": 3,
+      "legitimate_in_sample": 50,
+      "succeeded": 53,
+      "failed": 0,
+      "errors": []
+    },
+    "test": {
+      "split": "test",
+      "sampled": 55,
+      "phishing_in_sample": 5,
+      "legitimate_in_sample": 50,
+      "succeeded": 55,
+      "failed": 0,
+      "errors": []
+    }
+  }
+}

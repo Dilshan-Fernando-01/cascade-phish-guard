@@ -109,7 +109,24 @@ def _load_tranco():
     return _tranco_lookup
 
 
+# Free hosting/PaaS platforms where anyone can register a subdomain
+KNOWN_SHARED_HOSTING_SUFFIXES = {
+    "vercel.app", "netlify.app", "github.io", "blogspot.com", "webflow.io",
+    "surge.sh", "replit.app", "repl.co", "framer.app", "framer.website",
+    "onrender.com", "herokuapp.com", "firebaseapp.com", "pages.dev",
+    "glitch.me", "weebly.com", "wixsite.com", "000webhostapp.com",
+}
+
+
+def _is_shared_hosting(host):
+    return any(host == suffix or host.endswith("." + suffix) for suffix in KNOWN_SHARED_HOSTING_SUFFIXES)
+
+
 def tranco_rank_bucket(host):
+    if _is_shared_hosting(host):
+       
+        return 0
+
     lookup = _load_tranco()
     rank = lookup.get(host)
     if rank is None:
@@ -179,7 +196,7 @@ def domain_age_days(host):
 
 
 def extract_all_features(url):
-    
+
     url = str(url)
     host = urlparse(url).netloc.split(":")[0]
 
@@ -189,3 +206,26 @@ def extract_all_features(url):
     features["brand_keyword_in_host"] = brand_keyword_in_host(host)
     features["domain_age_days"] = domain_age_days(host)
     return features
+
+
+def extract_features_batch(urls):
+
+    domain_cache = {}
+    results = []
+    for url in urls:
+        try:
+            url = str(url)
+            host = urlparse(url).netloc.split(":")[0]
+            if host not in domain_cache:
+                domain_cache[host] = {
+                    "tranco_rank_bucket": tranco_rank_bucket(host),
+                    "brand_distance_score": brand_distance_score(host),
+                    "brand_keyword_in_host": brand_keyword_in_host(host),
+                    "domain_age_days": domain_age_days(host),
+                }
+            features = extract_basic_features(url)
+            features.update(domain_cache[host])
+            results.append((features, None))
+        except Exception as exc:
+            results.append((None, f"{type(exc).__name__}: {exc}"))
+    return results
