@@ -1,11 +1,11 @@
 {
   "match_mode": "domain",
-  "total_candidates": 85263,
-  "exact_url_agreement_count": 13,
-  "domain_level_agreement_count": 427,
+  "total_candidates": 90501,
+  "exact_url_agreement_count": 397,
+  "domain_level_agreement_count": 1747,
   "manual_verification_count": 0,
   "overlap_between_feed_and_manual": 0,
-  "final_confirmed_count": 427,
-  "agreement_rate_exact": 0.0001524694181532435,
-  "agreement_rate_domain": 0.005008033965494998
+  "final_confirmed_count": 1747,
+  "agreement_rate_exact": 0.004386691859758456,
+  "agreement_rate_domain": 0.019303654103269577
 }
