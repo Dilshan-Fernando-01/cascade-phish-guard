@@ -2,7 +2,15 @@ import ipaddress
 import math
 import unicodedata
 from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
 from urllib.parse import urlparse
+
+import pandas as pd
+import requests
+from rapidfuzz.distance import Levenshtein
+
+from .brand_reference import BRAND_DOMAINS
 
 SUSPICIOUS_KEYWORDS = {"login", "verify", "secure", "update", "account"}
 SPECIAL_CHARS = set("-_@%=?&")
@@ -60,7 +68,8 @@ def punycode_homograph_flag(host):
     return int(is_punycode or mixed_script)
 
 
-def extract_features(url):
+def extract_basic_features(url):
+
     url = str(url)
     parsed = urlparse(url)
     host = parsed.netloc.split(":")[0]
@@ -86,3 +95,97 @@ def extract_features(url):
         "digit_ratio": (sum(c.isdigit() for c in url) / len(url)) if url else 0.0,
         "is_punycode_or_homograph": punycode_homograph_flag(host),
     }
+
+
+_TRANCO_PATH = Path(__file__).resolve().parents[3] / "data" / "raw" / "tranco.csv"
+_tranco_lookup = None
+
+
+def _load_tranco():
+    global _tranco_lookup
+    if _tranco_lookup is None:
+        df = pd.read_csv(_TRANCO_PATH, header=None, names=["rank", "domain"])
+        _tranco_lookup = dict(zip(df["domain"], df["rank"]))
+    return _tranco_lookup
+
+
+def tranco_rank_bucket(host):
+    lookup = _load_tranco()
+    rank = lookup.get(host)
+    if rank is None:
+        rank = lookup.get(_registrable_domain_guess(host))
+    if rank is None:
+        return 0
+    if rank <= 1000:
+        return 5
+    if rank <= 10000:
+        return 4
+    if rank <= 100000:
+        return 3
+    if rank <= 500000:
+        return 2
+    return 1
+
+
+def _registrable_domain_guess(host):
+    labels = host.split(".")
+    return ".".join(labels[-2:]) if len(labels) >= 2 else host
+
+
+def brand_distance_score(host):
+
+    candidate = _registrable_domain_guess(host)
+    return min(Levenshtein.distance(candidate, brand) for brand in BRAND_DOMAINS)
+
+
+def brand_keyword_in_host(host):
+ 
+    registrable = _registrable_domain_guess(host)
+    for brand in BRAND_DOMAINS:
+        brand_name = brand.split(".")[0]
+        if len(brand_name) >= 4 and brand_name in host and registrable != brand:
+            return 1
+    return 0
+
+
+def domain_age_days(host):
+    
+    try:
+        resp = requests.get(f"https://rdap.org/domain/{host}", timeout=8)
+        if resp.status_code == 200:
+            data = resp.json()
+            for event in data.get("events", []):
+                if event.get("eventAction") == "registration":
+                    reg_date = datetime.fromisoformat(event["eventDate"].replace("Z", "+00:00"))
+                    return (datetime.now(timezone.utc) - reg_date).days
+    except Exception:
+        pass
+
+    try:
+        import whois
+
+        w = whois.whois(host)
+        creation = w.creation_date
+        if isinstance(creation, list):
+            creation = creation[0]
+        if creation:
+            if creation.tzinfo is None:
+                creation = creation.replace(tzinfo=timezone.utc)
+            return (datetime.now(timezone.utc) - creation).days
+    except Exception:
+        pass
+
+    return None
+
+
+def extract_all_features(url):
+    
+    url = str(url)
+    host = urlparse(url).netloc.split(":")[0]
+
+    features = extract_basic_features(url)
+    features["tranco_rank_bucket"] = tranco_rank_bucket(host)
+    features["brand_distance_score"] = brand_distance_score(host)
+    features["brand_keyword_in_host"] = brand_keyword_in_host(host)
+    features["domain_age_days"] = domain_age_days(host)
+    return features
