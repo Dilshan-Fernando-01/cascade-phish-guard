@@ -1,0 +1,42 @@
+{
+  "model": "logistic_regression",
+  "train_rows": 67,
+  "validation_rows": 53,
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "auc_roc": 1.0
+  },
+  "confusion_matrix": [
+    [
+      50,
+      0
+    ],
+    [
+      0,
+      3
+    ]
+  ],
+  "coefficients": {
+    "url_length": 0.49349716178162367,
+    "subdomain_count": 0.31803380543674,
+    "has_https": 1.8255095816020142,
+    "special_char_count": 0.2591033693672117,
+    "keyword_score": 0.5552511343599003,
+    "character_entropy": 0.4997761836426878,
+    "tld_risk_score": 0.33114896664766696,
+    "has_ip_host": 0.0,
+    "has_at_symbol": 0.0,
+    "path_depth": 0.6093271968036732,
+    "query_param_count": 0.0003626882800054042,
+    "digit_ratio": 0.3349694502462061,
+    "is_punycode_or_homograph": 0.0,
+    "tranco_rank_bucket": -0.1442601373078946,
+    "brand_distance_score": -0.3607811036807965,
+    "brand_keyword_in_host": -0.003508236225384916,
+    "domain_age_days": 0.008617394119377036,
+    "domain_age_missing": 0.26011668690171375
+  }
+}
