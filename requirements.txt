@@ -13,3 +13,7 @@ rapidfuzz
 matplotlib
 seaborn
 scipy
+
+# Phase 4
+scikit-learn
+joblib
