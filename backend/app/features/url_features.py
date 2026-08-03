@@ -109,12 +109,13 @@ def _load_tranco():
     return _tranco_lookup
 
 
-# Free hosting/PaaS platforms where anyone can register a subdomain
+# Free hosting/PaaS platforms where anyone can register a subdomain 
 KNOWN_SHARED_HOSTING_SUFFIXES = {
     "vercel.app", "netlify.app", "github.io", "blogspot.com", "webflow.io",
     "surge.sh", "replit.app", "repl.co", "framer.app", "framer.website",
     "onrender.com", "herokuapp.com", "firebaseapp.com", "pages.dev",
     "glitch.me", "weebly.com", "wixsite.com", "000webhostapp.com",
+    "ipfs.io", "dweb.link",
 }
 
 
@@ -166,7 +167,10 @@ def brand_keyword_in_host(host):
 
 
 def domain_age_days(host):
-    
+    if _is_shared_hosting(host):
+
+        return None
+
     try:
         resp = requests.get(f"https://rdap.org/domain/{host}", timeout=8)
         if resp.status_code == 200:
