@@ -49,23 +49,24 @@ FastAPI local backend
 backend/
   api/            # FastAPI routes
   app/
-    features/     # feature extraction modules
+    features/     # feature extraction modules (url_features.py, brand_reference.py)
     models/       # thin wrappers around trained model artifacts
     services/     # orchestration (page loading, analyzers, cascade logic)
     schemas/      # Pydantic request/response models
 scripts/
   data_collection/  # one script per data source
-  data_filtering/   # validation, dedup, agreement checks, splits
-  training/         # one script per model, plus comparison scripts
+  data_filtering/   # validation, dedup, agreement checks, feature build, splits
+  training/         # one script per model (common.py holds shared prep/eval logic)
   reporting/        # evidence-pack generation for the paper
 data/
   raw/            # untouched downloads (not tracked in git)
-  processed/      # cleaned/labelled datasets
-  reports/        # model comparison tables, filtering summaries
+  processed/      # cleaned/labelled datasets, feature tables, train/val/test splits
+  reports/        # model comparison tables, filtering summaries, figures/
+  models/         # trained model artifacts (.joblib, not tracked in git)
 notebooks/        # exploratory data analysis
 extension/        # browser extension
 tests/            # unit tests
-docs/             # architecture notes
+docs/             # architecture notes, future-feature ideas
 ```
 
 ## Project status
@@ -73,8 +74,8 @@ docs/             # architecture notes
 | Phase | Status |
 |---|---|
 | 0 — Project setup | ☑ |
-| 1–3 — Dataset collection, filtering, EDA | ☐ |
-| 4 — Layer 1 (URL) | ☐ |
+| 1–3 — Dataset collection, filtering, EDA | ☑ (dataset collection continues running in the background; pipeline itself is complete) |
+| 4 — Layer 1 (URL) | ◐ in progress — feature extraction done; 2 of 4 models trained (Logistic Regression, Random Forest) |
 | 5 — Layer 2 (DOM) | ☐ |
 | 6 — FastAPI backend | ☐ |
 | 7 — Browser extension | ☐ |
