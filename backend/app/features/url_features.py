@@ -115,7 +115,7 @@ KNOWN_SHARED_HOSTING_SUFFIXES = {
     "surge.sh", "replit.app", "repl.co", "framer.app", "framer.website",
     "onrender.com", "herokuapp.com", "firebaseapp.com", "pages.dev",
     "glitch.me", "weebly.com", "wixsite.com", "000webhostapp.com",
-    "ipfs.io", "dweb.link",
+    "ipfs.io", "dweb.link", "webcindario.com",
 }
 
 
