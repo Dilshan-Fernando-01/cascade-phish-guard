@@ -63,7 +63,7 @@ data/
   processed/      # cleaned/labelled datasets, feature tables, train/val/test splits
   reports/        # model comparison tables, filtering summaries, figures/
   models/         # trained model artifacts (.joblib, not tracked in git)
-notebooks/        # exploratory data analysis
+notebooks/        # exploratory data analysis, model comparison reports
 extension/        # browser extension
 tests/            # unit tests
 docs/             # architecture notes, future-feature ideas
@@ -75,7 +75,7 @@ docs/             # architecture notes, future-feature ideas
 |---|---|
 | 0 — Project setup | ☑ |
 | 1–3 — Dataset collection, filtering, EDA | ☑ (dataset collection continues running in the background; pipeline itself is complete) |
-| 4 — Layer 1 (URL) | ◐ in progress — feature extraction done; 2 of 4 models trained (Logistic Regression, Random Forest) |
+| 4 — Layer 1 (URL) | ☑ all 4 models trained (Logistic Regression, Random Forest, XGBoost, MLP), compared, winner selected |
 | 5 — Layer 2 (DOM) | ☐ |
 | 6 — FastAPI backend | ☐ |
 | 7 — Browser extension | ☐ |
