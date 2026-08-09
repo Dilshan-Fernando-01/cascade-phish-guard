@@ -1,10 +1,12 @@
 import glob
-import ipaddress
 import json
 import os
-from urllib.parse import urlparse
+import sys
 
 import pandas as pd
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "backend", "app"))
+from features.url_features import validate_url  
 
 openphish_single = pd.read_csv("data/raw/openphish.csv", header=None, names=["url"])
 openphish_single["source"] = "openphish"
@@ -45,41 +47,6 @@ phishing_candidates = pd.concat(
 )
 
 legitimate_candidates = tranco[["url", "source", "rank"]].copy()
-
-
-MAX_URL_LENGTH = 2000
-ALLOWED_SCHEMES = {"http", "https"}
-
-
-def validate_url(url):
-
-    if pd.isna(url) or not str(url).strip():
-        return False, "empty"
-
-    url = str(url).strip()
-
-    if len(url) > MAX_URL_LENGTH:
-        return False, "too_long"
-
-    parsed = urlparse(url)
-
-    if parsed.scheme not in ALLOWED_SCHEMES:
-        return False, "invalid_scheme"
-
-    host = parsed.netloc.split(":")[0]  
-    if not host:
-        return False, "missing_domain"
-
-    try:
-        ipaddress.ip_address(host)
-        is_ip = True
-    except ValueError:
-        is_ip = False
-
-    if not is_ip and "." not in host:
-        return False, "malformed_domain"
-
-    return True, None
 
 
 def apply_validation(df):

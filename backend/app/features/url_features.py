@@ -109,7 +109,7 @@ def _load_tranco():
     return _tranco_lookup
 
 
-# Free hosting/PaaS platforms where anyone can register a subdomain 
+
 KNOWN_SHARED_HOSTING_SUFFIXES = {
     "vercel.app", "netlify.app", "github.io", "blogspot.com", "webflow.io",
     "surge.sh", "replit.app", "repl.co", "framer.app", "framer.website",
@@ -171,8 +171,9 @@ def domain_age_days(host):
 
         return None
 
+    
     try:
-        resp = requests.get(f"https://rdap.org/domain/{host}", timeout=8)
+        resp = requests.get(f"https://rdap.org/domain/{host}", timeout=5)
         if resp.status_code == 200:
             data = resp.json()
             for event in data.get("events", []):
@@ -185,7 +186,7 @@ def domain_age_days(host):
     try:
         import whois
 
-        w = whois.whois(host)
+        w = whois.whois(host, timeout=5)
         creation = w.creation_date
         if isinstance(creation, list):
             creation = creation[0]
@@ -251,3 +252,40 @@ def prepare_features(df, median_domain_age):
     X["domain_age_missing"] = X["domain_age_days"].isna().astype(int)
     X["domain_age_days"] = X["domain_age_days"].fillna(median_domain_age)
     return X
+
+
+
+
+MAX_URL_LENGTH = 2000
+ALLOWED_SCHEMES = {"http", "https"}
+
+
+def validate_url(url):
+    """Returns (is_valid, rejection_reason)."""
+    if pd.isna(url) or not str(url).strip():
+        return False, "empty"
+
+    url = str(url).strip()
+
+    if len(url) > MAX_URL_LENGTH:
+        return False, "too_long"
+
+    parsed = urlparse(url)
+
+    if parsed.scheme not in ALLOWED_SCHEMES:
+        return False, "invalid_scheme"
+
+    host = parsed.netloc.split(":")[0]
+    if not host:
+        return False, "missing_domain"
+
+    try:
+        ipaddress.ip_address(host)
+        is_ip = True
+    except ValueError:
+        is_ip = False
+
+    if not is_ip and "." not in host:
+        return False, "malformed_domain"
+
+    return True, None
