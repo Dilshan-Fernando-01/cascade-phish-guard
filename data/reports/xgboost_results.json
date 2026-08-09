@@ -20,23 +20,23 @@
     ]
   ],
   "feature_importances": {
-    "url_length": 0.06216274946928024,
-    "subdomain_count": 0.03812972456216812,
-    "has_https": 0.6163380146026611,
-    "special_char_count": 0.020131992176175117,
+    "url_length": 0.007947449572384357,
+    "subdomain_count": 0.01525176502764225,
+    "has_https": 0.0,
+    "special_char_count": 0.0,
     "keyword_score": 0.0,
-    "character_entropy": 0.022817621007561684,
+    "character_entropy": 0.02416997402906418,
     "tld_risk_score": 0.0,
     "has_ip_host": 0.0,
     "has_at_symbol": 0.0,
-    "path_depth": 0.0,
+    "path_depth": 0.5215126872062683,
     "query_param_count": 0.0,
-    "digit_ratio": 0.03015667200088501,
+    "digit_ratio": 0.0,
     "is_punycode_or_homograph": 0.0,
-    "tranco_rank_bucket": 0.2079726904630661,
-    "brand_distance_score": 0.002290653297677636,
+    "tranco_rank_bucket": 0.4086463153362274,
+    "brand_distance_score": 0.006740582641214132,
     "brand_keyword_in_host": 0.0,
     "domain_age_days": 0.0,
-    "domain_age_missing": 0.0
+    "domain_age_missing": 0.015731101855635643
   }
 }

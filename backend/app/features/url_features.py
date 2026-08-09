@@ -233,3 +233,21 @@ def extract_features_batch(urls):
         except Exception as exc:
             results.append((None, f"{type(exc).__name__}: {exc}"))
     return results
+
+
+
+FEATURE_COLUMNS = [
+    "url_length", "subdomain_count", "has_https", "special_char_count",
+    "keyword_score", "character_entropy", "tld_risk_score", "has_ip_host",
+    "has_at_symbol", "path_depth", "query_param_count", "digit_ratio",
+    "is_punycode_or_homograph", "tranco_rank_bucket", "brand_distance_score",
+    "brand_keyword_in_host", "domain_age_days",
+]
+
+
+def prepare_features(df, median_domain_age):
+
+    X = df[FEATURE_COLUMNS].copy()
+    X["domain_age_missing"] = X["domain_age_days"].isna().astype(int)
+    X["domain_age_days"] = X["domain_age_days"].fillna(median_domain_age)
+    return X
