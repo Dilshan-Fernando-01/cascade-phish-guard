@@ -30,14 +30,27 @@ function renderStage(index) {
 
 const VERDICT_META = {
   safe: { key: "safe", label: "Looks safe", badge: "SAFE", icon: "&#10003;" },
-  suspicious: { key: "suspicious", label: "Suspicious", badge: "SUSPICIOUS", icon: "!" },
-  phishing: { key: "phishing", label: "Likely phishing", badge: "PHISHING", icon: "&#10005;" },
+  suspicious: {
+    key: "suspicious",
+    label: "Suspicious",
+    badge: "SUSPICIOUS",
+    icon: "!",
+  },
+  phishing: {
+    key: "phishing",
+    label: "Likely phishing",
+    badge: "PHISHING",
+    icon: "&#10005;",
+  },
 };
 
 function renderDone(result) {
-  const meta =
-    VERDICT_META[result.verdict] ||
-    { key: "neutral", label: "Unknown", badge: "UNKNOWN", icon: "?" };
+  const meta = VERDICT_META[result.verdict] || {
+    key: "neutral",
+    label: "Unknown",
+    badge: "UNKNOWN",
+    icon: "?",
+  };
   setChrome(meta.key, meta.badge);
 
   const confidencePct = Math.round(result.confidence * 100);
@@ -129,7 +142,11 @@ function pollUntilDone(tabId, attempt = 0) {
 
 async function main() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab || !tab.url || !(tab.url.startsWith("http://") || tab.url.startsWith("https://"))) {
+  if (
+    !tab ||
+    !tab.url ||
+    !(tab.url.startsWith("http://") || tab.url.startsWith("https://"))
+  ) {
     renderUnknown();
     return;
   }
@@ -137,18 +154,30 @@ async function main() {
   renderStage(0);
   const stageTimer = setTimeout(() => renderStage(1), 900);
 
-  chrome.runtime.sendMessage({ type: "getTabResult", tabId: tab.id }, (response) => {
-    clearTimeout(stageTimer);
-    if (!response || response.status === "unknown") {
-      renderUnknown();
-      return;
-    }
-    if (response.status === "analyzing") {
-      pollUntilDone(tab.id);
-      return;
-    }
-    handleResolvedStatus(response.status, response);
-  });
+  chrome.runtime.sendMessage(
+    { type: "getTabResult", tabId: tab.id },
+    (response) => {
+      if (response && response.status === "analyzing") {
+        clearTimeout(stageTimer);
+        pollUntilDone(tab.id);
+        return;
+      }
+
+      if (!response || response.status === "unknown") {
+        chrome.runtime.sendMessage(
+          { type: "analyzeTabNow", tabId: tab.id, url: tab.url },
+          (analyzed) => {
+            clearTimeout(stageTimer);
+            handleResolvedStatus(analyzed.status, analyzed);
+          },
+        );
+        return;
+      }
+
+      clearTimeout(stageTimer);
+      handleResolvedStatus(response.status, response);
+    },
+  );
 }
 
 main();
