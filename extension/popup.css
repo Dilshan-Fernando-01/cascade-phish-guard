@@ -1,147 +1,250 @@
 :root {
-  --radius-card: 18px;
+  --radius-card: 20px;
   --radius-pill: 999px;
-  --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.1);
+  --shadow-card: 0 12px 28px rgba(15, 23, 42, 0.14);
   --color-text: #1f2937;
   --color-muted: #6b7280;
   --color-border: #e5e7eb;
 
-  --safe: #16a34a;
-  --safe-bg: #ecfdf5;
+  --brand: #4f46e5;
+  --brand-dark: #4338ca;
+  --brand-light: #eef2ff;
+
+  --safe-text: #065f46;
   --safe-badge-bg: #dcfce7;
   --safe-badge-text: #15803d;
+  --safe-grad-a: #bbf7d0;
+  --safe-grad-b: #4ade80;
+  --safe-fill: #16a34a;
 
-  --suspicious: #d97706;
-  --suspicious-bg: #fffbeb;
+  --suspicious-text: #78350f;
   --suspicious-badge-bg: #fef3c7;
   --suspicious-badge-text: #b45309;
+  --suspicious-grad-a: #fde68a;
+  --suspicious-grad-b: #f59e0b;
+  --suspicious-fill: #d97706;
 
-  --phishing: #dc2626;
-  --phishing-bg: #fef2f2;
+  --phishing-text: #7f1d1d;
   --phishing-badge-bg: #fee2e2;
   --phishing-badge-text: #b91c1c;
+  --phishing-grad-a: #fecaca;
+  --phishing-grad-b: #f87171;
+  --phishing-fill: #dc2626;
 
-  --loading: #2563eb;
-  --loading-bg: #eff6ff;
-  --loading-badge-bg: #dbeafe;
-  --loading-badge-text: #1d4ed8;
-
-  --neutral: #6b7280;
-  --neutral-bg: #f9fafb;
-  --neutral-badge-bg: #e5e7eb;
-  --neutral-badge-text: #374151;
+  --neutral-text: #3730a3;
+  --neutral-badge-bg: #e0e7ff;
+  --neutral-badge-text: #4338ca;
+  --neutral-grad-a: #e0e7ff;
+  --neutral-grad-b: #a5b4fc;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html {
+html,
+body {
+  margin: 0;
   background: transparent;
 }
 
 body {
-  margin: 0;
   width: 320px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: transparent;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--color-text);
 }
 
 .card {
+  margin: 8px;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
   background: #fff;
+  padding: 18px 18px 16px;
 }
 
-.topbar {
+.header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
-  transition: background 0.25s ease;
+  gap: 8px;
 }
 
-.topbar-label {
-  font-size: 11px;
+.brand-title {
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  opacity: 0.7;
+  letter-spacing: -0.01em;
 }
 
 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  padding: 4px 10px;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
   border-radius: var(--radius-pill);
-  transition: background 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+  background: var(--neutral-badge-bg);
+  color: var(--neutral-badge-text);
 }
 
-.topbar-safe {
-  background: var(--safe-bg);
+.badge-icon {
+  font-size: 10px;
 }
+
 .badge-safe {
   background: var(--safe-badge-bg);
   color: var(--safe-badge-text);
-}
-
-.topbar-suspicious {
-  background: var(--suspicious-bg);
 }
 .badge-suspicious {
   background: var(--suspicious-badge-bg);
   color: var(--suspicious-badge-text);
 }
-
-.topbar-phishing {
-  background: var(--phishing-bg);
-}
 .badge-phishing {
   background: var(--phishing-badge-bg);
   color: var(--phishing-badge-text);
 }
-
-.topbar-loading {
-  background: var(--loading-bg);
-}
-.badge-loading {
-  background: var(--loading-badge-bg);
-  color: var(--loading-badge-text);
-}
-
-.topbar-neutral {
-  background: var(--neutral-bg);
-}
+.badge-loading,
 .badge-neutral {
   background: var(--neutral-badge-bg);
   color: var(--neutral-badge-text);
 }
 
-.content {
-  padding: 26px 20px 22px;
-  min-height: 140px;
+.subtitle {
+  margin: 6px 0 16px;
+  font-size: 12px;
+  color: var(--color-muted);
+  min-height: 15px;
+}
+
+/* --- Hero panel: the gradient "spotlight" box for the current verdict --- */
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.hero-safe {
+  background-image:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(255, 255, 255, 0.65) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 78% 60%,
+      rgba(255, 255, 255, 0.55) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 45% 85%,
+      rgba(255, 255, 255, 0.4) 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(135deg, var(--safe-grad-a), var(--safe-grad-b));
+}
+.hero-suspicious {
+  background-image:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(255, 255, 255, 0.65) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 78% 60%,
+      rgba(255, 255, 255, 0.55) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 45% 85%,
+      rgba(255, 255, 255, 0.4) 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(135deg, var(--suspicious-grad-a), var(--suspicious-grad-b));
+}
+.hero-phishing {
+  background-image:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(255, 255, 255, 0.65) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 78% 60%,
+      rgba(255, 255, 255, 0.55) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 45% 85%,
+      rgba(255, 255, 255, 0.4) 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(135deg, var(--phishing-grad-a), var(--phishing-grad-b));
+}
+.hero-loading,
+.hero-neutral {
+  background-image:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(255, 255, 255, 0.65) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 78% 60%,
+      rgba(255, 255, 255, 0.55) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 45% 85%,
+      rgba(255, 255, 255, 0.4) 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(135deg, var(--neutral-grad-a), var(--neutral-grad-b));
+}
+
+.hero-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.6);
 }
 
-.state {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.hero-safe .hero-icon {
+  color: var(--safe-text);
+}
+.hero-suspicious .hero-icon {
+  color: var(--suspicious-text);
+}
+.hero-phishing .hero-icon {
+  color: var(--phishing-text);
+}
+.hero-loading .hero-icon,
+.hero-neutral .hero-icon {
+  color: var(--neutral-text);
 }
 
-.spinner {
-  width: 26px;
-  height: 26px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--loading);
+.hero-icon .spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(67, 56, 202, 0.25);
+  border-top-color: var(--neutral-text);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin-bottom: 10px;
 }
 
 @keyframes spin {
@@ -150,67 +253,50 @@ body {
   }
 }
 
-.stage-text {
-  font-size: 13px;
-  color: var(--color-muted);
+.hero-text {
+  min-width: 0;
+}
+
+.hero-label {
   margin: 0;
-}
-
-.verdict-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 700;
-  margin-bottom: 10px;
+  line-height: 1.25;
 }
 
-.icon-safe {
-  background: var(--safe-badge-bg);
-  color: var(--safe);
-}
-.icon-suspicious {
-  background: var(--suspicious-badge-bg);
-  color: var(--suspicious);
-}
-.icon-phishing {
-  background: var(--phishing-badge-bg);
-  color: var(--phishing);
-}
-.icon-neutral {
-  background: var(--neutral-badge-bg);
-  color: var(--neutral);
-}
-
-.verdict-label {
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0 0 16px;
-}
-
-.progress-row {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
+.hero-sub {
+  margin: 2px 0 0;
   font-size: 12px;
-  color: var(--color-muted);
-  margin-bottom: 6px;
+  line-height: 1.4;
+  opacity: 0.85;
 }
 
-.progress-value {
-  font-weight: 700;
-  color: var(--color-text);
+.hero-safe .hero-label,
+.hero-safe .hero-sub {
+  color: var(--safe-text);
+}
+.hero-suspicious .hero-label,
+.hero-suspicious .hero-sub {
+  color: var(--suspicious-text);
+}
+.hero-phishing .hero-label,
+.hero-phishing .hero-sub {
+  color: var(--phishing-text);
+}
+.hero-loading .hero-label,
+.hero-loading .hero-sub,
+.hero-neutral .hero-label,
+.hero-neutral .hero-sub {
+  color: var(--neutral-text);
 }
 
 .progress-track {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: var(--color-border);
   border-radius: var(--radius-pill);
   overflow: hidden;
+  margin-top: 10px;
 }
 
 .progress-fill {
@@ -220,20 +306,13 @@ body {
 }
 
 .fill-safe {
-  background: var(--safe);
+  background: var(--safe-fill);
 }
 .fill-suspicious {
-  background: var(--suspicious);
+  background: var(--suspicious-fill);
 }
 .fill-phishing {
-  background: var(--phishing);
-}
-
-.note {
-  font-size: 12px;
-  color: var(--color-muted);
-  margin: 10px 0 0;
-  line-height: 1.45;
+  background: var(--phishing-fill);
 }
 
 .note-box {
@@ -241,10 +320,10 @@ body {
   align-items: flex-start;
   gap: 8px;
   text-align: left;
-  margin-top: 16px;
+  margin-top: 12px;
   padding: 10px 12px;
   border-radius: 12px;
-  background: var(--neutral-bg);
+  background: #f9fafb;
   border: 1px solid var(--color-border);
   font-size: 12px;
   color: var(--color-muted);
@@ -264,4 +343,81 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 18px 0;
+}
+
+.manual-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.manual-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  margin-bottom: 8px;
+}
+
+.manual-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: #fff;
+}
+
+.manual-input-wrap:focus-within {
+  border-color: var(--brand);
+}
+
+.manual-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.manual-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-text);
+}
+
+.manual-button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manual-button:hover {
+  background: var(--brand-dark);
+}
+
+.manual-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.manual-result:not(:empty) {
+  margin-top: 12px;
 }

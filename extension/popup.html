@@ -7,12 +7,33 @@
 </head>
 <body>
   <div class="card">
-    <div class="topbar topbar-neutral" id="topbar">
-      <span class="topbar-label">Cascade Phish Guard</span>
-      <span class="badge badge-neutral" id="badge">--</span>
+    <div class="header-row">
+      <span class="brand-title">Cascade Phish Guard</span>
+      <span class="badge" id="badge">--</span>
     </div>
-    <div class="content" id="content"></div>
+    <p class="subtitle" id="subtitle">&nbsp;</p>
+
+    <div id="content"></div>
+
+    <div class="divider"></div>
+
+    <form id="manual-form" class="manual-section">
+      <label class="manual-label" for="manual-url">Check a URL directly</label>
+      <div class="manual-input-wrap">
+        <span class="manual-icon">&#128279;</span>
+        <input
+          type="text"
+          id="manual-url"
+          class="manual-input"
+          placeholder="https://example.com"
+          autocomplete="off"
+        />
+      </div>
+      <button type="submit" class="manual-button">Check</button>
+      <div id="manual-result" class="manual-result"></div>
+    </form>
   </div>
+  <script src="shared.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

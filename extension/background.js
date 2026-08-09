@@ -1,6 +1,6 @@
-console.log("Cascade Phish Guard: background service worker loaded.");
+importScripts("shared.js");
 
-const BACKEND_URL = "http://127.0.0.1:8000/analyze";
+console.log("Cascade Phish Guard: background service worker loaded.");
 
 const tabResults = new Map();
 
@@ -13,25 +13,9 @@ function analyzeAndStore(tabId, url) {
 
   tabResults.set(tabId, { status: "analyzing" });
 
-  const promise = fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        tabResults.set(tabId, {
-          status: "error",
-          message: body.detail || `Backend returned ${response.status}`,
-        });
-        return;
-      }
-      const result = await response.json();
-      tabResults.set(tabId, { status: "done", result });
-    })
-    .catch((err) => {
-      tabResults.set(tabId, { status: "offline", message: String(err) });
+  const promise = checkUrlWithBackend(url)
+    .then((outcome) => {
+      tabResults.set(tabId, outcome);
     })
     .finally(() => {
       inFlight.delete(tabId);

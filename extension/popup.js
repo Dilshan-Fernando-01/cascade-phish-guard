@@ -4,112 +4,165 @@ const STAGE_MESSAGES = [
   "Finalizing result...",
 ];
 
-const topbar = document.getElementById("topbar");
 const badge = document.getElementById("badge");
+const subtitleEl = document.getElementById("subtitle");
 const content = document.getElementById("content");
 
-function setChrome(stateKey, badgeText) {
-  topbar.className = `topbar topbar-${stateKey}`;
-  badge.className = `badge badge-${stateKey}`;
-  badge.textContent = badgeText;
+function setBadge(key, icon, text) {
+  badge.className = `badge badge-${key}`;
+  badge.innerHTML = `<span class="badge-icon">${icon}</span>${text}`;
+}
+
+function setSubtitle(text) {
+  subtitleEl.textContent = text || " ";
 }
 
 function render(html) {
   content.innerHTML = html;
 }
 
-function renderStage(index) {
-  setChrome("loading", "CHECKING");
-  render(`
-    <div class="state">
-      <div class="spinner"></div>
-      <p class="stage-text">${STAGE_MESSAGES[index]}</p>
+function hostFromUrl(url) {
+  try {
+    return new URL(url).hostname;
+  } catch (err) {
+    return "";
+  }
+}
+
+function heroHtml({ key, label, sub, icon, spinner }) {
+  const iconBlock = spinner
+    ? `<div class="hero-icon"><div class="spinner"></div></div>`
+    : `<div class="hero-icon">${icon}</div>`;
+  return `
+    <div class="hero hero-${key}">
+      ${iconBlock}
+      <div class="hero-text">
+        <p class="hero-label">${label}</p>
+        <p class="hero-sub">${sub}</p>
+      </div>
     </div>
-  `);
+  `;
+}
+
+function renderStage(index) {
+  setBadge("loading", "&#8987;", "CHECKING");
+  render(
+    heroHtml({
+      key: "loading",
+      label: "Checking...",
+      sub: STAGE_MESSAGES[index],
+      spinner: true,
+    }),
+  );
 }
 
 const VERDICT_META = {
-  safe: { key: "safe", label: "Looks safe", badge: "SAFE", icon: "&#10003;" },
+  safe: {
+    key: "safe",
+    label: "Looks safe",
+    badgeText: "SAFE",
+    icon: "&#10003;",
+  },
   suspicious: {
     key: "suspicious",
     label: "Suspicious",
-    badge: "SUSPICIOUS",
+    badgeText: "SUSPICIOUS",
     icon: "!",
   },
   phishing: {
     key: "phishing",
     label: "Likely phishing",
-    badge: "PHISHING",
+    badgeText: "PHISHING",
     icon: "&#10005;",
   },
 };
 
-function renderDone(result) {
+function verdictCard(result) {
   const meta = VERDICT_META[result.verdict] || {
     key: "neutral",
     label: "Unknown",
-    badge: "UNKNOWN",
+    badgeText: "UNKNOWN",
     icon: "?",
   };
-  setChrome(meta.key, meta.badge);
-
   const confidencePct = Math.round(result.confidence * 100);
+  const hero = heroHtml({
+    key: meta.key,
+    label: meta.label,
+    sub: `${confidencePct}% phishing likelihood`,
+    icon: meta.icon,
+  });
+  const bar = `
+    <div class="progress-track">
+      <div class="progress-fill fill-${meta.key}" style="width: ${confidencePct}%"></div>
+    </div>
+  `;
   const escalateNote = result.would_escalate
     ? `<div class="note-box">
          <span class="note-icon">i</span>
          <span>This page falls in a gray zone our deeper checks aren't built yet to resolve -- treat it with extra caution.</span>
        </div>`
     : "";
+  return { meta, html: hero + bar + escalateNote };
+}
 
-  render(`
-    <div class="state">
-      <div class="verdict-icon icon-${meta.key}">${meta.icon}</div>
-      <p class="verdict-label">${meta.label}</p>
-      <div class="progress-row">
-        <span>Phishing likelihood</span>
-        <span class="progress-value">${confidencePct}%</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill fill-${meta.key}" style="width: ${confidencePct}%"></div>
-      </div>
-      ${escalateNote}
-    </div>
-  `);
+function errorCard(message) {
+  return heroHtml({
+    key: "neutral",
+    label: "Couldn't check this page",
+    sub: message || "The address couldn't be analyzed.",
+    icon: "?",
+  });
+}
+
+function offlineCard() {
+  return heroHtml({
+    key: "neutral",
+    label: "Backend not reachable",
+    sub: "Make sure the Cascade Phish Guard server is running.",
+    icon: "&#9211;",
+  });
+}
+
+function unknownCard(message) {
+  return heroHtml({
+    key: "neutral",
+    label: "Nothing to check",
+    sub: message || "This isn't a page we can analyze.",
+    icon: "&#8211;",
+  });
+}
+
+function renderDone(result) {
+  const { meta, html } = verdictCard(result);
+  setBadge(meta.key, meta.icon, meta.badgeText);
+  render(html);
 }
 
 function renderError(message) {
-  setChrome("neutral", "ERROR");
-  render(`
-    <div class="state">
-      <div class="verdict-icon icon-neutral">?</div>
-      <p class="verdict-label">Couldn't check this page</p>
-      <p class="note">${message || "The address couldn't be analyzed."}</p>
-    </div>
-  `);
+  setBadge("neutral", "?", "ERROR");
+  render(errorCard(message));
 }
 
 function renderOffline() {
-  setChrome("neutral", "OFFLINE");
-  render(`
-    <div class="state">
-      <div class="verdict-icon icon-neutral">&#9211;</div>
-      <p class="verdict-label">Backend not reachable</p>
-      <p class="note">Make sure the Cascade Phish Guard server is running.</p>
-    </div>
-  `);
+  setBadge("neutral", "&#9211;", "OFFLINE");
+  render(offlineCard());
 }
 
 function renderUnknown() {
-  setChrome("neutral", "N/A");
-  render(`
-    <div class="state">
-      <p class="note">Nothing to check on this page.</p>
-    </div>
-  `);
+  setBadge("neutral", "&#8211;", "N/A");
+  render(unknownCard());
 }
 
 function handleResolvedStatus(status, payload) {
-  renderStage(2);
+  setBadge("loading", "&#8987;", "CHECKING");
+  render(
+    heroHtml({
+      key: "loading",
+      label: "Checking...",
+      sub: STAGE_MESSAGES[2],
+      spinner: true,
+    }),
+  );
   setTimeout(() => {
     if (status === "done") {
       renderDone(payload.result);
@@ -147,10 +200,12 @@ async function main() {
     !tab.url ||
     !(tab.url.startsWith("http://") || tab.url.startsWith("https://"))
   ) {
+    setSubtitle("");
     renderUnknown();
     return;
   }
 
+  setSubtitle(hostFromUrl(tab.url));
   renderStage(0);
   const stageTimer = setTimeout(() => renderStage(1), 900);
 
@@ -181,3 +236,35 @@ async function main() {
 }
 
 main();
+
+const manualForm = document.getElementById("manual-form");
+const manualInput = document.getElementById("manual-url");
+const manualResultEl = document.getElementById("manual-result");
+const manualButton = manualForm.querySelector(".manual-button");
+
+manualForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const url = manualInput.value.trim();
+  if (!url) {
+    return;
+  }
+
+  manualButton.disabled = true;
+  manualResultEl.innerHTML = heroHtml({
+    key: "loading",
+    label: "Checking...",
+    sub: "Analyzing...",
+    spinner: true,
+  });
+
+  checkUrlWithBackend(url).then((outcome) => {
+    manualButton.disabled = false;
+    if (outcome.status === "done") {
+      manualResultEl.innerHTML = verdictCard(outcome.result).html;
+    } else if (outcome.status === "offline") {
+      manualResultEl.innerHTML = offlineCard();
+    } else {
+      manualResultEl.innerHTML = errorCard(outcome.message);
+    }
+  });
+});
