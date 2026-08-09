@@ -1,8 +1,8 @@
 {
   "phishing_candidates": {
     "openphish": {
-      "total": 9600,
-      "valid": 9600,
+      "total": 9900,
+      "valid": 9900,
       "rejected": 0,
       "rejection_reasons": {}
     },
