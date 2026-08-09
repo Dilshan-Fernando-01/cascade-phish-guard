@@ -3,6 +3,9 @@
   "name": "Cascade Phish Guard",
   "version": "0.1.0",
   "description": "Checks web addresses for phishing risk as you browse.",
+  "permissions": [
+    "webNavigation"
+  ],
   "host_permissions": [
     "http://localhost:8000/*",
     "http://127.0.0.1:8000/*"
