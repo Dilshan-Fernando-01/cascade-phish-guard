@@ -26,24 +26,24 @@
     },
     {
       "model": "mlp",
-      "accuracy": 0.9811320754716981,
-      "precision": 1.0,
-      "recall": 0.6666666666666666,
-      "f1": 0.8,
-      "auc_roc": 0.9866666666666666
+      "accuracy": 0.9433962264150944,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "auc_roc": 0.9533333333333334
     }
   ],
   "primary_metric": "f1",
   "winner": "logistic_regression",
   "winner_selected_via_tiebreak": true,
-  "tie_break_reasoning": "Occam's razor -- when validation performance ties, prefer the simpler/more interpretable model (order: logistic_regression > random_forest > xgboost > mlp).",
+  "tie_break_reasoning": "Occam's razor when validation performance ties, prefer the simpler/more interpretable model (order: logistic_regression > random_forest > xgboost > mlp).",
   "test_set_confirmation": {
     "metrics": {
-      "accuracy": 0.9454545454545454,
+      "accuracy": 0.9818181818181818,
       "precision": 1.0,
-      "recall": 0.4,
-      "f1": 0.5714285714285714,
-      "auc_roc": 1.0
+      "recall": 0.8,
+      "f1": 0.8888888888888888,
+      "auc_roc": 0.868
     },
     "confusion_matrix": [
       [
@@ -51,8 +51,8 @@
         0
       ],
       [
-        3,
-        2
+        1,
+        4
       ]
     ]
   }

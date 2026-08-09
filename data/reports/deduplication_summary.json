@@ -1,17 +1,17 @@
 {
   "phishing_candidates": {
-    "total_before": 1628535,
-    "total_after": 93775,
-    "duplicates_removed": 1534760,
+    "total_before": 2052092,
+    "total_after": 95924,
+    "duplicates_removed": 1956168,
     "total_before_by_source": {
-      "phishtank": 1556459,
+      "phishtank": 1978216,
       "phishtank_kaggle": 64276,
-      "openphish": 7800
+      "openphish": 9600
     },
     "removed_by_source": {
-      "phishtank": 1533265,
-      "openphish": 940,
-      "phishtank_kaggle": 555
+      "phishtank": 1954289,
+      "openphish": 1323,
+      "phishtank_kaggle": 556
     }
   },
   "legitimate_candidates": {

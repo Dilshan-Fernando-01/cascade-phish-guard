@@ -29,7 +29,8 @@ phishtank_snapshots["source"] = "phishtank"
 
 
 tranco = pd.read_csv("data/raw/tranco.csv", header=None, names=["rank", "domain"])
-tranco["url"] = "http://" + tranco["domain"]
+
+tranco["url"] = "https://" + tranco["domain"]
 tranco["source"] = "tranco"
 
 
@@ -51,7 +52,7 @@ ALLOWED_SCHEMES = {"http", "https"}
 
 
 def validate_url(url):
-    """Check a single URL string. Returns (is_valid, rejection_reason)."""
+
     if pd.isna(url) or not str(url).strip():
         return False, "empty"
 

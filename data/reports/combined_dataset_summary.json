@@ -5,7 +5,9 @@
   "class_ratio_legitimate_to_phishing": 40000.0,
   "by_source": {
     "tranco": 1000000,
-    "openphish": 16,
-    "openphish,phishtank": 9
+    "phishtank,phishtank_kaggle": 18,
+    "openphish,phishtank": 5,
+    "phishtank": 1,
+    "openphish": 1
   }
 }
