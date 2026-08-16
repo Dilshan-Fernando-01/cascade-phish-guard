@@ -18,12 +18,14 @@ _COMPARISON_PATH = Path(__file__).resolve().parents[2] / "data" / "reports" / "l
 
 REQUEST_TIMEOUT_SECONDS = 12
 
+EXTENSION_ORIGIN = "chrome-extension://ecnkllhbcnponkmgmeenkoijnpkociaj"
+
 app = FastAPI(title="Cascade Phish Guard API", version=APP_VERSION)
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[EXTENSION_ORIGIN],
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

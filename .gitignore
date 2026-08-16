@@ -5,6 +5,7 @@ __pycache__/
 
 # Env / secrets
 .env
+extension/.dev-key.pem
 
 # Data
 data/raw/

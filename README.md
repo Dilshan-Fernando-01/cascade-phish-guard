@@ -65,20 +65,26 @@ data/
   models/         # trained model artifacts (.joblib, not tracked in git)
 notebooks/        # exploratory data analysis, model comparison reports
 extension/        # browser extension
-tests/            # unit tests
+tests/            # backend smoke test
 docs/             # architecture notes, future-feature ideas
 ```
 
 ## Project status
+
+Layer 2 is temporarily paused (it needs a sandboxed environment to load
+real phishing pages, currently pending a separate VM). In the meantime,
+the backend and extension were built through Layer 1 only, as a working
+end-to-end skeleton — the extension genuinely calls a live backend and
+returns a real verdict today, just without Layer 2/3 escalation yet.
 
 | Phase | Status |
 |---|---|
 | 0 — Project setup | ☑ |
 | 1–3 — Dataset collection, filtering, EDA | ☑ (dataset collection continues running in the background; pipeline itself is complete) |
 | 4 — Layer 1 (URL) | ☑ all 4 models trained (Logistic Regression, Random Forest, XGBoost, MLP), compared, winner selected |
-| 5 — Layer 2 (DOM) | ☐ |
-| 6 — FastAPI backend | ☐ |
-| 7 — Browser extension | ☐ |
+| 5 — Layer 2 (DOM) | ☐ paused — resumes once a sandboxed VM is available |
+| 6 — FastAPI backend | ☑ `/health`, `/version`, `/analyze` — Layer 1 only for now |
+| 7 — Browser extension | ☑ manifest, live verdict on page visit, manual URL check — Layer 1 only for now |
 | 8 — Layer 3 (visual) | ☐ |
 | 9 — Ensemble / cascade integration | ☐ |
 | 10 — Evaluation & evidence pack | ☐ |
@@ -91,6 +97,24 @@ cd cascade-phish-guard
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+## Running the backend + extension
+
+```bash
+cd backend
+../.venv/bin/uvicorn api.main:app --port 8000
+```
+
+Then in Chrome: `chrome://extensions` → enable Developer mode → **Load
+unpacked** → select the `extension/` folder. Visiting any page shows a
+live verdict in the popup; the popup also has a field to check any URL
+directly without visiting it.
+
+To check the backend on its own without a browser:
+
+```bash
+.venv/bin/python tests/test_backend_smoke.py
 ```
 
 ## Academic context
