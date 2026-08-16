@@ -3,6 +3,7 @@
   "name": "Cascade Phish Guard",
   "version": "0.1.0",
   "description": "Checks web addresses for phishing risk as you browse.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyclcE1CenfyQ039MJnQ9l60Ugh9Ahbf3X3uwE4tjc/TurgDleIdBTPF2vtzIYokhJjFLAoXqE1OMBYdwJc7Grs3YJ0fN7x03mBI4zdr0+vqZ6QZpS7SqtnTmP85+FcPGygDU5vZNcBhSzja9Sv8Qd7nd2SelyopvEy/8VwaQ1UiTOuqszOGnxOacHMjIApakNl0tAeSQkqNoiZXnjlTYW4tFJci75baZwYpQZ5l1vwQGrE/oBtKuZS3CLNukJNsLkMtpDeEME2MV61vTfA7B4nHJTHEpWkMZhD8pSbwaCVh+U1nzlZDdGZtCrXo67twNSHGy3EetwOdVTEgB/s8BQwIDAQAB",
   "permissions": [
     "webNavigation",
     "activeTab"
