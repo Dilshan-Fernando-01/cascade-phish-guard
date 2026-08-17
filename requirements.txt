@@ -18,3 +18,6 @@ scipy
 scikit-learn
 joblib
 xgboost
+
+# Phase 5 (Layer 2)
+beautifulsoup4
