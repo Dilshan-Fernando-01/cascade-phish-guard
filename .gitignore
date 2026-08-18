@@ -8,8 +8,11 @@ __pycache__/
 extension/.dev-key.pem
 
 # Data
-data/raw/
+
+data/raw/*
 data/processed/
+
+!data/raw/tranco.csv
 
 # Model artifacts
 *.pkl
