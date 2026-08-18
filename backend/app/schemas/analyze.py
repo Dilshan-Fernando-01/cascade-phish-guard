@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -26,5 +27,9 @@ class AnalyzeResponse(BaseModel):
     )
     would_escalate: bool = Field(
         ..., description="Whether the cascade rule judged this uncertain and would escalate, if a next layer existed"
+    )
+    layer2_features: Optional[dict] = Field(
+        default=None,
+        description="Raw Layer 2 DOM features, when Layer 2 actually ran. ",
     )
     analyzed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
