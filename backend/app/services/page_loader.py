@@ -1,5 +1,3 @@
-
-
 from playwright.sync_api import sync_playwright
 
 DEFAULT_TIMEOUT_MS = 15000
@@ -7,15 +5,26 @@ MAX_REDIRECTS = 5
 
 
 def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
-    """Loads a URL headlessly and returns its DOM content.
+    """Loads a URL headlessly and returns its DOM content
 
     Returns a dict:
-        {"success": True, "html": str, "final_url": str, "status": int, "error": None}
-        {"success": False, "html": None, "final_url": None, "status": None, "error": str}
+        {"success": True, "html": str, "final_url": str, "status": int,
+         "network_urls": list[str], "error": None}
+        {"success": False, "html": None, "final_url": None, "status": None,
+         "network_urls": [], "error": str}
+
     """
-    result = {"success": False, "html": None, "final_url": None, "status": None, "error": None}
+    result = {
+        "success": False,
+        "html": None,
+        "final_url": None,
+        "status": None,
+        "network_urls": [],
+        "error": None,
+    }
     abort_reason = {"reason": None}
     visited = []
+    network_urls = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -23,11 +32,17 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
         context = browser.new_context(ignore_https_errors=True)
         page = context.new_page()
 
-       
+        
         page.on("dialog", lambda dialog: dialog.dismiss())
 
       
         page.on("download", lambda download: download.cancel())
+
+        def track_request(request):
+            if request.resource_type in ("xhr", "fetch"):
+                network_urls.append(request.url)
+
+        page.on("request", track_request)
 
         def track_navigation(frame):
            
@@ -35,7 +50,7 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
                 return
             visited.append(frame.url)
             if visited.count(frame.url) > 1:
-              
+                
                 abort_reason["reason"] = "redirect loop detected"
                 page.close()
             elif len(visited) > max_redirects + 1:
@@ -47,7 +62,7 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
         try:
             response = page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
 
-            
+           
             hop_count = 0
             req = response.request if response else None
             while req is not None and req.redirected_from is not None:
@@ -67,6 +82,7 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
         finally:
             browser.close()
 
+    result["network_urls"] = network_urls
     if not result["success"]:
         result["error"] = abort_reason["reason"]
 
