@@ -15,5 +15,7 @@ data/processed/
 *.pkl
 *.joblib
 
+!data/models/layer1_winner.joblib
+
 # Scratch work
 /temp/
