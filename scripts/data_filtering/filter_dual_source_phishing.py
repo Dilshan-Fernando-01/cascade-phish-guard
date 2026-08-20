@@ -74,7 +74,7 @@ confirmed["confirmation_method"] = [
 os.makedirs("data/processed", exist_ok=True)
 os.makedirs("data/reports", exist_ok=True)
 
-confirmed[["url", "source", "confirmation_method"]].to_csv(
+confirmed[["url", "source", "collected_date", "confirmation_method"]].to_csv(
     "data/processed/phishing_candidates_dual_confirmed.csv", index=False
 )
 

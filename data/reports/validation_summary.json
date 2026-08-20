@@ -1,18 +1,20 @@
 {
   "phishing_candidates": {
     "openphish": {
-      "total": 9900,
-      "valid": 9900,
+      "total": 15900,
+      "valid": 15900,
       "rejected": 0,
-      "rejection_reasons": {}
+      "rejection_reasons": {},
+      "undated": 0
     },
     "phishtank": {
-      "total": 1978346,
-      "valid": 1978216,
-      "rejected": 130,
+      "total": 3339977,
+      "valid": 3339752,
+      "rejected": 225,
       "rejection_reasons": {
-        "too_long": 130
-      }
+        "too_long": 225
+      },
+      "undated": 96
     },
     "phishtank_kaggle": {
       "total": 64280,
@@ -20,7 +22,8 @@
       "rejected": 4,
       "rejection_reasons": {
         "too_long": 4
-      }
+      },
+      "undated": 64280
     }
   },
   "legitimate_candidates": {
@@ -28,7 +31,8 @@
       "total": 1000000,
       "valid": 1000000,
       "rejected": 0,
-      "rejection_reasons": {}
+      "rejection_reasons": {},
+      "undated": 0
     }
   }
 }
