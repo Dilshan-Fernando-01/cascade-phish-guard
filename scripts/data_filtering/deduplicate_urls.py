@@ -29,8 +29,12 @@ def deduplicate_with_report(df):
         .apply(lambda s: ",".join(sorted(set(s))))
     )
 
+
+    earliest_date = df.groupby("normalized_url")["collected_date"].min()
+
     deduped = df.drop_duplicates(subset="normalized_url", keep="first").set_index("normalized_url")
     deduped["source"] = merged_sources
+    deduped["collected_date"] = earliest_date
     deduped = deduped.reset_index(drop=True)
 
     report = {
@@ -47,16 +51,20 @@ def deduplicate_with_report(df):
 phishing_candidates = pd.read_csv("data/processed/phishing_candidates_valid.csv")
 legitimate_candidates = pd.read_csv("data/processed/legitimate_candidates_valid.csv")
 
+
+phishing_candidates["collected_date"] = pd.to_datetime(phishing_candidates["collected_date"], errors="coerce")
+legitimate_candidates["collected_date"] = pd.to_datetime(legitimate_candidates["collected_date"], errors="coerce")
+
 phishing_deduped, phishing_report = deduplicate_with_report(phishing_candidates)
 legitimate_deduped, legitimate_report = deduplicate_with_report(legitimate_candidates)
 
 os.makedirs("data/processed", exist_ok=True)
 os.makedirs("data/reports", exist_ok=True)
 
-phishing_deduped[["url", "source"]].to_csv(
+phishing_deduped[["url", "source", "collected_date"]].to_csv(
     "data/processed/phishing_candidates_deduped.csv", index=False
 )
-legitimate_deduped[["url", "source", "rank"]].to_csv(
+legitimate_deduped[["url", "source", "rank", "collected_date"]].to_csv(
     "data/processed/legitimate_candidates_deduped.csv", index=False
 )
 
