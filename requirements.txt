@@ -21,3 +21,8 @@ xgboost
 
 # Phase 5 (Layer 2)
 beautifulsoup4
+
+# Phase 6
+fastapi
+uvicorn
+pydantic
