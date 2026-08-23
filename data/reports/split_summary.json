@@ -1,19 +1,18 @@
 {
-  "split_mode": "random_stratified_TEMPORARY",
-  "warning": "TEMPORARY random-stratified split ",
+  "split_mode": "domain_grouped__temporal_phishing__random_legitimate",
   "train": {
-    "total": 700017,
-    "phishing": 17,
-    "legitimate": 700000
+    "total": 16693,
+    "phishing": 8017,
+    "legitimate": 8676
   },
   "validation": {
-    "total": 150003,
-    "phishing": 3,
-    "legitimate": 150000
+    "total": 3529,
+    "phishing": 1729,
+    "legitimate": 1800
   },
   "test": {
-    "total": 150005,
-    "phishing": 5,
-    "legitimate": 150000
+    "total": 4400,
+    "phishing": 2565,
+    "legitimate": 1835
   }
 }
