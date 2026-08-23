@@ -28,9 +28,88 @@ CC_DOMAIN_SAMPLE_SIZE = 6000
 CC_TARGET_COUNT = 1500
 CC_REQUEST_DELAY_SECONDS = 1.5
 
-TEMPLATE_TARGET_COUNT = 2200
+
+TEMPLATE_TARGET_COUNT = 4700
 TEMPLATE_EXTRA_DOMAIN_SAMPLE_SIZE = 550
 TEMPLATE_EXTRA_DOMAIN_POOL_TOP_N = 20_000
+
+
+REAL_AUTH_TEMPLATES = {
+    "accounts.google.com": [
+        "/signin/v2/identifier?service=mail&continue=https%3A%2F%2Fmail.google.com%2Fmail%2F",
+        "/signin/v2/challenge/pwd?TL={token}",
+        "/o/oauth2/v2/auth?client_id={cid}&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&response_type=code&scope=email",
+        "/ServiceLogin?service=accountsettings&continue=https%3A%2F%2Fmyaccount.google.com%2F",
+    ],
+    "login.microsoftonline.com": [
+        "/common/oauth2/v2.0/authorize?client_id={cid}&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback",
+        "/consumers/oauth2/v2.0/authorize?client_id={cid}&scope=openid",
+        "/common/login?response_type=code&client_id={cid}",
+    ],
+    "login.live.com": [
+        "/oauth20_authorize.srf?client_id={cid}&scope=service%3A%3Aaccount.microsoft.com&response_type=code",
+    ],
+    "www.facebook.com": [
+        "/login.php?next=https%3A%2F%2Fwww.facebook.com%2Fhome.php",
+        "/v18.0/dialog/oauth?client_id={cid}&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback",
+    ],
+    "appleid.apple.com": [
+        "/auth/authorize?client_id={cid}&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&response_type=code",
+        "/sign-in?widgetKey={token}",
+    ],
+    "www.amazon.com": [
+        "/ap/signin?openid.return_to=https%3A%2F%2Fwww.amazon.com%2F&openid.pape.max_auth_age=0",
+        "/ap/oa?client_id={cid}&scope=profile",
+    ],
+    "www.paypal.com": [
+        "/signin?returnUri=https%3A%2F%2Fwww.paypal.com%2Fmyaccount%2Fsummary",
+        "/connect?flowEntry=static&client_id={cid}",
+    ],
+    "github.com": [
+        "/login?return_to=%2Fsettings%2Fprofile",
+        "/login/oauth/authorize?client_id={cid}&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback",
+    ],
+    "www.linkedin.com": [
+        "/uas/login?session_redirect=%2Ffeed%2F",
+        "/oauth/v2/authorization?client_id={cid}&response_type=code",
+    ],
+    "www.dropbox.com": [
+        "/login?cont=https%3A%2F%2Fwww.dropbox.com%2Fhome",
+        "/oauth2/authorize?client_id={cid}&response_type=code",
+    ],
+    "auth.services.adobe.com": [
+        "/en_US/index.html?callback=https%3A%2F%2Fadobe.com%2Fcallback&client_id={cid}",
+    ],
+    "login.yahoo.com": [
+        "/?.src=fp&.intl=us&.done=https%3A%2F%2Fwww.yahoo.com%2F",
+    ],
+    "www.netflix.com": [
+        "/login?nextpage=https%3A%2F%2Fwww.netflix.com%2Fbrowse",
+    ],
+    "www.instagram.com": [
+        "/accounts/login/?next=%2F",
+    ],
+    "x.com": [
+        "/i/flow/login",
+    ],
+    "api.twitter.com": [
+        "/oauth/authorize?oauth_token={token}",
+    ],
+    "www.chase.com": [
+        "/web/auth/dashboard/",
+        "/logon/#/logon/logon/chaseonline",
+    ],
+    "www.bankofamerica.com": [
+        "/login/sign-in/signOnV2Screen.go",
+    ],
+    "www.wellsfargo.com": [
+        "/signon/",
+    ],
+    "www.hsbc.com": [
+        "/1/2/logon",
+    ],
+}
+REAL_AUTH_INSTANCES_PER_TEMPLATE = 15
 
 CC_CHECKPOINT_PATH = "data/processed/legitimate_deep_links_commoncrawl_checkpoint.csv"
 TEMPLATE_OUTPUT_PATH = "data/processed/legitimate_deep_links_templated.csv"
@@ -202,6 +281,15 @@ def build_common_crawl_urls():
             time.sleep(CC_REQUEST_DELAY_SECONDS)
 
 
+def _build_real_auth_candidates():
+    candidates = set()
+    for hostname, templates in REAL_AUTH_TEMPLATES.items():
+        for template in templates:
+            for _ in range(REAL_AUTH_INSTANCES_PER_TEMPLATE):
+                candidates.add(_render_template(template, hostname))
+    return list(candidates)
+
+
 def build_templated_urls():
     tranco = pd.read_csv(TRANCO_PATH)
     pool = tranco.sort_values("rank").head(TEMPLATE_EXTRA_DOMAIN_POOL_TOP_N)
@@ -210,24 +298,32 @@ def build_templated_urls():
     rng.shuffle(extra_hosts)
     extra_hosts = extra_hosts[:TEMPLATE_EXTRA_DOMAIN_SAMPLE_SIZE]
 
-    candidates = set()
+
+    real_auth_candidates = _build_real_auth_candidates()
+
+    other_candidates = set()
     for domain in BRAND_DOMAINS:
         for template in OAUTH_TEMPLATES + GENERIC_TEMPLATES:
-            candidates.add(_render_template(template, domain))
+            other_candidates.add(_render_template(template, domain))
     for domain in extra_hosts:
         for template in GENERIC_TEMPLATES:
-            candidates.add(_render_template(template, domain))
+            other_candidates.add(_render_template(template, domain))
+    other_candidates = list(other_candidates)
+    rng.shuffle(other_candidates)
 
-    candidates = list(candidates)
-    rng.shuffle(candidates)
+    all_candidates = real_auth_candidates + other_candidates
 
     rows = []
-    for url in candidates:
+    seen_urls = set()
+    for url in all_candidates:
         if len(rows) >= TEMPLATE_TARGET_COUNT:
             break
+        if url in seen_urls:
+            continue
         is_valid, _reason = validate_url(url)
         if not is_valid:
             continue
+        seen_urls.add(url)
         rows.append({
             "domain": urlparse(url).netloc, "url": url,
             "source": "templated_authflow", "collected_date": COLLECTED_DATE,
@@ -235,7 +331,9 @@ def build_templated_urls():
 
     out_df = pd.DataFrame(rows)
     out_df.to_csv(TEMPLATE_OUTPUT_PATH, index=False)
-    print(f"[templated] wrote {len(out_df)} URLs to {TEMPLATE_OUTPUT_PATH}")
+    real_auth_kept = sum(1 for u in real_auth_candidates if u in seen_urls)
+    print(f"[templated] wrote {len(out_df)} URLs to {TEMPLATE_OUTPUT_PATH} "
+          f"({real_auth_kept} from real-provider auth templates)")
 
 
 def combine_final_output():

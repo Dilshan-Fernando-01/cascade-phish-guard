@@ -1,13 +1,11 @@
 {
-  "total": 1000025,
-  "phishing": 25,
-  "legitimate": 1000000,
-  "class_ratio_legitimate_to_phishing": 40000.0,
-  "by_source": {
-    "tranco": 1000000,
-    "phishtank,phishtank_kaggle": 18,
-    "openphish,phishtank": 5,
-    "phishtank": 1,
-    "openphish": 1
-  }
+  "total": 24622,
+  "phishing": 12311,
+  "legitimate": 12311,
+  "legitimate_breakdown": {
+    "tranco": 7360,
+    "templated_authflow": 4700,
+    "commoncrawl": 251
+  },
+  "class_ratio_legitimate_to_phishing": 1.0
 }
