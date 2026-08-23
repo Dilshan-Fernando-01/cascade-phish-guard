@@ -1,3 +1,4 @@
+import concurrent.futures
 import ipaddress
 import math
 import unicodedata
@@ -213,21 +214,44 @@ def extract_all_features(url):
     return features
 
 
-def extract_features_batch(urls):
+def _domain_features(host):
+    return {
+        "tranco_rank_bucket": tranco_rank_bucket(host),
+        "brand_distance_score": brand_distance_score(host),
+        "brand_keyword_in_host": brand_keyword_in_host(host),
+        "domain_age_days": domain_age_days(host),
+    }
+
+
+def extract_features_batch(urls, max_workers=15):
+    hosts = []
+    seen = set()
+    for url in urls:
+        host = urlparse(str(url)).netloc.split(":")[0]
+        if host not in seen:
+            seen.add(host)
+            hosts.append(host)
 
     domain_cache = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_host = {executor.submit(_domain_features, host): host for host in hosts}
+        for future in concurrent.futures.as_completed(future_to_host):
+            host = future_to_host[future]
+            try:
+                domain_cache[host] = future.result()
+            except Exception:
+                domain_cache[host] = {
+                    "tranco_rank_bucket": None,
+                    "brand_distance_score": None,
+                    "brand_keyword_in_host": None,
+                    "domain_age_days": None,
+                }
+
     results = []
     for url in urls:
         try:
             url = str(url)
             host = urlparse(url).netloc.split(":")[0]
-            if host not in domain_cache:
-                domain_cache[host] = {
-                    "tranco_rank_bucket": tranco_rank_bucket(host),
-                    "brand_distance_score": brand_distance_score(host),
-                    "brand_keyword_in_host": brand_keyword_in_host(host),
-                    "domain_age_days": domain_age_days(host),
-                }
             features = extract_basic_features(url)
             features.update(domain_cache[host])
             results.append((features, None))
