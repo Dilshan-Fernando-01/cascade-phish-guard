@@ -154,9 +154,6 @@ def tranco_rank_bucket(host):
 
 
 def _registrable_domain_guess(host):
-    # ICANN-level registrable domain (e.g. "roblox.com.ml", "example.co.uk",
-    # "google.com" even for "sites.google.com") -- correct for brand
-    # comparison and as a Tranco-lookup fallback.
     return _icann_extract(host).registered_domain or host
 
 
