@@ -22,13 +22,14 @@ TRANCO_PATH = "data/processed/legitimate_candidates_deduped.csv"
 CC_COLLINFO_URL = "https://index.commoncrawl.org/collinfo.json"
 CC_TIMEOUT = 15
 CC_URLS_PER_DOMAIN = 6
-CC_DOMAIN_POOL_TOP_N = 200_000
-CC_DOMAIN_SAMPLE_SIZE = 900
-CC_TARGET_COUNT = 3450
-CC_REQUEST_DELAY_SECONDS = 0.3
 
-TEMPLATE_TARGET_COUNT = 1475
-TEMPLATE_EXTRA_DOMAIN_SAMPLE_SIZE = 300
+CC_DOMAIN_POOL_TOP_N = 1_000_000
+CC_DOMAIN_SAMPLE_SIZE = 6000
+CC_TARGET_COUNT = 1500
+CC_REQUEST_DELAY_SECONDS = 1.5
+
+TEMPLATE_TARGET_COUNT = 2200
+TEMPLATE_EXTRA_DOMAIN_SAMPLE_SIZE = 550
 TEMPLATE_EXTRA_DOMAIN_POOL_TOP_N = 20_000
 
 CC_CHECKPOINT_PATH = "data/processed/legitimate_deep_links_commoncrawl_checkpoint.csv"
@@ -81,13 +82,20 @@ def _render_template(template, domain):
     )
     return f"https://{domain}{path}"
 
+FALLBACK_CDX_API = "https://index.commoncrawl.org/CC-MAIN-2026-25-index"
 
-# --- Source A: Common Crawl organic deep links ---------------------------
 
 def _cc_index_endpoint():
-    resp = requests.get(CC_COLLINFO_URL, timeout=CC_TIMEOUT)
-    resp.raise_for_status()
-    return resp.json()[0]["cdx-api"]  # most recent index
+    for attempt in range(3):
+        try:
+            resp = requests.get(CC_COLLINFO_URL, timeout=CC_TIMEOUT)
+            resp.raise_for_status()
+            return resp.json()[0]["cdx-api"]  # most recent index
+        except requests.exceptions.RequestException:
+            if attempt < 2:
+                time.sleep(3)
+    print("[commoncrawl] collinfo.json unreachable after retries, using fallback index")
+    return FALLBACK_CDX_API
 
 
 NON_CONTENT_PATH_SUFFIXES = (
