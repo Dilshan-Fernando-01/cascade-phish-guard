@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 import pandas as pd
 import requests
+import tldextract
 from rapidfuzz.distance import Levenshtein
 
 from .brand_reference import BRAND_DOMAINS
@@ -110,26 +111,29 @@ def _load_tranco():
     return _tranco_lookup
 
 
+_icann_extract = tldextract.TLDExtract(include_psl_private_domains=False)
+_private_extract = tldextract.TLDExtract(include_psl_private_domains=True)
 
-KNOWN_SHARED_HOSTING_SUFFIXES = {
-    "vercel.app", "netlify.app", "github.io", "blogspot.com", "webflow.io",
-    "surge.sh", "replit.app", "repl.co", "framer.app", "framer.website",
-    "onrender.com", "herokuapp.com", "firebaseapp.com", "pages.dev",
-    "glitch.me", "weebly.com", "wixsite.com", "000webhostapp.com",
-    "ipfs.io", "dweb.link", "webcindario.com",
-    "qrco.de", "ead.me", "tinyurl.com", "did.li", "surl.li", "tr.ee",
-    "rebrand.ly", "s4w.in", "sites.google.com", "edgeone.dev",
-    "typedream.app", "weeblysite.com", "contabostorage.com",
+KNOWN_SHARED_HOSTS_NOT_IN_PSL = {
+    "000webhostapp.com", "contabostorage.com", "did.li", "dweb.link",
+    "ead.me", "edgeone.dev", "glitch.me", "ipfs.io", "qrco.de",
+    "rebrand.ly", "s4w.in", "sites.google.com", "surge.sh", "surl.li",
+    "tinyurl.com", "tr.ee", "webcindario.com", "weebly.com", "weeblysite.com",
 }
 
 
 def _is_shared_hosting(host):
-    return any(host == suffix or host.endswith("." + suffix) for suffix in KNOWN_SHARED_HOSTING_SUFFIXES)
+    if _private_extract(host).suffix != _icann_extract(host).suffix:
+        return True
+    return any(
+        host == suffix or host.endswith("." + suffix)
+        for suffix in KNOWN_SHARED_HOSTS_NOT_IN_PSL
+    )
 
 
 def tranco_rank_bucket(host):
     if _is_shared_hosting(host):
-       
+
         return 0
 
     lookup = _load_tranco()
@@ -150,8 +154,10 @@ def tranco_rank_bucket(host):
 
 
 def _registrable_domain_guess(host):
-    labels = host.split(".")
-    return ".".join(labels[-2:]) if len(labels) >= 2 else host
+    # ICANN-level registrable domain (e.g. "roblox.com.ml", "example.co.uk",
+    # "google.com" even for "sites.google.com") -- correct for brand
+    # comparison and as a Tranco-lookup fallback.
+    return _icann_extract(host).registered_domain or host
 
 
 def brand_distance_score(host):

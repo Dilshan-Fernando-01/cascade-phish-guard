@@ -3,40 +3,40 @@
   "train_rows": 16705,
   "validation_rows": 3564,
   "metrics": {
-    "accuracy": 0.9943883277216611,
-    "precision": 0.995937318630296,
-    "recall": 0.9924812030075187,
-    "f1": 0.9942062572421785,
-    "auc_roc": 0.9999506731616297
+    "accuracy": 0.9949494949494949,
+    "precision": 0.9947946790052054,
+    "recall": 0.9947946790052054,
+    "f1": 0.9947946790052054,
+    "auc_roc": 0.9999520915052251
   },
   "confusion_matrix": [
     [
-      1828,
-      7
+      1826,
+      9
     ],
     [
-      13,
-      1716
+      9,
+      1720
     ]
   ],
   "feature_importances": {
-    "url_length": 0.03325786885344483,
-    "subdomain_count": 0.008579618539551248,
-    "has_https": 0.0038476569005615768,
-    "special_char_count": 0.004768744217521114,
-    "keyword_score": 0.006602814546797365,
-    "character_entropy": 0.05077816721814238,
-    "tld_risk_score": 0.02730927162222917,
+    "url_length": 0.02987536666462875,
+    "subdomain_count": 0.006326828427028381,
+    "has_https": 0.002989380530044211,
+    "special_char_count": 0.005184087907302548,
+    "keyword_score": 0.007046334332954678,
+    "character_entropy": 0.03872825790559172,
+    "tld_risk_score": 0.029685784512617296,
     "has_ip_host": 0.0,
-    "has_at_symbol": 0.0004381206430264528,
-    "path_depth": 0.09417153168677891,
-    "query_param_count": 0.0026568101092465848,
-    "digit_ratio": 0.007021473363751244,
-    "is_punycode_or_homograph": 5.935737513014246e-06,
-    "tranco_rank_bucket": 0.34932216988522247,
-    "brand_distance_score": 0.10552255422614537,
-    "brand_keyword_in_host": 0.0015133338710254687,
-    "domain_age_days": 0.049792536260887525,
-    "domain_age_missing": 0.2544113923181552
+    "has_at_symbol": 2.6443548284244697e-05,
+    "path_depth": 0.09057402283820314,
+    "query_param_count": 0.0025325184838623964,
+    "digit_ratio": 0.006115940892598384,
+    "is_punycode_or_homograph": 2.3916852751438918e-18,
+    "tranco_rank_bucket": 0.32218939611594,
+    "brand_distance_score": 0.14010205384255203,
+    "brand_keyword_in_host": 0.0004747960704481844,
+    "domain_age_days": 0.05344476560930945,
+    "domain_age_missing": 0.26470402231863466
   }
 }
