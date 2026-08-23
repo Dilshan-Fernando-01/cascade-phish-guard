@@ -1,0 +1,16 @@
+{
+  "total_confirmed": 13409,
+  "checked_so_far": 13409,
+  "remaining": 0,
+  "reachable": 12311,
+  "unreachable": 1098,
+  "reachability_rate": 0.9181146990827056,
+  "error_breakdown": {
+    "ConnectionError": 619,
+    "SSLError": 336,
+    "ConnectTimeout": 72,
+    "ReadTimeout": 70,
+    "TooManyRedirects": 1
+  },
+  "complete": true
+}
