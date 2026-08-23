@@ -117,6 +117,9 @@ KNOWN_SHARED_HOSTING_SUFFIXES = {
     "onrender.com", "herokuapp.com", "firebaseapp.com", "pages.dev",
     "glitch.me", "weebly.com", "wixsite.com", "000webhostapp.com",
     "ipfs.io", "dweb.link", "webcindario.com",
+    "qrco.de", "ead.me", "tinyurl.com", "did.li", "surl.li", "tr.ee",
+    "rebrand.ly", "s4w.in", "sites.google.com", "edgeone.dev",
+    "typedream.app", "weeblysite.com", "contabostorage.com",
 }
 
 

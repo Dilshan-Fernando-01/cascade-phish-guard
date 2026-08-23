@@ -2,57 +2,57 @@
   "comparison_table": [
     {
       "model": "logistic_regression",
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "auc_roc": 1.0
+      "accuracy": 0.9943883277216611,
+      "precision": 0.9913743530764807,
+      "recall": 0.9971081550028918,
+      "f1": 0.994232987312572,
+      "auc_roc": 0.997828988736776
     },
     {
       "model": "random_forest",
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "auc_roc": 1.0
+      "accuracy": 0.9943883277216611,
+      "precision": 0.995937318630296,
+      "recall": 0.9924812030075187,
+      "f1": 0.9942062572421785,
+      "auc_roc": 0.9999506731616297
     },
     {
       "model": "xgboost",
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "auc_roc": 1.0
+      "accuracy": 0.9918630751964085,
+      "precision": 0.9947613504074505,
+      "recall": 0.9884326200115674,
+      "f1": 0.9915868871482448,
+      "auc_roc": 0.999861317515125
     },
     {
       "model": "mlp",
-      "accuracy": 0.9433962264150944,
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1": 0.0,
-      "auc_roc": 0.9533333333333334
+      "accuracy": 0.9943883277216611,
+      "precision": 0.992507204610951,
+      "recall": 0.9959514170040485,
+      "f1": 0.9942263279445728,
+      "auc_roc": 0.9994276195624252
     }
   ],
   "primary_metric": "f1",
   "winner": "logistic_regression",
-  "winner_selected_via_tiebreak": true,
-  "tie_break_reasoning": "Occam's razor when validation performance ties, prefer the simpler/more interpretable model (order: logistic_regression > random_forest > xgboost > mlp).",
+  "winner_selected_via_tiebreak": false,
+  "tie_break_reasoning": null,
   "test_set_confirmation": {
     "metrics": {
-      "accuracy": 0.9818181818181818,
-      "precision": 1.0,
-      "recall": 0.8,
-      "f1": 0.8888888888888888,
-      "auc_roc": 0.868
+      "accuracy": 0.8313806570181485,
+      "precision": 0.9940636805180788,
+      "recall": 0.7181286549707603,
+      "f1": 0.8338614757808963,
+      "auc_roc": 0.9641122754686866
     },
     "confusion_matrix": [
       [
-        50,
-        0
+        1777,
+        11
       ],
       [
-        1,
-        4
+        723,
+        1842
       ]
     ]
   }

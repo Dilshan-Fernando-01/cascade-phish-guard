@@ -3,8 +3,8 @@
   "phishing": 12311,
   "legitimate": 12311,
   "legitimate_breakdown": {
-    "tranco": 9860,
-    "templated_authflow": 2200,
+    "tranco": 7360,
+    "templated_authflow": 4700,
     "commoncrawl": 251
   },
   "class_ratio_legitimate_to_phishing": 1.0

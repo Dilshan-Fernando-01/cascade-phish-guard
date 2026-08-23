@@ -1,0 +1,23 @@
+[
+  {
+    "split": "train",
+    "total": 16705,
+    "succeeded": 16705,
+    "failed": 0,
+    "complete": true
+  },
+  {
+    "split": "validation",
+    "total": 3564,
+    "succeeded": 3564,
+    "failed": 0,
+    "complete": true
+  },
+  {
+    "split": "test",
+    "total": 4353,
+    "succeeded": 4353,
+    "failed": 0,
+    "complete": true
+  }
+]
