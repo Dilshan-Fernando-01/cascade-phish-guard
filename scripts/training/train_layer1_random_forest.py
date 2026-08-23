@@ -32,6 +32,7 @@ def main():
         n_estimators=200,
         class_weight="balanced",
         random_state=42,
+        min_samples_leaf=5,
     )
     model.fit(X_train, y_train)
 

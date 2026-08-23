@@ -3,40 +3,40 @@
   "train_rows": 16705,
   "validation_rows": 3564,
   "metrics": {
-    "accuracy": 0.9918630751964085,
-    "precision": 0.9947613504074505,
-    "recall": 0.9884326200115674,
-    "f1": 0.9915868871482448,
-    "auc_roc": 0.999861317515125
+    "accuracy": 0.9949494949494949,
+    "precision": 0.9930835734870317,
+    "recall": 0.9965297860034702,
+    "f1": 0.9948036951501155,
+    "auc_roc": 0.9999319195074251
   },
   "confusion_matrix": [
     [
-      1826,
-      9
+      1823,
+      12
     ],
     [
-      20,
-      1709
+      6,
+      1723
     ]
   ],
   "feature_importances": {
-    "url_length": 0.0050922599621117115,
-    "subdomain_count": 0.011901559308171272,
-    "has_https": 0.07773178070783615,
-    "special_char_count": 0.001309370854869485,
-    "keyword_score": 0.012090434320271015,
-    "character_entropy": 0.000894209195394069,
-    "tld_risk_score": 0.008435004390776157,
+    "url_length": 0.005252229981124401,
+    "subdomain_count": 0.004652215633541346,
+    "has_https": 0.05873545631766319,
+    "special_char_count": 0.0009473084937781096,
+    "keyword_score": 0.0062393187545239925,
+    "character_entropy": 0.000646376924123615,
+    "tld_risk_score": 0.0050304364413022995,
     "has_ip_host": 0.0,
     "has_at_symbol": 0.0,
-    "path_depth": 0.009037640877068043,
-    "query_param_count": 0.005009089130908251,
-    "digit_ratio": 0.0047152163460850716,
+    "path_depth": 0.009688765741884708,
+    "query_param_count": 0.005939791910350323,
+    "digit_ratio": 0.00486510107293725,
     "is_punycode_or_homograph": 0.0,
-    "tranco_rank_bucket": 0.8255124092102051,
-    "brand_distance_score": 0.003216345328837633,
-    "brand_keyword_in_host": 0.03185351938009262,
-    "domain_age_days": 0.001696562860161066,
-    "domain_age_missing": 0.0015046129701659083
+    "tranco_rank_bucket": 0.8905846476554871,
+    "brand_distance_score": 0.003153441706672311,
+    "brand_keyword_in_host": 0.0,
+    "domain_age_days": 0.0025629347655922174,
+    "domain_age_missing": 0.0017020670929923654
   }
 }

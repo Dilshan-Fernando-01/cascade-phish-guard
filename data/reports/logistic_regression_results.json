@@ -3,16 +3,16 @@
   "train_rows": 16705,
   "validation_rows": 3564,
   "metrics": {
-    "accuracy": 0.9943883277216611,
-    "precision": 0.9913743530764807,
+    "accuracy": 0.9935465768799102,
+    "precision": 0.9896670493685419,
     "recall": 0.9971081550028918,
-    "f1": 0.994232987312572,
-    "auc_roc": 0.997828988736776
+    "f1": 0.9933736675309709,
+    "auc_roc": 0.9977423121837291
   },
   "confusion_matrix": [
     [
-      1820,
-      15
+      1817,
+      18
     ],
     [
       5,
@@ -20,23 +20,23 @@
     ]
   ],
   "coefficients": {
-    "url_length": 1.3260811021814987,
-    "subdomain_count": -0.6684106278271749,
-    "has_https": -0.5450812823986116,
-    "special_char_count": -1.1667828733903025,
-    "keyword_score": -1.0542031733233463,
-    "character_entropy": 0.517065342308208,
-    "tld_risk_score": 0.9041434250675445,
+    "url_length": 1.2166169433698186,
+    "subdomain_count": -0.15747684228335507,
+    "has_https": -0.5281246116796117,
+    "special_char_count": -1.1534956598697672,
+    "keyword_score": -1.082363496069479,
+    "character_entropy": 0.5400210241381871,
+    "tld_risk_score": 1.2443743807691239,
     "has_ip_host": 0.0,
-    "has_at_symbol": 0.6819218862877593,
-    "path_depth": 2.461447297924823,
-    "query_param_count": -0.8771184340449844,
-    "digit_ratio": 0.313130071987151,
-    "is_punycode_or_homograph": -0.00999581387748579,
-    "tranco_rank_bucket": -3.9999333741609577,
-    "brand_distance_score": -2.455781291167434,
-    "brand_keyword_in_host": 0.06813317433471207,
-    "domain_age_days": -0.8562349334997283,
-    "domain_age_missing": 1.2425478173012556
+    "has_at_symbol": 0.45423545158255824,
+    "path_depth": 2.412509398121922,
+    "query_param_count": -0.7057366221848264,
+    "digit_ratio": 0.2670739945569878,
+    "is_punycode_or_homograph": -0.004269968054387473,
+    "tranco_rank_bucket": -4.395033116594824,
+    "brand_distance_score": -2.6743805220965355,
+    "brand_keyword_in_host": -0.21860363558307508,
+    "domain_age_days": -0.6877740093574869,
+    "domain_age_missing": 0.7038469942632276
   }
 }

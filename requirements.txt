@@ -8,6 +8,7 @@ python-dotenv
 # Phase 4 (Layer 1 advanced features)
 python-whois
 rapidfuzz
+tldextract
 
 # Phase 3 (EDA)
 matplotlib
