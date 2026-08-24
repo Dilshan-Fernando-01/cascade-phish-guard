@@ -6,6 +6,17 @@ from services.embedded_url_analyzer import analyze_embedded_urls
 from services.page_loader import load_page
 
 
+LAYER2_FEATURE_COLUMNS = [
+    "form_count", "password_input_count", "hidden_input_count",
+    "external_script_count", "external_form_action", "external_resource_ratio",
+    "iframe_count", "meta_redirect_present", "link_to_text_ratio", "dom_tree_depth",
+    "favicon_domain_mismatch", "title_domain_mismatch", "brand_keyword_mismatch",
+    "overlay_detected", "css_anomaly_score", "fake_browser_chrome_detected",
+    "script_obfuscation_score", "suspicious_js_pattern_count", "social_engineering_score",
+    "suspicious_embedded_url_count", "max_embedded_url_risk", "avg_embedded_url_risk",
+]
+
+
 def analyze_layer2(url):
     loaded = load_page(url)
     if not loaded["success"]:

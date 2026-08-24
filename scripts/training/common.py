@@ -17,13 +17,24 @@ from sklearn.metrics import (
 
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "backend", "app"))
-from features.url_features import FEATURE_COLUMNS, prepare_features  
+from features.url_features import FEATURE_COLUMNS, prepare_features
+from services.layer2_analyzer import LAYER2_FEATURE_COLUMNS
 
 
 def load_train_val():
     train = pd.read_csv("data/processed/layer1_train_features.csv")
     val = pd.read_csv("data/processed/layer1_validation_features.csv")
     return train, val
+
+
+def load_layer2_train_val():
+    train = pd.read_csv("data/processed/layer2_train_features.csv")
+    val = pd.read_csv("data/processed/layer2_validation_features.csv")
+    return train, val
+
+
+def prepare_layer2_features(df):
+    return df[LAYER2_FEATURE_COLUMNS].copy()
 
 
 def compute_metrics(y_val, y_pred, y_proba):

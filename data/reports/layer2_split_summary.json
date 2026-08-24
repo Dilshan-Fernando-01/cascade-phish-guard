@@ -1,0 +1,18 @@
+{
+  "split_mode": "domain_grouped__temporal_phishing__random_legitimate",
+  "train": {
+    "total": 700,
+    "phishing": 352,
+    "legitimate": 348
+  },
+  "validation": {
+    "total": 148,
+    "phishing": 75,
+    "legitimate": 73
+  },
+  "test": {
+    "total": 152,
+    "phishing": 73,
+    "legitimate": 79
+  }
+}
