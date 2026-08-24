@@ -11,15 +11,15 @@ SPLIT_MODE = "domain_grouped__temporal_phishing__random_legitimate"
 
 
 def main():
-    combined = pd.read_csv("data/processed/layer1_labelled_dataset.csv")
+    combined = pd.read_csv("data/processed/layer2_labelled_dataset.csv")
     train, val, test = split_dataset(combined)
 
     os.makedirs("data/processed", exist_ok=True)
     os.makedirs("data/reports", exist_ok=True)
 
-    train.to_csv("data/processed/layer1_train.csv", index=False)
-    val.to_csv("data/processed/layer1_validation.csv", index=False)
-    test.to_csv("data/processed/layer1_test.csv", index=False)
+    train.to_csv("data/processed/layer2_train.csv", index=False)
+    val.to_csv("data/processed/layer2_validation.csv", index=False)
+    test.to_csv("data/processed/layer2_test.csv", index=False)
 
     summary = {
         "split_mode": SPLIT_MODE,
@@ -28,7 +28,7 @@ def main():
         "test": class_counts(test),
     }
 
-    with open("data/reports/split_summary.json", "w") as f:
+    with open("data/reports/layer2_split_summary.json", "w") as f:
         json.dump(summary, f, indent=2)
 
     print(json.dumps(summary, indent=2))
