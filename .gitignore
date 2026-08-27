@@ -25,6 +25,7 @@ data/processed/*
 *.joblib
 
 !data/models/layer1_winner.joblib
+!data/models/layer2_winner.joblib
 
 # Scratch work
 /temp/
