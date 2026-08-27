@@ -10,9 +10,15 @@ extension/.dev-key.pem
 # Data
 
 data/raw/*
-data/processed/
+data/processed/*
 
 !data/raw/tranco.csv
+
+# Layer 2 dataset
+!data/processed/layer2_labelled_dataset.csv
+!data/processed/layer2_train.csv
+!data/processed/layer2_validation.csv
+!data/processed/layer2_test.csv
 
 # Model artifacts
 *.pkl
