@@ -23,20 +23,29 @@ def analyze(url):
     layers_used = ["layer1"]
     layer_scores = {"layer1": layer1_score}
     layer2_features = None
+    layer2_score = None
 
     if would_escalate and LAYER2_ENABLED:
         from services.layer2_analyzer import analyze_layer2
+        from models.layer2_model import predict_from_features
 
         layer2_result = analyze_layer2(url)
         layers_used.append("layer2")
         if layer2_result["success"]:
             layer2_features = layer2_result["features"]
+            layer2_score = predict_from_features(layer2_features)
+            layer_scores["layer2"] = layer2_score
         else:
             layer2_features = {"error": layer2_result["error"]}
 
-    if layer1_score > HIGH_THRESHOLD:
+    if layer2_score is not None:
+        score_for_verdict = layer2_score
+    else:
+        score_for_verdict = layer1_score
+
+    if score_for_verdict > HIGH_THRESHOLD:
         verdict = Verdict.phishing
-    elif layer1_score < LOW_THRESHOLD:
+    elif score_for_verdict < LOW_THRESHOLD:
         verdict = Verdict.safe
     else:
         verdict = Verdict.suspicious
@@ -44,7 +53,7 @@ def analyze(url):
     return AnalyzeResponse(
         url=url,
         verdict=verdict,
-        confidence=layer1_score,
+        confidence=score_for_verdict,
         layers_used=layers_used,
         layer_scores=layer_scores,
         would_escalate=would_escalate,

@@ -16,7 +16,7 @@ seaborn
 scipy
 
 # Phase 4
-# scikit-learn pinned
+# scikit-learn pinned to 1.6.1
 scikit-learn==1.6.1
 joblib
 xgboost

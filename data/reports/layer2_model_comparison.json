@@ -1,0 +1,59 @@
+{
+  "comparison_table": [
+    {
+      "model": "layer2_logistic_regression",
+      "accuracy": 0.8,
+      "precision": 0.8833333333333333,
+      "recall": 0.7464788732394366,
+      "f1": 0.8091603053435115,
+      "auc_roc": 0.8185967657798643
+    },
+    {
+      "model": "layer2_random_forest",
+      "accuracy": 0.712,
+      "precision": 0.8888888888888888,
+      "recall": 0.5633802816901409,
+      "f1": 0.6896551724137931,
+      "auc_roc": 0.8723265519040168
+    },
+    {
+      "model": "layer2_xgboost",
+      "accuracy": 0.736,
+      "precision": 0.9318181818181818,
+      "recall": 0.5774647887323944,
+      "f1": 0.7130434782608696,
+      "auc_roc": 0.8475482524778299
+    },
+    {
+      "model": "layer2_mlp",
+      "accuracy": 0.776,
+      "precision": 0.864406779661017,
+      "recall": 0.7183098591549296,
+      "f1": 0.7846153846153846,
+      "auc_roc": 0.7990349504434012
+    }
+  ],
+  "primary_metric": "f1",
+  "winner": "layer2_logistic_regression",
+  "winner_selected_via_tiebreak": false,
+  "tie_break_reasoning": null,
+  "test_set_confirmation": {
+    "metrics": {
+      "accuracy": 0.7299270072992701,
+      "precision": 0.8,
+      "recall": 0.6575342465753424,
+      "f1": 0.7218045112781954,
+      "auc_roc": 0.7156464041095889
+    },
+    "confusion_matrix": [
+      [
+        52,
+        12
+      ],
+      [
+        25,
+        48
+      ]
+    ]
+  }
+}
