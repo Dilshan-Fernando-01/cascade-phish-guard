@@ -62,7 +62,7 @@ def version():
 
 @app.post("/analyze", response_model=AnalyzeResponse, dependencies=[Depends(verify_api_key)])
 def analyze_url(request: AnalyzeRequest):
-    future = _executor.submit(run_cascade_analysis, request.url)
+    future = _executor.submit(run_cascade_analysis, request.url, request.full_scan)
     try:
         return future.result(timeout=REQUEST_TIMEOUT_SECONDS)
     except concurrent.futures.TimeoutError:

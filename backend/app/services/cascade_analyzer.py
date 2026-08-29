@@ -12,7 +12,7 @@ HIGH_THRESHOLD = 0.8
 LAYER2_ENABLED = os.environ.get("ENABLE_LAYER2", "").lower() in ("1", "true", "yes")
 
 
-def analyze(url):
+def analyze(url, full_scan=False):
     is_valid, reason = validate_url(url)
     if not is_valid:
         raise ValueError(f"invalid URL ({reason})")
@@ -25,7 +25,7 @@ def analyze(url):
     layer2_features = None
     layer2_score = None
 
-    if would_escalate and LAYER2_ENABLED:
+    if (would_escalate or full_scan) and LAYER2_ENABLED:
         from services.layer2_analyzer import analyze_layer2
         from models.layer2_model import predict_from_features
 
