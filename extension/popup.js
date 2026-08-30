@@ -1,8 +1,9 @@
-const PRESENTATION_MODE = true;
-const STEP_DELAY_MS = PRESENTATION_MODE ? 700 : 120;
-
 const LOW_THRESHOLD = 0.2;
 const HIGH_THRESHOLD = 0.8;
+
+const STAGE_CHECKING_ADDRESS = "checking_address";
+const STAGE_REVIEWING_CONTENT = "reviewing_content";
+const STAGE_DONE = "done";
 
 const STEP_TITLES = [
   "Web address check",
@@ -23,7 +24,6 @@ const LAYER_SUBSTEPS = [
   ],
   [],
 ];
-const SUBSTEP_DELAY_MS = PRESENTATION_MODE ? 250 : 40;
 
 const badge = document.getElementById("badge");
 const subtitleEl = document.getElementById("subtitle");
@@ -53,10 +53,6 @@ function hostFromUrl(url) {
   } catch (err) {
     return "";
   }
-}
-
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function emptyStateHtml({ icon, title, sub }) {
@@ -369,55 +365,59 @@ function deriveStepOutcomes(result) {
   ];
 }
 
-// Reveals a layer's own sub-steps one at a time while it's "active" --
-// currently timer-driven, not yet tied to real backend progress (see the
-// LAYER_SUBSTEPS comment above). No-op for layers with no sub-steps.
-async function animateSubsteps(steps, index, target) {
-  const total = (LAYER_SUBSTEPS[index] || []).length;
-  if (total === 0) return;
-  steps[index].substepsDone = 0;
-  for (let i = 1; i <= total; i++) {
-    await wait(SUBSTEP_DELAY_MS);
-    steps[index].substepsDone = i;
-    updateSteps(steps, target);
-  }
-}
-
-async function playStepSequence(
-  outcomes,
-  result,
-  fullScanMode,
-  target = content,
-) {
-  const ns = targetNamespace(target);
+function stepsForStage(stage) {
   const steps = STEP_TITLES.map((title) => ({
     title,
     status: "pending",
     sub: "Waiting...",
   }));
-  steps[0].status = "active";
-  steps[0].sub = "Checking the web address...";
+  if (stage === STAGE_REVIEWING_CONTENT || stage === STAGE_DONE) {
+    steps[0].status = "done";
+    steps[0].sub = "Web address analyzed";
+    steps[0].substepsDone = (LAYER_SUBSTEPS[0] || []).length;
+  } else {
+    steps[0].status = "active";
+    steps[0].sub = "Checking the web address...";
+  }
+  if (stage === STAGE_REVIEWING_CONTENT) {
+    steps[1].status = "active";
+    steps[1].sub = "Reviewing page content...";
+  }
+  return steps;
+}
 
-  renderShell(fullScanMode, target);
-  setBadge("loading", "&#8987;", "CHECKING");
-  updateSteps(steps, target);
+function applyLiveProgress(progress, fullScanMode, target) {
+  if (!progress) return;
+  const ns = targetNamespace(target);
+  updateSteps(stepsForStage(progress.stage), target);
+  if (typeof progress.layer1_score === "number") {
+    const s = statusForScore(progress.layer1_score);
+    animateGauge(`${ns}-gauge-overall`, {
+      value: progress.layer1_score * 100,
+      statusKey: s.key,
+      statusLabel: s.label,
+    });
+    if (fullScanMode) {
+      animateGauge(`${ns}-gauge-layer1`, {
+        value: progress.layer1_score * 100,
+        statusKey: s.key,
+        statusLabel: s.label,
+      });
+    }
+  }
+}
 
-  await animateSubsteps(steps, 0, target);
-  steps[0].status = outcomes[0].status;
-  steps[0].sub = outcomes[0].sub;
-  steps[1].status = "active";
-  steps[1].sub = "Reviewing page content...";
-  updateSteps(steps, target);
-  animateResultGauges({ ...result, layers_used: ["layer1"] }, fullScanMode, ns);
-
-  await animateSubsteps(steps, 1, target);
-  steps[1].status = outcomes[1].status;
-  steps[1].sub = outcomes[1].sub;
-  steps[2].status = outcomes[2].status;
-  steps[2].sub = outcomes[2].sub;
-  updateSteps(steps, target);
-
-  await wait(STEP_DELAY_MS);
+function finishWithResult(result, fullScanMode, target = content) {
+  const outcomes = deriveStepOutcomes(result);
+  const steps = STEP_TITLES.map((title, i) => ({
+    title,
+    status: outcomes[i].status,
+    sub: outcomes[i].sub,
+    substepsDone: (LAYER_SUBSTEPS[i] || []).length,
+  }));
+  if (!target.querySelector(".gauge-row")) {
+    renderShell(fullScanMode, target);
+  }
   renderDoneKeepingSteps(steps, result, fullScanMode, target);
 }
 
@@ -522,8 +522,7 @@ function renderInitialChecking(fullScanMode, target = content) {
 function handleResolvedStatus(status, payload, tabId, target = content) {
   const fullScanMode = scanMode === "full";
   if (status === "done") {
-    const outcomes = deriveStepOutcomes(payload.result);
-    playStepSequence(outcomes, payload.result, fullScanMode, target);
+    finishWithResult(payload.result, fullScanMode, target);
   } else if (status === "offline") {
     renderOffline(target);
   } else if (status === "error") {
@@ -534,7 +533,7 @@ function handleResolvedStatus(status, payload, tabId, target = content) {
     // real analysis is still legitimately running, so keep polling instead
     // of showing "nothing to check" for a page that's actually being
     // analyzed right now.
-    pollUntilDone(tabId);
+    pollUntilDone(tabId, 0, target);
   } else {
     renderUnknown(target);
   }
@@ -546,7 +545,7 @@ function handleResolvedStatus(status, payload, tabId, target = content) {
 // working and might succeed a few seconds later.
 const MAX_POLL_ATTEMPTS = 90;
 
-function pollUntilDone(tabId, attempt = 0) {
+function pollUntilDone(tabId, attempt = 0, target = content) {
   if (attempt > MAX_POLL_ATTEMPTS) {
     renderError("Taking longer than expected.");
     return;
@@ -555,9 +554,10 @@ function pollUntilDone(tabId, attempt = 0) {
     chrome.runtime.sendMessage({ type: "getTabResult", tabId }, (response) => {
       if (!response) return;
       if (response.status === "analyzing") {
-        pollUntilDone(tabId, attempt + 1);
+        applyLiveProgress(response, scanMode === "full", target);
+        pollUntilDone(tabId, attempt + 1, target);
       } else {
-        handleResolvedStatus(response.status, response, tabId);
+        handleResolvedStatus(response.status, response, tabId, target);
       }
     });
   }, 500);
@@ -576,12 +576,13 @@ function setScanModeUI(mode) {
 
 function requestRescan(tab) {
   renderInitialChecking(scanMode === "full");
-  chrome.runtime.sendMessage(
-    { type: "rescanTab", tabId: tab.id, url: tab.url },
-    (response) => {
-      handleResolvedStatus(response.status, response, tab.id);
-    },
-  );
+
+  chrome.runtime.sendMessage({
+    type: "rescanTab",
+    tabId: tab.id,
+    url: tab.url,
+  });
+  pollUntilDone(tab.id);
 }
 
 scanModeToggle.addEventListener("click", (event) => {
@@ -623,12 +624,12 @@ async function main() {
       }
 
       if (!response || response.status === "unknown") {
-        chrome.runtime.sendMessage(
-          { type: "analyzeTabNow", tabId: tab.id, url: tab.url },
-          (analyzed) => {
-            handleResolvedStatus(analyzed.status, analyzed, tab.id);
-          },
-        );
+        chrome.runtime.sendMessage({
+          type: "analyzeTabNow",
+          tabId: tab.id,
+          url: tab.url,
+        });
+        pollUntilDone(tab.id);
         return;
       }
 
@@ -657,22 +658,44 @@ manualForm.addEventListener("submit", (event) => {
   }
 
   manualButton.disabled = true;
-  renderInitialChecking(scanMode === "full", manualResultEl);
+  const fullScanMode = scanMode === "full";
+  renderInitialChecking(fullScanMode, manualResultEl);
 
-  checkUrlWithBackend(url, scanMode === "full").then((outcome) => {
+  const requestId = crypto.randomUUID();
+  let lastProgress = null;
+  let polling = true;
+
+  const pollLoop = () => {
+    if (!polling) return;
+    fetchAnalysisProgress(requestId).then((progress) => {
+      if (!polling || !progress) return;
+      lastProgress = progress;
+      applyLiveProgress(progress, fullScanMode, manualResultEl);
+    });
+    setTimeout(pollLoop, 500);
+  };
+  pollLoop();
+
+  checkUrlWithBackend(url, fullScanMode, requestId).then((outcome) => {
+    polling = false;
     manualButton.disabled = false;
-    if (outcome.status === "done") {
-      const outcomes = deriveStepOutcomes(outcome.result);
-      playStepSequence(
-        outcomes,
-        outcome.result,
-        scanMode === "full",
-        manualResultEl,
-      );
-    } else if (outcome.status === "offline") {
+
+    let finalOutcome = outcome;
+    if (
+      outcome.status !== "done" &&
+      lastProgress &&
+      lastProgress.stage === STAGE_DONE &&
+      lastProgress.result
+    ) {
+      finalOutcome = { status: "done", result: lastProgress.result };
+    }
+
+    if (finalOutcome.status === "done") {
+      finishWithResult(finalOutcome.result, fullScanMode, manualResultEl);
+    } else if (finalOutcome.status === "offline") {
       render(offlineStateHtml(), manualResultEl);
     } else {
-      render(errorStateHtml(outcome.message), manualResultEl);
+      render(errorStateHtml(finalOutcome.message), manualResultEl);
     }
   });
 });

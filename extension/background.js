@@ -9,7 +9,9 @@ const inFlight = new Map();
 const tabGeneration = new Map();
 
 function getScanMode() {
-  return chrome.storage.local.get(["scanMode"]).then((stored) => stored.scanMode || "quick");
+  return chrome.storage.local
+    .get(["scanMode"])
+    .then((stored) => stored.scanMode || "quick");
 }
 
 function analyzeAndStore(tabId, url, { force = false } = {}) {
@@ -20,19 +22,60 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
   const generation = (tabGeneration.get(tabId) || 0) + 1;
   tabGeneration.set(tabId, generation);
 
+  const requestId = crypto.randomUUID();
+  let lastProgress = null;
+
   tabResults.set(tabId, { status: "analyzing" });
 
+  const progressInterval = setInterval(() => {
+    if (tabGeneration.get(tabId) !== generation) {
+      clearInterval(progressInterval);
+      return;
+    }
+    fetchAnalysisProgress(requestId).then((progress) => {
+      if (!progress || tabGeneration.get(tabId) !== generation) return;
+      lastProgress = progress;
+      const current = tabResults.get(tabId);
+      if (current && current.status === "analyzing") {
+        tabResults.set(tabId, {
+          status: "analyzing",
+          stage: progress.stage,
+          layer1_score: progress.layer1_score,
+        });
+      }
+    });
+  }, 500);
+
   const promise = getScanMode()
-    .then((mode) => checkUrlWithBackend(url, mode === "full").then((outcome) => ({ outcome, mode })))
+    .then((mode) =>
+      checkUrlWithBackend(url, mode === "full", requestId).then((outcome) => ({
+        outcome,
+        mode,
+      })),
+    )
     .then(({ outcome, mode }) => {
-      if (outcome.status !== "done") {
-        console.warn(`Cascade Phish Guard: analysis for ${url} resolved as "${outcome.status}"`, outcome.message || outcome);
+      let finalOutcome = outcome;
+
+      if (
+        outcome.status !== "done" &&
+        lastProgress &&
+        lastProgress.stage === "done" &&
+        lastProgress.result
+      ) {
+        finalOutcome = { status: "done", result: lastProgress.result };
+      }
+      if (finalOutcome.status !== "done") {
+        console.warn(
+          `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
+          finalOutcome.message || finalOutcome,
+        );
       }
       if (tabGeneration.get(tabId) === generation) {
-        tabResults.set(tabId, { ...outcome, modeUsed: mode });
+        tabResults.set(tabId, { ...finalOutcome, modeUsed: mode });
       }
     })
     .finally(() => {
+      clearInterval(progressInterval);
       if (tabGeneration.get(tabId) === generation) {
         inFlight.delete(tabId);
       }

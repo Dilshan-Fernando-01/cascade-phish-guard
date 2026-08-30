@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from schemas.analyze import AnalyzeRequest, AnalyzeResponse
 from schemas.system import HealthResponse, VersionResponse
 from services.cascade_analyzer import analyze as run_cascade_analysis
+from services.cascade_analyzer import get_progress
 
 APP_VERSION = "0.1.0"
 _COMPARISON_PATH = Path(__file__).resolve().parents[2] / "data" / "reports" / "layer1_model_comparison.json"
@@ -64,10 +65,18 @@ def version():
 
 @app.post("/analyze", response_model=AnalyzeResponse, dependencies=[Depends(verify_api_key)])
 def analyze_url(request: AnalyzeRequest):
-    future = _executor.submit(run_cascade_analysis, request.url, request.full_scan)
+    future = _executor.submit(run_cascade_analysis, request.url, request.full_scan, request.request_id)
     try:
         return future.result(timeout=REQUEST_TIMEOUT_SECONDS)
     except concurrent.futures.TimeoutError:
         raise HTTPException(status_code=504, detail="Analysis timed out")
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Could not analyze URL: {exc}")
+
+
+@app.get("/analyze/progress/{request_id}", dependencies=[Depends(verify_api_key)])
+def analyze_progress(request_id: str):
+    progress = get_progress(request_id)
+    if progress is None:
+        raise HTTPException(status_code=404, detail="Unknown or expired request id")
+    return progress
