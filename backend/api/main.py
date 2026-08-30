@@ -20,7 +20,7 @@ _COMPARISON_PATH = Path(__file__).resolve().parents[2] / "data" / "reports" / "l
 _API_KEY = os.environ.get("API_KEY")
 
 
-REQUEST_TIMEOUT_SECONDS = 12
+REQUEST_TIMEOUT_SECONDS = 40
 
 EXTENSION_ORIGIN = "chrome-extension://ecnkllhbcnponkmgmeenkoijnpkociaj"
 
