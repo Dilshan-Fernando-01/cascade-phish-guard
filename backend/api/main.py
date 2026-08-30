@@ -1,10 +1,14 @@
-import concurrent.futures
-import json
 import os
 import sys
-from pathlib import Path
 
 from dotenv import load_dotenv
+
+load_dotenv()
+
+import concurrent.futures
+import json
+from pathlib import Path
+
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,8 +16,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from schemas.analyze import AnalyzeRequest, AnalyzeResponse
 from schemas.system import HealthResponse, VersionResponse
 from services.cascade_analyzer import analyze as run_cascade_analysis
-
-load_dotenv()
 
 APP_VERSION = "0.1.0"
 _COMPARISON_PATH = Path(__file__).resolve().parents[2] / "data" / "reports" / "layer1_model_comparison.json"

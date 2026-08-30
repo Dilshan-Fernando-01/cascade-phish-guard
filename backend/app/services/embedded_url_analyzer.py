@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
@@ -13,7 +13,24 @@ TIME_BUDGET_SECONDS = 10
 SUSPICIOUS_THRESHOLD = 0.5
 
 
+KNOWN_WAF_VENDOR_HOSTS = {
+    "awswaf.com",
+    "cloudflareinsights.com",
+    "challenges.cloudflare.com",
+    "datadome.co",
+    "perimeterx.net",
+    "px-cloud.net",
+    "hcaptcha.com",
+    "recaptcha.net",
+}
+
+
+def _is_known_waf_vendor(host):
+    return any(host == vendor or host.endswith("." + vendor) for vendor in KNOWN_WAF_VENDOR_HOSTS)
+
+
 def extract_embedded_urls(html, base_url, network_urls=None):
+
     soup = BeautifulSoup(html or "", "html.parser")
     raw_urls = []
 
@@ -23,12 +40,6 @@ def extract_embedded_urls(html, base_url, network_urls=None):
         raw_urls.append(tag["src"])
     for tag in soup.find_all("form", action=True):
         raw_urls.append(tag["action"])
-    for tag in soup.find_all("script", src=True):
-        raw_urls.append(tag["src"])
-    for tag in soup.find_all("link", href=True):
-        raw_urls.append(tag["href"])
-    for tag in soup.find_all("img", src=True):
-        raw_urls.append(tag["src"])
     for tag in soup.find_all("meta", attrs={"http-equiv": lambda v: v and v.lower() == "refresh"}):
         content = tag.get("content", "")
         if "url=" in content.lower():
@@ -55,6 +66,7 @@ def extract_embedded_urls(html, base_url, network_urls=None):
 
 def analyze_embedded_urls(html, base_url, network_urls=None):
     urls = extract_embedded_urls(html, base_url, network_urls)
+    urls = [u for u in urls if not _is_known_waf_vendor(urlparse(u).netloc.split(":")[0])]
 
     scores = []
     start = time.monotonic()

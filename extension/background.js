@@ -25,6 +25,9 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
   const promise = getScanMode()
     .then((mode) => checkUrlWithBackend(url, mode === "full").then((outcome) => ({ outcome, mode })))
     .then(({ outcome, mode }) => {
+      if (outcome.status !== "done") {
+        console.warn(`Cascade Phish Guard: analysis for ${url} resolved as "${outcome.status}"`, outcome.message || outcome);
+      }
       if (tabGeneration.get(tabId) === generation) {
         tabResults.set(tabId, { ...outcome, modeUsed: mode });
       }
