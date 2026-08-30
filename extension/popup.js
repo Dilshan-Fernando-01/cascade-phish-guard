@@ -10,6 +10,21 @@ const STEP_TITLES = [
   "Visual comparison",
 ];
 
+const LAYER_SUBSTEPS = [
+  [
+    "Analyzing URL structure",
+    "Checking domain reputation",
+    "Cross-referencing threat lists",
+  ],
+  [
+    "Loading page content",
+    "Scanning page structure",
+    "Checking embedded links",
+  ],
+  [],
+];
+const SUBSTEP_DELAY_MS = PRESENTATION_MODE ? 250 : 40;
+
 const badge = document.getElementById("badge");
 const subtitleEl = document.getElementById("subtitle");
 const content = document.getElementById("content");
@@ -202,28 +217,93 @@ function stepIconHtml(status) {
   return "";
 }
 
-function layerCardHtml(step, index) {
-  const expanded = step.status === "active";
+// A summary pill showing analysis PROGRESS (how many layers have run) --
+// distinct from the gauges above, which show the RISK score. "Resolved"
+// covers done/skipped/unavailable -- anything no longer waiting or active.
+function progressSummaryHtml(steps) {
+  const resolved = steps.filter((s) =>
+    ["done", "skipped", "unavailable"].includes(s.status),
+  ).length;
+  const pct = Math.round((resolved / steps.length) * 100);
+  const allDone = resolved === steps.length;
   return `
-    <div class="layer-card step-${step.status} ${expanded ? "is-expanded is-active" : ""}" data-step-index="${index}">
-      <button type="button" class="layer-card-header" data-toggle-index="${index}">
+    <div class="progress-summary">
+      <div class="progress-summary-icon ${allDone ? "is-done" : ""}">${allDone ? "&#10003;" : ""}</div>
+      <span class="progress-summary-count">${resolved} of ${steps.length}</span>
+      <div class="progress-summary-track">
+        <div class="progress-summary-fill" style="width: ${pct}%"></div>
+      </div>
+      <span class="progress-summary-pct">${pct}%</span>
+    </div>
+  `;
+}
+
+// The mini progress pill + checklist inside one layer's own card, tracking
+// that layer's sub-steps (not the score, not the outer 3-layer progress).
+function substepChecklistHtml(index, doneCount) {
+  const labels = LAYER_SUBSTEPS[index] || [];
+  if (labels.length === 0) return "";
+  const syntheticSteps = labels.map((_, i) => ({
+    status: i < doneCount ? "done" : "pending",
+  }));
+  const rows = labels
+    .map(
+      (label, i) => `
+      <div class="substep-row ${i < doneCount ? "is-done" : ""}">
+        <span class="substep-icon">${i < doneCount ? "&#10003;" : ""}</span>
+        <span class="substep-label">${label}</span>
+      </div>
+    `,
+    )
+    .join("");
+  return `${progressSummaryHtml(syntheticSteps)}<div class="substep-list">${rows}</div>`;
+}
+
+function layerCardHtml(step, index) {
+  const substeps = LAYER_SUBSTEPS[index] || [];
+  const showSubsteps =
+    substeps.length > 0 && (step.status === "active" || step.status === "done");
+  // Default to 0 (not started) while still active, and only assume "fully
+  // done" once the layer has actually resolved -- the previous fallback
+  // defaulted to fully-done any time substepsDone wasn't set yet, which
+  // included the very first render of a newly-active layer, showing 100%
+  // before the animation had even started.
+  const defaultSubstepsDone = step.status === "done" ? substeps.length : 0;
+  const detail = showSubsteps
+    ? substepChecklistHtml(index, step.substepsDone ?? defaultSubstepsDone)
+    : step.detail;
+  // Only show the expandable body/chevron when there's real additional
+  // detail to show -- previously this fell back to repeating `sub`,
+  // showing the exact same line twice for no reason.
+  const hasDetail = Boolean(detail);
+  const expanded = hasDetail && step.status === "active";
+  const activeClass = step.status === "active" ? "is-active" : "";
+  return `
+    <div class="layer-card step-${step.status} ${activeClass} ${expanded ? "is-expanded" : ""}" data-step-index="${index}">
+      <button type="button" class="layer-card-header" ${hasDetail ? `data-toggle-index="${index}"` : ""}>
         <div class="step-icon">${stepIconHtml(step.status)}</div>
         <div class="step-title-wrap">
           <p class="step-title">${step.title}</p>
           <p class="step-sub">${step.sub}</p>
         </div>
-        <span class="layer-card-chevron">&#9650;</span>
+        ${hasDetail ? '<span class="layer-card-chevron">&#9650;</span>' : ""}
       </button>
-      <div class="layer-card-body-outer">
+      ${
+        hasDetail
+          ? `<div class="layer-card-body-outer">
         <div class="layer-card-body-inner">
-          <div class="layer-card-body">${step.detail || step.sub}</div>
+          <div class="layer-card-body">${detail}</div>
         </div>
-      </div>
+      </div>`
+          : ""
+      }
     </div>
   `;
 }
 
 function stepsListHtml(steps) {
+  // No outer "N of 3 layers" summary here -- per-layer progress (inside
+  // each card, via substepChecklistHtml) is enough on its own.
   return `<div class="steps-list">${steps.map(layerCardHtml).join("")}</div>`;
 }
 
@@ -289,6 +369,20 @@ function deriveStepOutcomes(result) {
   ];
 }
 
+// Reveals a layer's own sub-steps one at a time while it's "active" --
+// currently timer-driven, not yet tied to real backend progress (see the
+// LAYER_SUBSTEPS comment above). No-op for layers with no sub-steps.
+async function animateSubsteps(steps, index, target) {
+  const total = (LAYER_SUBSTEPS[index] || []).length;
+  if (total === 0) return;
+  steps[index].substepsDone = 0;
+  for (let i = 1; i <= total; i++) {
+    await wait(SUBSTEP_DELAY_MS);
+    steps[index].substepsDone = i;
+    updateSteps(steps, target);
+  }
+}
+
 async function playStepSequence(
   outcomes,
   result,
@@ -308,7 +402,7 @@ async function playStepSequence(
   setBadge("loading", "&#8987;", "CHECKING");
   updateSteps(steps, target);
 
-  await wait(STEP_DELAY_MS);
+  await animateSubsteps(steps, 0, target);
   steps[0].status = outcomes[0].status;
   steps[0].sub = outcomes[0].sub;
   steps[1].status = "active";
@@ -316,7 +410,7 @@ async function playStepSequence(
   updateSteps(steps, target);
   animateResultGauges({ ...result, layers_used: ["layer1"] }, fullScanMode, ns);
 
-  await wait(STEP_DELAY_MS);
+  await animateSubsteps(steps, 1, target);
   steps[1].status = outcomes[1].status;
   steps[1].sub = outcomes[1].sub;
   steps[2].status = outcomes[2].status;
@@ -425,7 +519,7 @@ function renderInitialChecking(fullScanMode, target = content) {
   updateSteps(steps, target);
 }
 
-function handleResolvedStatus(status, payload, target = content) {
+function handleResolvedStatus(status, payload, tabId, target = content) {
   const fullScanMode = scanMode === "full";
   if (status === "done") {
     const outcomes = deriveStepOutcomes(payload.result);
@@ -434,13 +528,26 @@ function handleResolvedStatus(status, payload, target = content) {
     renderOffline(target);
   } else if (status === "error") {
     renderError(payload.message, target);
+  } else if (status === "analyzing" && tabId != null) {
+    // A newer navigation superseded the request that just resolved (e.g.
+    // multiple redirects on a login page) while it was in flight -- the
+    // real analysis is still legitimately running, so keep polling instead
+    // of showing "nothing to check" for a page that's actually being
+    // analyzed right now.
+    pollUntilDone(tabId);
   } else {
     renderUnknown(target);
   }
 }
 
+// 90 attempts * 500ms = 45s -- must stay above the backend's own
+// REQUEST_TIMEOUT_SECONDS (40s), or the popup gives up and shows a false
+// "taking longer than expected" error for a page that's still legitimately
+// working and might succeed a few seconds later.
+const MAX_POLL_ATTEMPTS = 90;
+
 function pollUntilDone(tabId, attempt = 0) {
-  if (attempt > 20) {
+  if (attempt > MAX_POLL_ATTEMPTS) {
     renderError("Taking longer than expected.");
     return;
   }
@@ -450,7 +557,7 @@ function pollUntilDone(tabId, attempt = 0) {
       if (response.status === "analyzing") {
         pollUntilDone(tabId, attempt + 1);
       } else {
-        handleResolvedStatus(response.status, response);
+        handleResolvedStatus(response.status, response, tabId);
       }
     });
   }, 500);
@@ -472,7 +579,7 @@ function requestRescan(tab) {
   chrome.runtime.sendMessage(
     { type: "rescanTab", tabId: tab.id, url: tab.url },
     (response) => {
-      handleResolvedStatus(response.status, response);
+      handleResolvedStatus(response.status, response, tab.id);
     },
   );
 }
@@ -519,7 +626,7 @@ async function main() {
         chrome.runtime.sendMessage(
           { type: "analyzeTabNow", tabId: tab.id, url: tab.url },
           (analyzed) => {
-            handleResolvedStatus(analyzed.status, analyzed);
+            handleResolvedStatus(analyzed.status, analyzed, tab.id);
           },
         );
         return;
@@ -530,7 +637,7 @@ async function main() {
         return;
       }
 
-      handleResolvedStatus(response.status, response);
+      handleResolvedStatus(response.status, response, tab.id);
     },
   );
 }
