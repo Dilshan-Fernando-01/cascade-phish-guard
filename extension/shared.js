@@ -1,11 +1,11 @@
 const BACKEND_URL = "http://127.0.0.1:8000/analyze";
 const API_KEY = "M_jfAWSwXqU56KYHqKvV3sn0_Mo0hEqxmsyx9ErnJHY";
 
-function checkUrlWithBackend(url) {
+function checkUrlWithBackend(url, fullScan = false) {
   return fetch(BACKEND_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-API-Key": API_KEY },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ url, full_scan: fullScan }),
   })
     .then(async (response) => {
       if (!response.ok) {
