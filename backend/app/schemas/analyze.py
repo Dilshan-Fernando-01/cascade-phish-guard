@@ -17,6 +17,10 @@ class AnalyzeRequest(BaseModel):
         default=False,
         description="Run every available layer regardless of Layer 1's confidence, instead of only escalating on an uncertain score",
     )
+    request_id: Optional[str] = Field(
+        default=None,
+        description="Client-generated id for polling live progress via GET /analyze/progress/{request_id} while this request is still in flight",
+    )
 
 
 class AnalyzeResponse(BaseModel):
