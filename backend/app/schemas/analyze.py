@@ -21,6 +21,14 @@ class AnalyzeRequest(BaseModel):
         default=None,
         description="Client-generated id for polling live progress via GET /analyze/progress/{request_id} while this request is still in flight",
     )
+    html: Optional[str] = Field(
+        default=None,
+        description="Already-rendered page HTML (e.g. from a content script reading the user's own tab). When present, Layer 2 analyzes this directly instead of independently re-rendering the URL with Playwright.",
+    )
+    skip_layer2: bool = Field(
+        default=False,
+        description="Force a Layer-1-only pass regardless of full_scan or Layer 1's escalation band. Used for the fast initial check before a page has finished loading.",
+    )
 
 
 class AnalyzeResponse(BaseModel):

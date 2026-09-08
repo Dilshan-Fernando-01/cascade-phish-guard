@@ -2,11 +2,23 @@ const BACKEND_BASE = "http://127.0.0.1:8000";
 const BACKEND_URL = `${BACKEND_BASE}/analyze`;
 const API_KEY = "M_jfAWSwXqU56KYHqKvV3sn0_Mo0hEqxmsyx9ErnJHY";
 
-function checkUrlWithBackend(url, fullScan = false, requestId = null) {
+function checkUrlWithBackend(
+  url,
+  fullScan = false,
+  requestId = null,
+  html = null,
+  skipLayer2 = false,
+) {
   return fetch(BACKEND_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-API-Key": API_KEY },
-    body: JSON.stringify({ url, full_scan: fullScan, request_id: requestId }),
+    body: JSON.stringify({
+      url,
+      full_scan: fullScan,
+      request_id: requestId,
+      html,
+      skip_layer2: skipLayer2,
+    }),
   })
     .then(async (response) => {
       if (!response.ok) {
