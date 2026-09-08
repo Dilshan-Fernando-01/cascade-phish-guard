@@ -36,15 +36,25 @@ def _looks_like_bot_challenge(html, network_urls=None):
     return False
 
 
-def analyze_layer2(url):
-    loaded = load_page(url)
-    if not loaded["success"]:
-        return {"success": False, "features": None, "error": loaded["error"]}
+def analyze_layer2(url, html=None):
+    """Runs Layer 2 DOM analysis, either on `html` already rendered by the
+    caller (e.g. a content script reading the user's own tab -- no network_urls
+    available in that case, since only a live browser session sees XHR/fetch
+    traffic) or, when `html` is None, by independently loading `url` with
+    Playwright exactly as before.
+    """
+    network_urls = None
+    if html is None:
+        loaded = load_page(url)
+        if not loaded["success"]:
+            return {"success": False, "features": None, "error": loaded["error"]}
+        html = loaded["html"]
+        final_url = loaded["final_url"]
+        network_urls = loaded["network_urls"]
+    else:
+        final_url = url
 
-    html = loaded["html"]
-    final_url = loaded["final_url"]
-
-    if _looks_like_bot_challenge(html, loaded["network_urls"]):
+    if _looks_like_bot_challenge(html, network_urls):
         return {
             "success": False,
             "features": None,
@@ -55,6 +65,6 @@ def analyze_layer2(url):
     features.update(extract_structural_features(html, final_url))
     features.update(extract_brand_features(html, final_url))
     features.update(extract_behavioral_features(html))
-    features.update(analyze_embedded_urls(html, final_url, loaded["network_urls"]))
+    features.update(analyze_embedded_urls(html, final_url, network_urls))
 
     return {"success": True, "features": features, "error": None}

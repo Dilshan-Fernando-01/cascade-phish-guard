@@ -41,7 +41,7 @@ def get_progress(request_id):
         return None if entry is None else {k: v for k, v in entry.items() if k != "_ts"}
 
 
-def analyze(url, full_scan=False, request_id=None):
+def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False):
     is_valid, reason = validate_url(url)
     if not is_valid:
         raise ValueError(f"invalid URL ({reason})")
@@ -56,7 +56,7 @@ def analyze(url, full_scan=False, request_id=None):
     layer2_features = None
     layer2_score = None
 
-    will_run_layer2 = (would_escalate or full_scan) and LAYER2_ENABLED
+    will_run_layer2 = (would_escalate or full_scan) and LAYER2_ENABLED and not skip_layer2
     _set_progress(
         request_id,
         {
@@ -69,7 +69,7 @@ def analyze(url, full_scan=False, request_id=None):
         from services.layer2_analyzer import analyze_layer2
         from models.layer2_model import predict_from_features
 
-        layer2_result = analyze_layer2(url)
+        layer2_result = analyze_layer2(url, html=html)
         layers_used.append("layer2")
         if layer2_result["success"]:
             layer2_features = layer2_result["features"]
