@@ -3,6 +3,7 @@ import os
 import sys
 
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
@@ -22,23 +23,40 @@ TIE_BREAK_PREFERENCE = ["layer2_logistic_regression", "layer2_random_forest", "l
 
 PRIMARY_METRIC = "f1"
 
-
-def load_all_results():
-    results = {}
-    for model_name in MODELS:
-        with open(f"data/reports/{model_name}_results.json") as f:
-            results[model_name] = json.load(f)
-    return results
+THRESHOLD_CANDIDATES = np.round(np.arange(0.01, 1.00, 0.01), 2)
 
 
-def build_comparison_table(results):
-    rows = [{"model": name, **r["metrics"]} for name, r in results.items()]
-    return pd.DataFrame(rows)
+def _predict_proba(artifact, X):
+    if "scaler" in artifact:
+        X = artifact["scaler"].transform(X)
+    return artifact["model"].predict_proba(X)[:, 1]
 
 
-def select_winner(comparison_df):
-    best_score = comparison_df[PRIMARY_METRIC].max()
-    tied = comparison_df.loc[comparison_df[PRIMARY_METRIC] == best_score, "model"].tolist()
+def _metrics_at_threshold(y_true, y_proba, threshold):
+    y_pred = (y_proba >= threshold).astype(int)
+    has_both = y_true.nunique() > 1
+    metrics = {
+        "accuracy": accuracy_score(y_true, y_pred),
+        "precision": precision_score(y_true, y_pred, zero_division=0),
+        "recall": recall_score(y_true, y_pred, zero_division=0),
+        "f1": f1_score(y_true, y_pred, zero_division=0),
+        "auc_roc": roc_auc_score(y_true, y_proba) if has_both else None,
+    }
+    return metrics, confusion_matrix(y_true, y_pred, labels=[0, 1]).tolist()
+
+
+def find_best_threshold(y_val, y_proba_val):
+    best_threshold, best_f1 = 0.5, -1.0
+    for t in THRESHOLD_CANDIDATES:
+        f1 = f1_score(y_val, (y_proba_val >= t).astype(int), zero_division=0)
+        if f1 > best_f1:
+            best_f1, best_threshold = f1, t
+    return float(best_threshold)
+
+
+def select_winner(rows):
+    best_score = max(r[PRIMARY_METRIC] for r in rows)
+    tied = [r["model"] for r in rows if r[PRIMARY_METRIC] == best_score]
     if len(tied) == 1:
         return tied[0], False
     for candidate in TIE_BREAK_PREFERENCE:
@@ -47,38 +65,33 @@ def select_winner(comparison_df):
     return tied[0], True
 
 
-def evaluate_on_test(model_name):
-    artifact = joblib.load(f"data/models/{model_name}.joblib")
-    model = artifact["model"]
-
-    test = pd.read_csv("data/processed/layer2_test_features.csv")
-    X_test = prepare_layer2_features(test)
-    y_test = test["label"]
-
-    if "scaler" in artifact:
-        X_test = artifact["scaler"].transform(X_test)
-
-    y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
-
-    has_both = y_test.nunique() > 1
-    metrics = {
-        "accuracy": accuracy_score(y_test, y_pred),
-        "precision": precision_score(y_test, y_pred, zero_division=0),
-        "recall": recall_score(y_test, y_pred, zero_division=0),
-        "f1": f1_score(y_test, y_pred, zero_division=0),
-        "auc_roc": roc_auc_score(y_test, y_proba) if has_both else None,
-    }
-    cm = confusion_matrix(y_test, y_pred, labels=[0, 1]).tolist()
-    return metrics, cm
-
-
 def main():
-    results = load_all_results()
-    comparison_df = build_comparison_table(results)
+    val = pd.read_csv("data/processed/layer2_validation_features.csv")
+    test = pd.read_csv("data/processed/layer2_test_features.csv")
+    X_val, y_val = prepare_layer2_features(val), val["label"]
+    X_test, y_test = prepare_layer2_features(test), test["label"]
 
-    winner, was_tied = select_winner(comparison_df)
-    test_metrics, test_cm = evaluate_on_test(winner)
+    comparison_rows = []
+    test_metrics_by_model = {}
+    test_cm_by_model = {}
+    threshold_by_model = {}
+
+    for model_name in MODELS:
+        artifact = joblib.load(f"data/models/{model_name}.joblib")
+
+        proba_val = _predict_proba(artifact, X_val)
+        threshold = find_best_threshold(y_val, proba_val)
+        val_metrics, _ = _metrics_at_threshold(y_val, proba_val, threshold)
+
+        proba_test = _predict_proba(artifact, X_test)
+        test_metrics, test_cm = _metrics_at_threshold(y_test, proba_test, threshold)
+
+        threshold_by_model[model_name] = threshold
+        test_metrics_by_model[model_name] = test_metrics
+        test_cm_by_model[model_name] = test_cm
+        comparison_rows.append({"model": model_name, "threshold": threshold, **val_metrics})
+
+    winner, was_tied = select_winner(comparison_rows)
 
     os.makedirs("data/models", exist_ok=True)
     os.makedirs("data/reports", exist_ok=True)
@@ -87,8 +100,16 @@ def main():
     joblib.dump(artifact, "data/models/layer2_winner.joblib")
 
     summary = {
-        "comparison_table": comparison_df.to_dict(orient="records"),
+        "comparison_table": comparison_rows,
         "primary_metric": PRIMARY_METRIC,
+        "thresholds_tuned_on": (
+            "Each model's own classification threshold was swept 0.01-0.99 on "
+            "the validation set only (never the test set) to find its "
+            "individual best-F1 cutoff, since predict_proba() outputs aren't "
+            "comparable across model types at a flat 0.5 -- see "
+            "data/reports/layer2_threshold_tuning.json for the full "
+            "before/after breakdown per model."
+        ),
         "winner": winner,
         "winner_selected_via_tiebreak": was_tied,
         "tie_break_reasoning": (
@@ -98,7 +119,11 @@ def main():
             if was_tied
             else None
         ),
-        "test_set_confirmation": {"metrics": test_metrics, "confusion_matrix": test_cm},
+        "test_set_confirmation": {
+            "threshold": threshold_by_model[winner],
+            "metrics": test_metrics_by_model[winner],
+            "confusion_matrix": test_cm_by_model[winner],
+        },
     }
 
     with open("data/reports/layer2_model_comparison.json", "w") as f:
@@ -108,8 +133,8 @@ def main():
         {
             "winner": winner,
             "was_tied": was_tied,
-            "validation_comparison": comparison_df.to_dict(orient="records"),
-            "test_confirmation": test_metrics,
+            "validation_comparison": comparison_rows,
+            "test_confirmation": summary["test_set_confirmation"],
         },
         indent=2,
     ))
