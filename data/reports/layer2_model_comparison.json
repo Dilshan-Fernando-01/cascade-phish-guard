@@ -2,57 +2,63 @@
   "comparison_table": [
     {
       "model": "layer2_logistic_regression",
-      "accuracy": 0.8,
-      "precision": 0.8833333333333333,
-      "recall": 0.7464788732394366,
-      "f1": 0.8091603053435115,
+      "threshold": 0.26,
+      "accuracy": 0.848,
+      "precision": 0.8513513513513513,
+      "recall": 0.8873239436619719,
+      "f1": 0.8689655172413793,
       "auc_roc": 0.8185967657798643
     },
     {
       "model": "layer2_random_forest",
-      "accuracy": 0.712,
-      "precision": 0.8888888888888888,
-      "recall": 0.5633802816901409,
-      "f1": 0.6896551724137931,
+      "threshold": 0.09,
+      "accuracy": 0.8,
+      "precision": 0.75,
+      "recall": 0.971830985915493,
+      "f1": 0.8466257668711656,
       "auc_roc": 0.8723265519040168
     },
     {
       "model": "layer2_xgboost",
-      "accuracy": 0.736,
-      "precision": 0.9318181818181818,
-      "recall": 0.5774647887323944,
-      "f1": 0.7130434782608696,
+      "threshold": 0.01,
+      "accuracy": 0.76,
+      "precision": 0.759493670886076,
+      "recall": 0.8450704225352113,
+      "f1": 0.8,
       "auc_roc": 0.8475482524778299
     },
     {
       "model": "layer2_mlp",
-      "accuracy": 0.776,
-      "precision": 0.864406779661017,
-      "recall": 0.7183098591549296,
-      "f1": 0.7846153846153846,
+      "threshold": 0.31,
+      "accuracy": 0.8,
+      "precision": 0.8194444444444444,
+      "recall": 0.8309859154929577,
+      "f1": 0.8251748251748252,
       "auc_roc": 0.7990349504434012
     }
   ],
   "primary_metric": "f1",
+  "thresholds_tuned_on": "Each model's own classification threshold was swept 0.01-0.99 on the validation set only (never the test set) to find its individual best-F1 cutoff, since predict_proba() outputs aren't comparable across model types at a flat 0.5 -- see data/reports/layer2_threshold_tuning.json for the full before/after breakdown per model.",
   "winner": "layer2_logistic_regression",
   "winner_selected_via_tiebreak": false,
   "tie_break_reasoning": null,
   "test_set_confirmation": {
+    "threshold": 0.26,
     "metrics": {
-      "accuracy": 0.7299270072992701,
-      "precision": 0.8,
-      "recall": 0.6575342465753424,
-      "f1": 0.7218045112781954,
+      "accuracy": 0.7591240875912408,
+      "precision": 0.803030303030303,
+      "recall": 0.726027397260274,
+      "f1": 0.762589928057554,
       "auc_roc": 0.7156464041095889
     },
     "confusion_matrix": [
       [
-        52,
-        12
+        51,
+        13
       ],
       [
-        25,
-        48
+        20,
+        53
       ]
     ]
   }

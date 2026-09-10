@@ -1,7 +1,10 @@
 {
-  "pool_size": 410,
+  "pool_size": 13409,
   "target_sample_size": 500,
-  "actual_sample_size": 410,
-  "sampled_entire_pool": true,
+  "existing_sample_size_before_this_run": 500,
+  "already_completed_before_this_run": 148,
+  "newly_added_this_run": 0,
+  "actual_sample_size": 500,
+  "reached_target": true,
   "random_seed": 42
 }

@@ -1,0 +1,9 @@
+{
+  "total": 500,
+  "checked": 500,
+  "malicious": 500,
+  "clean": 0,
+  "not_found": 0,
+  "errors": 0,
+  "agreement_rate": 1.0
+}
