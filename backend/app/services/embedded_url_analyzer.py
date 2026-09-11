@@ -82,6 +82,7 @@ def analyze_embedded_urls(html, base_url, network_urls=None):
 
     if not scores:
         return {
+            "checked_embedded_url_count": 0,
             "suspicious_embedded_url_count": 0,
             "max_embedded_url_risk": 0.0,
             "avg_embedded_url_risk": 0.0,
@@ -90,6 +91,7 @@ def analyze_embedded_urls(html, base_url, network_urls=None):
     suspicious_count = sum(1 for s in scores if s > SUSPICIOUS_THRESHOLD)
 
     return {
+        "checked_embedded_url_count": len(scores),
         "suspicious_embedded_url_count": suspicious_count,
         "max_embedded_url_risk": round(max(scores), 4),
         "avg_embedded_url_risk": round(sum(scores) / len(scores), 4),
