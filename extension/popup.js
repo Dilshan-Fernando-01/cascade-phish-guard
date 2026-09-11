@@ -255,6 +255,23 @@ function substepChecklistHtml(index, doneCount) {
   return `${progressSummaryHtml(syntheticSteps)}<div class="substep-list">${rows}</div>`;
 }
 
+function embeddedUrlSummaryHtml(features) {
+  if (!features) return "";
+  const checked = features.checked_embedded_url_count;
+  if (!checked) return "";
+  const suspicious = features.suspicious_embedded_url_count || 0;
+  const linkWord = checked === 1 ? "link" : "links";
+  let line;
+  if (suspicious === 0) {
+    line = `Checked ${checked} embedded ${linkWord} on this page -- none looked suspicious.`;
+  } else {
+    const maxRisk = Math.round((features.max_embedded_url_risk || 0) * 100);
+    const flagWord = suspicious === 1 ? "link" : "links";
+    line = `Checked ${checked} embedded ${linkWord} on this page -- ${suspicious} ${flagWord} looked suspicious (highest risk: ${maxRisk}%).`;
+  }
+  return `<div class="embedded-url-summary">${line}</div>`;
+}
+
 function layerCardHtml(step, index) {
   const substeps = LAYER_SUBSTEPS[index] || [];
   const showSubsteps =
@@ -266,7 +283,8 @@ function layerCardHtml(step, index) {
   // before the animation had even started.
   const defaultSubstepsDone = step.status === "done" ? substeps.length : 0;
   const detail = showSubsteps
-    ? substepChecklistHtml(index, step.substepsDone ?? defaultSubstepsDone)
+    ? substepChecklistHtml(index, step.substepsDone ?? defaultSubstepsDone) +
+      (step.extraDetail || "")
     : step.detail;
   // Only show the expandable body/chevron when there's real additional
   // detail to show -- previously this fell back to repeating `sub`,
@@ -344,9 +362,11 @@ function deriveStepOutcomes(result) {
 
   let layer2Status;
   let layer2Sub;
+  let layer2ExtraDetail = "";
   if (layer2Succeeded) {
     layer2Status = "done";
     layer2Sub = "Page content reviewed";
+    layer2ExtraDetail = embeddedUrlSummaryHtml(result.layer2_features);
   } else if (layer2Failed) {
     layer2Status = "unavailable";
     layer2Sub = "Could not load the page to review it";
@@ -360,7 +380,7 @@ function deriveStepOutcomes(result) {
   }
   return [
     { status: "done", sub: "Web address analyzed" },
-    { status: layer2Status, sub: layer2Sub },
+    { status: layer2Status, sub: layer2Sub, extraDetail: layer2ExtraDetail },
     { status: "unavailable", sub: "Planned for a later phase of this project" },
   ];
 }
@@ -414,6 +434,7 @@ function finishWithResult(result, fullScanMode, target = content) {
     status: outcomes[i].status,
     sub: outcomes[i].sub,
     substepsDone: (LAYER_SUBSTEPS[i] || []).length,
+    extraDetail: outcomes[i].extraDetail,
   }));
   if (!target.querySelector(".gauge-row")) {
     renderShell(fullScanMode, target);
