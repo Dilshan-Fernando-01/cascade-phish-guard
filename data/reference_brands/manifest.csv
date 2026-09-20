@@ -1,0 +1,33 @@
+domain,url,final_url,image_path,success,flagged_bot_challenge,error,captured_at
+allegro.pl,https://allegro.pl,https://allegro.pl/,data/reference_brands/images/allegro.pl.png,True,False,,2026-09-20T01:55:07.093496+00:00
+irs.gov,https://irs.gov,https://www.irs.gov/,data/reference_brands/images/irs.gov.png,True,False,,2026-09-20T01:55:11.092217+00:00
+facebook.com,https://facebook.com,https://web.facebook.com/?_rdc=1&_rdr,data/reference_brands/images/facebook.com.png,True,False,,2026-09-20T01:55:18.287010+00:00
+microsoft.com,https://microsoft.com,https://www.microsoft.com/en-lk,data/reference_brands/images/microsoft.com.png,True,False,,2026-09-20T01:55:23.036178+00:00
+amazon.com,https://amazon.com,https://www.amazon.com/,data/reference_brands/images/amazon.com.png,True,False,,2026-09-20T01:55:29.697231+00:00
+bradesco.com.br,https://bradesco.com.br,https://banco.bradesco/html/classic/index.shtm,data/reference_brands/images/bradesco.com.br.png,True,False,,2026-09-20T01:55:36.589465+00:00
+netflix.com,https://netflix.com,https://www.netflix.com/lk/,data/reference_brands/images/netflix.com.png,True,False,,2026-09-20T01:55:41.956439+00:00
+optus.com.au,https://optus.com.au,,,False,False,"Error: Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://optus.com.au/
+Call log:
+  - navigating to ""https://optus.com.au/"", waiting until ""domcontentloaded""
+",2026-09-20T01:55:48.479319+00:00
+societegenerale.com,https://societegenerale.com,https://www.societegenerale.com/fr,data/reference_brands/images/societegenerale.com.png,True,False,,2026-09-20T01:55:50.883382+00:00
+paypal.com,https://paypal.com,https://www.paypal.com/lk/home,data/reference_brands/images/paypal.com.png,True,False,,2026-09-20T01:55:57.021194+00:00
+adobe.com,https://adobe.com,,,False,False,"Error: Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://adobe.com/
+Call log:
+  - navigating to ""https://adobe.com/"", waiting until ""domcontentloaded""
+",2026-09-20T01:56:02.580935+00:00
+att.com,https://att.com,https://www.att.com/,data/reference_brands/images/att.com.png,True,False,,2026-09-20T01:56:04.139852+00:00
+americanexpress.com,https://americanexpress.com,https://www.americanexpress.com/,data/reference_brands/images/americanexpress.com.png,True,False,,2026-09-20T01:56:10.577724+00:00
+docusign.com,https://docusign.com,https://www.docusign.com/,data/reference_brands/images/docusign.com.png,True,False,,2026-09-20T01:56:16.554047+00:00
+comcast.com,https://comcast.com,,,False,False,"Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://comcast.com/
+Call log:
+  - navigating to ""https://comcast.com/"", waiting until ""domcontentloaded""
+",2026-09-20T01:56:23.037619+00:00
+google.com,https://google.com,https://www.google.com/,data/reference_brands/images/google.com.png,True,False,,2026-09-20T01:56:24.721810+00:00
+ebay.com,https://ebay.com,https://www.ebay.com/,data/reference_brands/images/ebay.com.png,True,False,,2026-09-20T01:56:28.668479+00:00
+apple.com,https://apple.com,https://www.apple.com/,data/reference_brands/images/apple.com.png,True,False,,2026-09-20T01:56:32.344823+00:00
+bankofamerica.com,https://bankofamerica.com,https://www.bankofamerica.com/,data/reference_brands/images/bankofamerica.com.png,True,False,,2026-09-20T01:56:36.988574+00:00
+hsbc.com,https://hsbc.com,,,False,False,"TimeoutError: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to ""https://hsbc.com/"", waiting until ""domcontentloaded""
+",2026-09-20T01:56:42.579006+00:00
