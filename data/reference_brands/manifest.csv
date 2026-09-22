@@ -9,20 +9,20 @@ netflix.com,https://netflix.com,https://www.netflix.com/lk/,data/reference_brand
 optus.com.au,https://optus.com.au,,,False,False,"Error: Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://optus.com.au/
 Call log:
   - navigating to ""https://optus.com.au/"", waiting until ""domcontentloaded""
-",2026-09-20T01:55:48.479319+00:00
+",2026-09-22T01:24:22.789558+00:00
 societegenerale.com,https://societegenerale.com,https://www.societegenerale.com/fr,data/reference_brands/images/societegenerale.com.png,True,False,,2026-09-20T01:55:50.883382+00:00
 paypal.com,https://paypal.com,https://www.paypal.com/lk/home,data/reference_brands/images/paypal.com.png,True,False,,2026-09-20T01:55:57.021194+00:00
 adobe.com,https://adobe.com,,,False,False,"Error: Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://adobe.com/
 Call log:
   - navigating to ""https://adobe.com/"", waiting until ""domcontentloaded""
-",2026-09-20T01:56:02.580935+00:00
+",2026-09-22T01:24:25.487409+00:00
 att.com,https://att.com,https://www.att.com/,data/reference_brands/images/att.com.png,True,False,,2026-09-20T01:56:04.139852+00:00
 americanexpress.com,https://americanexpress.com,https://www.americanexpress.com/,data/reference_brands/images/americanexpress.com.png,True,False,,2026-09-20T01:56:10.577724+00:00
 docusign.com,https://docusign.com,https://www.docusign.com/,data/reference_brands/images/docusign.com.png,True,False,,2026-09-20T01:56:16.554047+00:00
 comcast.com,https://comcast.com,,,False,False,"Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://comcast.com/
 Call log:
   - navigating to ""https://comcast.com/"", waiting until ""domcontentloaded""
-",2026-09-20T01:56:23.037619+00:00
+",2026-09-22T01:24:27.116260+00:00
 google.com,https://google.com,https://www.google.com/,data/reference_brands/images/google.com.png,True,False,,2026-09-20T01:56:24.721810+00:00
 ebay.com,https://ebay.com,https://www.ebay.com/,data/reference_brands/images/ebay.com.png,True,False,,2026-09-20T01:56:28.668479+00:00
 apple.com,https://apple.com,https://www.apple.com/,data/reference_brands/images/apple.com.png,True,False,,2026-09-20T01:56:32.344823+00:00
@@ -30,4 +30,46 @@ bankofamerica.com,https://bankofamerica.com,https://www.bankofamerica.com/,data/
 hsbc.com,https://hsbc.com,,,False,False,"TimeoutError: Page.goto: Timeout 20000ms exceeded.
 Call log:
   - navigating to ""https://hsbc.com/"", waiting until ""domcontentloaded""
-",2026-09-20T01:56:42.579006+00:00
+",2026-09-22T01:24:28.799237+00:00
+dhl.com,https://dhl.com,,,False,False,"Error: Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://dhl.com/
+Call log:
+  - navigating to ""https://dhl.com/"", waiting until ""domcontentloaded""
+",2026-09-22T01:24:49.894540+00:00
+chase.com,https://chase.com,https://www.chase.com/,data/reference_brands/images/chase.com.png,True,False,,2026-09-22T01:24:52.422782+00:00
+coinbase.com,https://coinbase.com,https://www.coinbase.com/,data/reference_brands/images/coinbase.com.png,True,False,,2026-09-22T01:24:57.134799+00:00
+orange.fr,https://orange.fr,https://www.orange.fr/portail,data/reference_brands/images/orange.fr.png,True,False,,2026-09-22T01:25:01.357375+00:00
+bt.com,https://bt.com,https://www.bt.com/,data/reference_brands/images/bt.com.png,True,False,,2026-09-22T01:25:07.871701+00:00
+wetransfer.com,https://wetransfer.com,https://wetransfer.com/,data/reference_brands/images/wetransfer.com.png,True,False,,2026-09-22T01:25:13.035598+00:00
+santander.com,https://santander.com,https://www.santander.com/en/home,data/reference_brands/images/santander.com.png,True,False,,2026-09-22T01:25:17.395466+00:00
+ing.com,https://ing.com,https://ing.com/,data/reference_brands/images/ing.com.png,True,False,,2026-09-22T01:25:25.748992+00:00
+steamcommunity.com,https://steamcommunity.com,https://steamcommunity.com/,data/reference_brands/images/steamcommunity.com.png,True,False,,2026-09-22T01:25:33.031513+00:00
+steampowered.com,https://steampowered.com,https://store.steampowered.com/,data/reference_brands/images/steampowered.com.png,True,False,,2026-09-22T01:25:37.348887+00:00
+visa.com,https://visa.com,https://www.visa.com.lk/,data/reference_brands/images/visa.com.png,True,False,,2026-09-22T01:25:43.847224+00:00
+outlook.com,https://outlook.com,https://outlook.live.com/mail/,data/reference_brands/images/outlook.com.png,True,False,,2026-09-22T01:25:49.920219+00:00
+interactivebrokers.com,https://interactivebrokers.com,https://www.interactivebrokers.com/,data/reference_brands/images/interactivebrokers.com.png,True,False,,2026-09-22T01:25:57.236113+00:00
+free.fr,https://free.fr,https://www.free.fr/,data/reference_brands/images/free.fr.png,True,False,,2026-09-22T01:26:03.944855+00:00
+navyfederal.org,https://navyfederal.org,https://www.navyfederal.org/,data/reference_brands/images/navyfederal.org.png,True,False,,2026-09-22T01:26:09.238663+00:00
+whatsapp.com,https://whatsapp.com,https://www.whatsapp.com/,data/reference_brands/images/whatsapp.com.png,True,False,,2026-09-22T01:26:14.755070+00:00
+abnamro.com,https://abnamro.com,https://www.abnamro.com/nl/home,data/reference_brands/images/abnamro.com.png,True,False,,2026-09-22T01:26:19.004001+00:00
+dbs.com,https://dbs.com,https://www.dbs.com/default.page,data/reference_brands/images/dbs.com.png,True,False,,2026-09-22T01:26:25.295087+00:00
+bb.com.br,https://bb.com.br,,,False,False,Error: Page.content: Unable to retrieve content because the page is navigating and changing the content.,2026-09-22T01:26:32.315117+00:00
+instagram.com,https://instagram.com,https://www.instagram.com/,data/reference_brands/images/instagram.com.png,True,False,,2026-09-22T01:26:41.476385+00:00
+dropbox.com,https://dropbox.com,https://www.dropbox.com/,data/reference_brands/images/dropbox.com.png,True,False,,2026-09-22T01:26:48.137252+00:00
+unicredit.eu,https://unicredit.eu,https://unicredit.eu/,data/reference_brands/images/unicredit.eu.png,True,False,,2026-09-22T01:26:53.426144+00:00
+wellsfargo.com,https://wellsfargo.com,https://www.wellsfargo.com/,data/reference_brands/images/wellsfargo.com.png,True,False,,2026-09-22T01:26:56.779274+00:00
+binance.com,https://binance.com,,,False,False,Error: Page.content: Unable to retrieve content because the page is navigating and changing the content.,2026-09-22T01:27:01.664767+00:00
+revolut.com,https://revolut.com,https://www.revolut.com/,data/reference_brands/images/revolut.com.png,True,False,,2026-09-22T01:27:05.857802+00:00
+linkedin.com,https://linkedin.com,https://www.linkedin.com/,data/reference_brands/images/linkedin.com.png,True,False,,2026-09-22T01:27:09.874016+00:00
+icloud.com,https://icloud.com,https://www.icloud.com/,data/reference_brands/images/icloud.com.png,True,False,,2026-09-22T01:27:13.811778+00:00
+yahoo.com,https://yahoo.com,https://www.yahoo.com/,data/reference_brands/images/yahoo.com.png,True,False,,2026-09-22T01:27:17.910084+00:00
+twitter.com,https://twitter.com,https://x.com/,data/reference_brands/images/twitter.com.png,True,False,,2026-09-22T01:27:22.652249+00:00
+x.com,https://x.com,https://x.com/,data/reference_brands/images/x.com.png,True,False,,2026-09-22T01:27:26.477626+00:00
+ups.com,https://ups.com,,,False,False,"Error: Page.goto: Download is starting
+Call log:
+  - navigating to ""https://ups.com/"", waiting until ""domcontentloaded""
+",2026-09-22T01:27:29.635253+00:00
+fedex.com,https://fedex.com,https://www.fedex.com/,data/reference_brands/images/fedex.com.png,True,False,,2026-09-22T01:27:31.941183+00:00
+citibank.com,https://citibank.com,https://www.citi.com/,data/reference_brands/images/citibank.com.png,True,False,,2026-09-22T01:27:36.370679+00:00
+usbank.com,https://usbank.com,https://www.usbank.com/index.html,data/reference_brands/images/usbank.com.png,True,False,,2026-09-22T01:27:42.971280+00:00
+capitalone.com,https://capitalone.com,https://www.capitalone.com/,data/reference_brands/images/capitalone.com.png,True,False,,2026-09-22T01:27:49.416844+00:00
+discover.com,https://discover.com,https://www.discover.com/,data/reference_brands/images/discover.com.png,True,False,,2026-09-22T01:27:55.715673+00:00
