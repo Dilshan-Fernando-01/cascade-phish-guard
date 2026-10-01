@@ -20,6 +20,9 @@ data/processed/*
 !data/processed/layer2_validation.csv
 !data/processed/layer2_test.csv
 
+# Third-party model weights / datasets (e.g. Phishpedia) -- large, never commit
+data/external/
+
 # Model artifacts
 *.pkl
 *.joblib

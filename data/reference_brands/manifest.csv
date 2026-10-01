@@ -1,5 +1,5 @@
 domain,url,final_url,image_path,success,flagged_bot_challenge,error,captured_at
-allegro.pl,https://allegro.pl,https://allegro.pl/,data/reference_brands/images/allegro.pl.png,True,False,,2026-09-20T01:55:07.093496+00:00
+allegro.pl,https://allegro.pl,https://allegro.pl/,,False,False,audit: blank page (text_len=0),2026-09-20T01:55:07.093496+00:00
 irs.gov,https://irs.gov,https://www.irs.gov/,data/reference_brands/images/irs.gov.png,True,False,,2026-09-20T01:55:11.092217+00:00
 facebook.com,https://facebook.com,https://web.facebook.com/?_rdc=1&_rdr,data/reference_brands/images/facebook.com.png,True,False,,2026-09-20T01:55:18.287010+00:00
 microsoft.com,https://microsoft.com,https://www.microsoft.com/en-lk,data/reference_brands/images/microsoft.com.png,True,False,,2026-09-20T01:55:23.036178+00:00
@@ -24,7 +24,7 @@ Call log:
   - navigating to ""https://comcast.com/"", waiting until ""domcontentloaded""
 ",2026-09-22T01:24:27.116260+00:00
 google.com,https://google.com,https://www.google.com/,data/reference_brands/images/google.com.png,True,False,,2026-09-20T01:56:24.721810+00:00
-ebay.com,https://ebay.com,https://www.ebay.com/,data/reference_brands/images/ebay.com.png,True,False,,2026-09-20T01:56:28.668479+00:00
+ebay.com,https://ebay.com,https://www.ebay.com/,,False,False,audit: error/challenge page: 'Error Page | eBay',2026-09-20T01:56:28.668479+00:00
 apple.com,https://apple.com,https://www.apple.com/,data/reference_brands/images/apple.com.png,True,False,,2026-09-20T01:56:32.344823+00:00
 bankofamerica.com,https://bankofamerica.com,https://www.bankofamerica.com/,data/reference_brands/images/bankofamerica.com.png,True,False,,2026-09-20T01:56:36.988574+00:00
 hsbc.com,https://hsbc.com,,,False,False,"TimeoutError: Page.goto: Timeout 20000ms exceeded.
@@ -36,16 +36,16 @@ Call log:
   - navigating to ""https://dhl.com/"", waiting until ""domcontentloaded""
 ",2026-09-22T01:24:49.894540+00:00
 chase.com,https://chase.com,https://www.chase.com/,data/reference_brands/images/chase.com.png,True,False,,2026-09-22T01:24:52.422782+00:00
-coinbase.com,https://coinbase.com,https://www.coinbase.com/,data/reference_brands/images/coinbase.com.png,True,False,,2026-09-22T01:24:57.134799+00:00
+coinbase.com,https://coinbase.com,https://www.coinbase.com/,,False,False,audit: error/challenge page: 'Just a moment...',2026-09-22T01:24:57.134799+00:00
 orange.fr,https://orange.fr,https://www.orange.fr/portail,data/reference_brands/images/orange.fr.png,True,False,,2026-09-22T01:25:01.357375+00:00
 bt.com,https://bt.com,https://www.bt.com/,data/reference_brands/images/bt.com.png,True,False,,2026-09-22T01:25:07.871701+00:00
-wetransfer.com,https://wetransfer.com,https://wetransfer.com/,data/reference_brands/images/wetransfer.com.png,True,False,,2026-09-22T01:25:13.035598+00:00
+wetransfer.com,https://wetransfer.com,https://wetransfer.com/,,False,False,audit: blank page (text_len=17),2026-09-22T01:25:13.035598+00:00
 santander.com,https://santander.com,https://www.santander.com/en/home,data/reference_brands/images/santander.com.png,True,False,,2026-09-22T01:25:17.395466+00:00
 ing.com,https://ing.com,https://ing.com/,data/reference_brands/images/ing.com.png,True,False,,2026-09-22T01:25:25.748992+00:00
 steamcommunity.com,https://steamcommunity.com,https://steamcommunity.com/,data/reference_brands/images/steamcommunity.com.png,True,False,,2026-09-22T01:25:33.031513+00:00
 steampowered.com,https://steampowered.com,https://store.steampowered.com/,data/reference_brands/images/steampowered.com.png,True,False,,2026-09-22T01:25:37.348887+00:00
 visa.com,https://visa.com,https://www.visa.com.lk/,data/reference_brands/images/visa.com.png,True,False,,2026-09-22T01:25:43.847224+00:00
-outlook.com,https://outlook.com,https://outlook.live.com/mail/,data/reference_brands/images/outlook.com.png,True,False,,2026-09-22T01:25:49.920219+00:00
+outlook.com,https://outlook.com,https://outlook.live.com/mail/,,False,False,audit: error/challenge page: 'Loading https://www.microsoft.com/en-us/',2026-09-22T01:25:49.920219+00:00
 interactivebrokers.com,https://interactivebrokers.com,https://www.interactivebrokers.com/,data/reference_brands/images/interactivebrokers.com.png,True,False,,2026-09-22T01:25:57.236113+00:00
 free.fr,https://free.fr,https://www.free.fr/,data/reference_brands/images/free.fr.png,True,False,,2026-09-22T01:26:03.944855+00:00
 navyfederal.org,https://navyfederal.org,https://www.navyfederal.org/,data/reference_brands/images/navyfederal.org.png,True,False,,2026-09-22T01:26:09.238663+00:00
@@ -55,20 +55,20 @@ dbs.com,https://dbs.com,https://www.dbs.com/default.page,data/reference_brands/i
 bb.com.br,https://bb.com.br,,,False,False,Error: Page.content: Unable to retrieve content because the page is navigating and changing the content.,2026-09-22T01:26:32.315117+00:00
 instagram.com,https://instagram.com,https://www.instagram.com/,data/reference_brands/images/instagram.com.png,True,False,,2026-09-22T01:26:41.476385+00:00
 dropbox.com,https://dropbox.com,https://www.dropbox.com/,data/reference_brands/images/dropbox.com.png,True,False,,2026-09-22T01:26:48.137252+00:00
-unicredit.eu,https://unicredit.eu,https://unicredit.eu/,data/reference_brands/images/unicredit.eu.png,True,False,,2026-09-22T01:26:53.426144+00:00
+unicredit.eu,https://unicredit.eu,https://unicredit.eu/,,False,False,audit: error/challenge page: 'Request Rejected',2026-09-22T01:26:53.426144+00:00
 wellsfargo.com,https://wellsfargo.com,https://www.wellsfargo.com/,data/reference_brands/images/wellsfargo.com.png,True,False,,2026-09-22T01:26:56.779274+00:00
 binance.com,https://binance.com,,,False,False,Error: Page.content: Unable to retrieve content because the page is navigating and changing the content.,2026-09-22T01:27:01.664767+00:00
-revolut.com,https://revolut.com,https://www.revolut.com/,data/reference_brands/images/revolut.com.png,True,False,,2026-09-22T01:27:05.857802+00:00
+revolut.com,https://revolut.com,https://www.revolut.com/,,False,False,audit: error/challenge page: 'Just a moment...',2026-09-22T01:27:05.857802+00:00
 linkedin.com,https://linkedin.com,https://www.linkedin.com/,data/reference_brands/images/linkedin.com.png,True,False,,2026-09-22T01:27:09.874016+00:00
 icloud.com,https://icloud.com,https://www.icloud.com/,data/reference_brands/images/icloud.com.png,True,False,,2026-09-22T01:27:13.811778+00:00
 yahoo.com,https://yahoo.com,https://www.yahoo.com/,data/reference_brands/images/yahoo.com.png,True,False,,2026-09-22T01:27:17.910084+00:00
-twitter.com,https://twitter.com,https://x.com/,data/reference_brands/images/twitter.com.png,True,False,,2026-09-22T01:27:22.652249+00:00
-x.com,https://x.com,https://x.com/,data/reference_brands/images/x.com.png,True,False,,2026-09-22T01:27:26.477626+00:00
+twitter.com,https://twitter.com,https://x.com/,,False,False,audit: blank page (text_len=0),2026-09-22T01:27:22.652249+00:00
+x.com,https://x.com,https://x.com/,,False,False,audit: blank page (text_len=0),2026-09-22T01:27:26.477626+00:00
 ups.com,https://ups.com,,,False,False,"Error: Page.goto: Download is starting
 Call log:
   - navigating to ""https://ups.com/"", waiting until ""domcontentloaded""
 ",2026-09-22T01:27:29.635253+00:00
-fedex.com,https://fedex.com,https://www.fedex.com/,data/reference_brands/images/fedex.com.png,True,False,,2026-09-22T01:27:31.941183+00:00
+fedex.com,https://fedex.com,https://www.fedex.com/,,False,False,audit: error/challenge page: 'FedEx | System Down',2026-09-22T01:27:31.941183+00:00
 citibank.com,https://citibank.com,https://www.citi.com/,data/reference_brands/images/citibank.com.png,True,False,,2026-09-22T01:27:36.370679+00:00
 usbank.com,https://usbank.com,https://www.usbank.com/index.html,data/reference_brands/images/usbank.com.png,True,False,,2026-09-22T01:27:42.971280+00:00
 capitalone.com,https://capitalone.com,https://www.capitalone.com/,data/reference_brands/images/capitalone.com.png,True,False,,2026-09-22T01:27:49.416844+00:00

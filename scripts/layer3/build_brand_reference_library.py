@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -8,6 +9,11 @@ from playwright.sync_api import sync_playwright
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "backend", "app"))
 from services.layer2_analyzer import _looks_like_bot_challenge
+
+BAD_TITLE = re.compile(
+    r"(error|access denied|forbidden|blocked|just a moment|attention required|are you a (robot|human)|"
+    r"captcha|unusual traffic|not found|unavailable|temporarily|request rejected|incident|"
+    r"system down|^loading|rejected)", re.I)
 
 
 CANDIDATE_BRANDS = [
@@ -50,11 +56,17 @@ def capture_brand(domain, browser):
     }
     try:
         page.goto(url, timeout=TIMEOUT_MS, wait_until="domcontentloaded")
-        page.wait_for_timeout(1500)  # let above-the-fold content/lazy images settle
+        page.wait_for_timeout(1500)
         html = page.content()
+        title = page.title() or ""
+        text_len = len((page.inner_text("body") or "").strip())
         if _looks_like_bot_challenge(html, None):
             result["flagged_bot_challenge"] = True
             result["error"] = "page appears to be a bot-verification challenge, not the real homepage"
+        elif BAD_TITLE.search(title):
+            result["error"] = f"error/challenge page rather than the real homepage (title: {title[:40]!r})"
+        elif text_len < 50 and domain != "google.com":
+            result["error"] = f"blank page (only {text_len} chars of visible text)"
         else:
             image_path = os.path.join(IMAGES_DIR, f"{domain}.png")
             page.screenshot(path=image_path)

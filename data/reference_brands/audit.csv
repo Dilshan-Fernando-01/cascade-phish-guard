@@ -1,0 +1,49 @@
+domain,title,text_len,bad_title,top_logo_score,suspect,note
+allegro.pl,allegro.pl,0,False,,True,almost no visible text
+irs.gov,,0,False,,True,revisit failed: Error
+facebook.com,Facebook,475,False,2,False,
+microsoft.com,"Microsoft – AI, Cloud, Productivity, Gaming & Apps",2294,False,10,False,
+amazon.com,Amazon.com. Spend less. Smile more.,2709,False,7,False,
+bradesco.com.br,Banco Bradesco | Você primeiro,1983,False,7,False,
+netflix.com,"Netflix Sri Lanka - Watch TV Shows Online, Watch Movies Online",1429,False,5,False,
+societegenerale.com,Accueil - Groupe Société Générale,2752,False,7,False,
+paypal.com,"Send Money, Shop, Manage Payments & More | PayPal LK",1689,False,7,False,
+att.com,AT&T Official Site | Our Best Wireless & Internet Service,1010,False,10,False,
+americanexpress.com,"American Express Credit Cards, Rewards & Banking",1772,False,,True,revisit failed: Error
+docusign.com,Docusign | #1 in Electronic Signature and Intelligent Agreement Management,9354,False,8,False,
+google.com,Google,129,False,5,True,almost no visible text
+ebay.com,Error Page | eBay,193,True,,True,error-like title
+apple.com,Apple,6240,False,5,False,
+bankofamerica.com,"Bank of America - Banking, Credit Cards, Loans and Merrill Investing",2680,False,7,False,
+chase.com,"Credit Card, Mortgage, Banking, Auto | Chase Online | Chase.com",5432,False,8,False,
+coinbase.com,Just a moment...,264,True,2,True,error-like title
+orange.fr,"Portail Orange | Offres Mobiles, Internet, TV, Actu & Accès compte Mail",4515,False,10,False,
+bt.com,"Broadband, TV Packages, TNT Sports & Mobile Deals | BT",5938,False,4,False,
+wetransfer.com,,17,False,10,True,almost no visible text
+santander.com,Santander Corporate Website,6740,False,7,False,
+ing.com,ING global company website | ING,6356,False,10,False,
+steamcommunity.com,Steam Community,731,False,7,False,
+steampowered.com,Welcome to Steam,4093,False,7,False,
+visa.com,"Visa, a trusted leader in digital payments. | Visa",4292,False,10,False,
+outlook.com,Loading https://www.microsoft.com/en-us/microsoft-365/outlook/email-and-calendar,0,False,,True,almost no visible text
+interactivebrokers.com,Home | Interactive Brokers LLC,6879,False,10,False,
+free.fr,"Freebox, offres internet Très Haut Débit fibre, ADSL - Free",3721,False,10,False,
+navyfederal.org,"Navy Federal Credit Union | Banking, Loans, Mortgages & Credit Cards | Navy Fede",3675,False,10,False,
+whatsapp.com,WhatsApp | Secure and Reliable Free Private Messaging and Calling,1956,False,10,False,
+abnamro.com,ABN AMRO | ABN AMRO,1624,False,7,False,
+dbs.com,DBS: Trusted as the World’s Best Bank | DBS Bank,4892,False,7,False,
+instagram.com,Instagram,811,False,2,False,
+dropbox.com,"Dropbox: Secure cloud storage, file sharing, and more",5001,False,10,False,
+unicredit.eu,Request Rejected,547,True,2,True,error-like title
+wellsfargo.com,Wells Fargo Bank | Financial Services & Online Banking,3902,False,7,False,
+revolut.com,Just a moment...,27,True,10,True,error-like title
+linkedin.com,LinkedIn: Log In or Sign Up,2710,False,7,False,
+icloud.com,iCloud,878,False,10,False,
+yahoo.com,"Yahoo | Mail, Weather, Search, Politics, News, Finance, Sports & Videos",3898,False,8,False,
+twitter.com,,0,False,,True,almost no visible text
+x.com,,0,False,,True,almost no visible text
+fedex.com,FedEx | System Down,319,False,4,False,
+citibank.com,"Online Banking, Mortgages, Personal Loans, Investing | Citi.com",2307,False,10,False,
+usbank.com,"Personal Banking, Credit Cards, Loans & Investing | U.S. Bank",3718,False,10,False,
+capitalone.com,"Capital One | Credit Cards, Checking, Savings & Auto Loans",3464,False,10,False,
+discover.com,"Discover - Personal Banking, Credit Cards & Loans",3993,False,7,False,
