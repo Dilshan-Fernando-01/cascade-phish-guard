@@ -1,15 +1,15 @@
 {
-  "total_confirmed": 13409,
-  "checked_so_far": 13409,
-  "remaining": 0,
-  "reachable": 12311,
-  "unreachable": 1098,
-  "reachability_rate": 0.9181146990827056,
+  "total_confirmed": 15392,
+  "checked_so_far": 15395,
+  "remaining": -3,
+  "reachable": 13970,
+  "unreachable": 1425,
+  "reachability_rate": 0.9074374797012017,
   "error_breakdown": {
-    "ConnectionError": 619,
-    "SSLError": 336,
-    "ConnectTimeout": 72,
-    "ReadTimeout": 70,
+    "ConnectionError": 875,
+    "SSLError": 349,
+    "ConnectTimeout": 120,
+    "ReadTimeout": 80,
     "TooManyRedirects": 1
   },
   "complete": true

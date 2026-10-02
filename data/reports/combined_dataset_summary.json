@@ -1,9 +1,9 @@
 {
-  "total": 24622,
-  "phishing": 12311,
-  "legitimate": 12311,
+  "total": 27940,
+  "phishing": 13970,
+  "legitimate": 13970,
   "legitimate_breakdown": {
-    "tranco": 7360,
+    "tranco": 9019,
     "templated_authflow": 4700,
     "commoncrawl": 251
   },

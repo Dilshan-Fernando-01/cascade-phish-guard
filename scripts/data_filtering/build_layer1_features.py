@@ -68,10 +68,12 @@ def _load_done_urls(checkpoint_path):
     return set(pd.read_csv(checkpoint_path, usecols=["url"])["url"])
 
 
-def _regenerate_final(name, checkpoint_path, total):
+def _regenerate_final(name, checkpoint_path, valid_urls):
+    total = len(valid_urls)
     if not os.path.exists(checkpoint_path):
         return {"split": name, "total": total, "succeeded": 0, "failed": 0, "complete": total == 0}
     checked = pd.read_csv(checkpoint_path)
+    checked = checked[checked["url"].isin(valid_urls)]
     succeeded = checked[checked["error"].isna()]
     succeeded.drop(columns=["error"]).to_csv(_final_path(name), index=False)
     return {
@@ -92,7 +94,7 @@ def build_features_for_split(name, path):
     print(f"[{name}] {len(done_urls)} already done, {len(remaining)} remaining out of {len(df)}")
 
     if len(remaining) == 0:
-        return _regenerate_final(name, checkpoint_path, len(df))
+        return _regenerate_final(name, checkpoint_path, set(df["url"]))
 
     fieldnames = list(df.columns) + FEATURE_COLUMNS + ["error"]
 
@@ -131,7 +133,7 @@ def build_features_for_split(name, path):
                 if completed % 25 == 0 or completed == len(hosts):
                     print(f"[{name}] {completed}/{len(hosts)} unique hosts looked up")
 
-    return _regenerate_final(name, checkpoint_path, len(df))
+    return _regenerate_final(name, checkpoint_path, set(df["url"]))
 
 
 def main():
