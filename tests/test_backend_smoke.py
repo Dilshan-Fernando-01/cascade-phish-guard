@@ -7,6 +7,8 @@ from main import app  # noqa: E402
 
 client = TestClient(app)
 
+API_KEY_HEADERS = {"X-API-Key": os.environ.get("API_KEY", "")}
+
 FAILURES = []
 
 
@@ -27,12 +29,16 @@ def main():
     check("GET /version reports a layer1_model", bool(resp.json().get("layer1_model")))
 
     # Known legitimate
-    resp = client.post("/analyze", json={"url": "https://www.google.com/"})
+    resp = client.post("/analyze", json={"url": "https://www.google.com/"}, headers=API_KEY_HEADERS)
     check("POST /analyze (google.com) returns 200", resp.status_code == 200)
     check("POST /analyze (google.com) verdict is 'safe'", resp.json().get("verdict") == "safe")
 
-    # Known confirmed phishing URL (manually verified during dataset work)
-    resp = client.post("/analyze", json={"url": "https://facebookloginbd.blogspot.com/"})
+    # Known confirmed phishing URL
+    resp = client.post(
+        "/analyze",
+        json={"url": "https://sites.google.com/l0gin-microsoftwebonlne.app/kn6-j56-e4/home/"},
+        headers=API_KEY_HEADERS,
+    )
     check("POST /analyze (known phishing) returns 200", resp.status_code == 200)
     check(
         "POST /analyze (known phishing) verdict is 'suspicious' or 'phishing'",
@@ -40,15 +46,15 @@ def main():
     )
 
     # Missing field
-    resp = client.post("/analyze", json={})
+    resp = client.post("/analyze", json={}, headers=API_KEY_HEADERS)
     check("POST /analyze (missing url) returns 422", resp.status_code == 422)
 
     # Empty string
-    resp = client.post("/analyze", json={"url": ""})
+    resp = client.post("/analyze", json={"url": ""}, headers=API_KEY_HEADERS)
     check("POST /analyze (empty url) returns 422", resp.status_code == 422)
 
     # Malformed/garbage input
-    resp = client.post("/analyze", json={"url": "not a url at all"})
+    resp = client.post("/analyze", json={"url": "not a url at all"}, headers=API_KEY_HEADERS)
     check("POST /analyze (garbage url) returns 400", resp.status_code == 400)
 
     print()
