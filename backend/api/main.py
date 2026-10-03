@@ -65,10 +65,10 @@ def version():
 
 @app.post("/analyze", response_model=AnalyzeResponse, dependencies=[Depends(verify_api_key)])
 def analyze_url(request: AnalyzeRequest):
-    screenshot_png = None
-    if request.screenshot_png_base64:
-        import base64
-        screenshot_png = base64.b64decode(request.screenshot_png_base64)
+    import base64
+
+    screenshot_png = base64.b64decode(request.screenshot_png_base64) if request.screenshot_png_base64 else None
+    logo_png = base64.b64decode(request.logo_png_base64) if request.logo_png_base64 else None
     future = _executor.submit(
         run_cascade_analysis,
         request.url,
@@ -77,6 +77,7 @@ def analyze_url(request: AnalyzeRequest):
         request.html,
         request.skip_layer2,
         screenshot_png,
+        logo_png,
     )
     try:
         return future.result(timeout=REQUEST_TIMEOUT_SECONDS)

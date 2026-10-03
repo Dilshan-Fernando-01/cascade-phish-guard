@@ -29,6 +29,10 @@ class AnalyzeRequest(BaseModel):
         default=False,
         description="Force a Layer-1-only pass regardless of full_scan or Layer 1's escalation band. Used for the fast initial check before a page has finished loading.",
     )
+    logo_png_base64: Optional[str] = Field(
+        default=None,
+        description="Base64-encoded PNG of the candidate logo cropped from the page. Layer 3's logo check only runs when this is present; the extension supplies it in a later phase.",
+    )
     screenshot_png_base64: Optional[str] = Field(
         default=None,
         description="Base64-encoded PNG screenshot of the visible tab. Layer 3 only runs in full_scan mode and only when this is present.",
