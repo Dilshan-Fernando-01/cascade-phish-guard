@@ -75,7 +75,7 @@ def build_features_for_split(name, path):
 
     file_exists = os.path.exists(checkpoint_path)
     with open(checkpoint_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         if not file_exists:
             writer.writeheader()
 
