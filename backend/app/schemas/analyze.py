@@ -29,6 +29,10 @@ class AnalyzeRequest(BaseModel):
         default=False,
         description="Force a Layer-1-only pass regardless of full_scan or Layer 1's escalation band. Used for the fast initial check before a page has finished loading.",
     )
+    screenshot_png_base64: Optional[str] = Field(
+        default=None,
+        description="Base64-encoded PNG screenshot of the visible tab. Layer 3 only runs in full_scan mode and only when this is present.",
+    )
 
 
 class AnalyzeResponse(BaseModel):
@@ -47,5 +51,9 @@ class AnalyzeResponse(BaseModel):
     layer2_features: Optional[dict] = Field(
         default=None,
         description="Raw Layer 2 DOM features, when Layer 2 actually ran. ",
+    )
+    layer3_results: Optional[dict] = Field(
+        default=None,
+        description="Layer 3 checks, reported separately (logo_check, banner_wording_check). Present only when Layer 3 actually ran.",
     )
     analyzed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
