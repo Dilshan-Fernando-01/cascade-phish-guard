@@ -36,16 +36,11 @@ def _looks_like_bot_challenge(html, network_urls=None):
     return False
 
 
-def analyze_layer2(url, html=None):
-    """Runs Layer 2 DOM analysis, either on `html` already rendered by the
-    caller (e.g. a content script reading the user's own tab -- no network_urls
-    available in that case, since only a live browser session sees XHR/fetch
-    traffic) or, when `html` is None, by independently loading `url` with
-    Playwright exactly as before.
-    """
+def analyze_layer2(url, html=None, screenshot_path=None):
+
     network_urls = None
     if html is None:
-        loaded = load_page(url)
+        loaded = load_page(url, screenshot_path=screenshot_path)
         if not loaded["success"]:
             return {"success": False, "features": None, "error": loaded["error"]}
         html = loaded["html"]

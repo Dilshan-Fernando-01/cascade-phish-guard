@@ -20,6 +20,17 @@ SPLITS = {
 }
 
 
+PHISHING_SCREENSHOT_DIR = "data/layer3_phishing_screenshots"
+
+
+def _screenshot_path_for(row):
+    if str(row.get("label")) != "1":
+        return None
+    os.makedirs(PHISHING_SCREENSHOT_DIR, exist_ok=True)
+    safe_name = "".join(c if c.isalnum() else "_" for c in str(row["url"]))[:150]
+    return os.path.join(PHISHING_SCREENSHOT_DIR, f"{safe_name}.png")
+
+
 def _checkpoint_path(name):
     return f"data/processed/layer2_{name}_features_checkpoint.csv"
 
@@ -71,7 +82,7 @@ def build_features_for_split(name, path):
         for i, (_, row) in enumerate(remaining.iterrows()):
             row_dict = row.to_dict()
             try:
-                result = analyze_layer2(row["url"])
+                result = analyze_layer2(row["url"], screenshot_path=_screenshot_path_for(row))
                 if result["success"]:
                     writer.writerow({**row_dict, **result["features"], "error": None})
                 else:

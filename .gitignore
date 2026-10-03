@@ -23,6 +23,9 @@ data/processed/*
 # Third-party model weights / datasets (e.g. Phishpedia) -- large, never commit
 data/external/
 
+# Real confirmed-phishing screenshots captured during Layer 2/3 VM sessions 
+data/layer3_phishing_screenshots/
+
 # Model artifacts
 *.pkl
 *.joblib
