@@ -5,7 +5,7 @@ DEFAULT_TIMEOUT_MS = 15000
 MAX_REDIRECTS = 5
 
 
-def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
+def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS, screenshot_path=None):
     """Loads a URL headlessly and returns its DOM content.
 
     Returns a dict:
@@ -14,6 +14,7 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
         {"success": False, "html": None, "final_url": None, "status": None,
          "network_urls": [], "error": str}
 
+   
     """
     result = {
         "success": False,
@@ -72,6 +73,11 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS):
                 result["html"] = page.content()
                 result["final_url"] = page.url
                 result["status"] = response.status if response else None
+                if screenshot_path:
+                    try:
+                        page.screenshot(path=screenshot_path)
+                    except Exception:
+                        pass  
     except Exception as exc:
         if abort_reason["reason"] is None:
             abort_reason["reason"] = f"{type(exc).__name__}: {exc}"
