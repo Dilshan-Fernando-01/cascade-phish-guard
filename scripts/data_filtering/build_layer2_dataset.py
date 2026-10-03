@@ -10,8 +10,8 @@ LEGITIMATE_DEEP_LINKS_PATH = "data/processed/legitimate_deep_links.csv"
 OUTPUT_PATH = "data/processed/layer2_labelled_dataset.csv"
 SUMMARY_PATH = "data/reports/layer2_combined_dataset_summary.json"
 
-TARGET_PHISHING = 500
-TARGET_LEGITIMATE = 500
+TARGET_PHISHING = 1000
+TARGET_LEGITIMATE = 1000
 
 DEEP_LINK_FRACTION = 0.40
 

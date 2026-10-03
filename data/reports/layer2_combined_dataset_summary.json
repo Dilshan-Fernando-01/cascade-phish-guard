@@ -1,10 +1,10 @@
 {
-  "total": 1000,
-  "phishing": 500,
-  "legitimate": 500,
+  "total": 2000,
+  "phishing": 1000,
+  "legitimate": 1000,
   "legitimate_breakdown": {
-    "tranco": 300,
-    "templated_authflow": 185,
-    "commoncrawl": 15
+    "tranco": 600,
+    "templated_authflow": 373,
+    "commoncrawl": 27
   }
 }
