@@ -41,7 +41,7 @@ def get_progress(request_id):
         return None if entry is None else {k: v for k, v in entry.items() if k != "_ts"}
 
 
-def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False):
+def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False, screenshot_png=None):
     is_valid, reason = validate_url(url)
     if not is_valid:
         raise ValueError(f"invalid URL ({reason})")
@@ -78,6 +78,13 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False)
         else:
             layer2_features = {"error": layer2_result["error"]}
 
+    layer3_results = None
+    if full_scan and screenshot_png is not None:
+        from services.layer3_analyzer import analyze_layer3
+
+        layer3_results = analyze_layer3(url, screenshot_png, html=html)
+        layers_used.append("layer3")
+
     if layer2_score is not None:
         score_for_verdict = layer2_score
     else:
@@ -98,6 +105,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False)
         layer_scores=layer_scores,
         would_escalate=would_escalate,
         layer2_features=layer2_features,
+        layer3_results=layer3_results,
     )
     _set_progress(request_id, {"stage": STAGE_DONE, "result": result.model_dump(mode="json")})
     return result
