@@ -12,10 +12,11 @@ DOMAIN_MAP_PATH = os.path.join(PHISHPEDIA_DIR, "domain_map.pkl")
 LOGO_CHECK = "logo_check"
 BANNER_WORDING_CHECK = "banner_wording_check"
 
-STATUS_PENDING = "pending"
 STATUS_CHECKED = "checked"
 STATUS_NO_LOGO = "no_logo_provided"
 STATUS_UNAVAILABLE = "unavailable"
+STATUS_NO_SCREENSHOT = "no_screenshot_provided"
+STATUS_UNREADABLE = "unreadable"
 
 _logo_state = None
 
@@ -71,11 +72,33 @@ def _logo_check(url, logo_png):
     return {"status": STATUS_CHECKED, **result}
 
 
+def _banner_wording_check(screenshot_png):
+    if screenshot_png is None:
+        return {"status": STATUS_NO_SCREENSHOT}
+    if not _ocr_available():
+        return {"status": STATUS_UNAVAILABLE, "reason": "text recognition (tesseract) not installed on this machine"}
+
+    from features.banner_wording import banner_wording_features
+
+    try:
+        return {"status": STATUS_CHECKED, **banner_wording_features(screenshot_png)}
+    except Exception:
+        return {"status": STATUS_UNREADABLE, "reason": "screenshot could not be read as an image"}
+
+
+def _ocr_available():
+    try:
+        import pytesseract
+
+        pytesseract.get_tesseract_version()
+        return True
+    except Exception:
+        return False
+
+
 def analyze_layer3(url, screenshot_png, html=None, logo_png=None):
-    """Runs Layer 3's checks. Each check is reported separately so the verdict
-    and the report can show them apart. Phase 2: logo check is live; the
-    banner/wording check is still pending."""
+
     return {
         LOGO_CHECK: _logo_check(url, logo_png),
-        BANNER_WORDING_CHECK: {"status": STATUS_PENDING},
+        BANNER_WORDING_CHECK: _banner_wording_check(screenshot_png),
     }
