@@ -84,7 +84,9 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
 
 
         try:
-            layer3_results = analyze_layer3(url, screenshot_png, html=html, logo_png=logo_png)
+            layer3_results = analyze_layer3(
+                url, screenshot_png, html=html, logo_png=logo_png, background=True
+            )
         except Exception as exc:
             layer3_results = {"error": f"Layer 3 could not run on this machine: {exc}"}
         layers_used.append("layer3")

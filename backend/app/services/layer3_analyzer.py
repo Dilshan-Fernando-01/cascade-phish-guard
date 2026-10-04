@@ -201,14 +201,42 @@ def _identity_note(logo_result, url_hints=()):
     return {"level": level, "text": text, "disclaimer": DISCLAIMER}
 
 
-def analyze_layer3(url, screenshot_png, html=None, logo_png=None):
-   
+def _background_upgrade(url, url_hints, identity):
+    from features.url_features import _registrable_domain_guess
+
+    host = urlparse(url).netloc.split(":")[0]
+    claimed = url_hints[0]["brand"]
+    if _registrable_domain_guess(host) == claimed:
+        return None, identity
+    from services.background_compare import background_check
+
+    background = background_check(url, claimed)
+    if background["status"] == "checked" and background.get("band") in ("strong", "moderate"):
+        identity = {
+            "level": LEVEL_CLOSELY_RESEMBLES,
+            "text": (
+                f"The address closely resembles {claimed}, and the logo on its home page "
+                "matches that brand. Check the address before entering personal details."
+            ),
+            "disclaimer": DISCLAIMER,
+        }
+    return background, identity
+
+
+def analyze_layer3(url, screenshot_png, html=None, logo_png=None, background=False):
     logo_result = _logo_check(url, logo_png)
     url_hints = url_brand_hints(urlparse(url).netloc.split(":")[0])
-    return {
+    identity = _identity_note(logo_result, url_hints)
+    results = {
         LOGO_CHECK: logo_result,
         BANNER_WORDING_CHECK: _banner_wording_check(screenshot_png),
         ORIGINAL_COMPARISON: _original_comparison(logo_png, url_hints),
         "url_brand_hints": url_hints,
-        "identity_note": _identity_note(logo_result, url_hints),
     }
+    already_mismatch = identity["level"] in (LEVEL_CLOSELY_RESEMBLES, LEVEL_MAY_BE_IMITATING)
+    if background and url_hints and not already_mismatch:
+        background_result, identity = _background_upgrade(url, url_hints, identity)
+        if background_result is not None:
+            results["background"] = background_result
+    results["identity_note"] = identity
+    return results
