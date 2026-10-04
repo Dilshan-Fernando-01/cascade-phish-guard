@@ -419,6 +419,12 @@ function layer3Outcome(result) {
       sub: "Planned for a later phase of this project",
     };
   }
+  if (layer3.error) {
+    return {
+      status: "unavailable",
+      sub: "Could not run the visual check on this machine",
+    };
+  }
   return {
     status: "done",
     sub: "Logo checked against the address",

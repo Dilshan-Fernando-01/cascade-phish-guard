@@ -111,9 +111,9 @@ async function cropLogoFromScreenshot(dataUrl, box, dpr) {
   return blobToBase64(cropped);
 }
 
-// Returns base64 PNG of the logo, or null when no confident logo is found or
-// the tab can't be captured (for example, a restricted page).
-function captureLogoPng(tabId) {
+const BANNER_BAND_PX = 300;
+
+function captureLayer3Images(tabId) {
   return chrome.scripting
     .executeScript({
       target: { tabId, frameIds: [0] },
@@ -126,20 +126,29 @@ function captureLogoPng(tabId) {
         console.log(
           `Cascade Phish Guard logo: no logo found (looked at ${stats.considered ?? "?"} elements, ${stats.kept ?? "?"} passed size and position rules, best score ${stats.topScore ?? "none"})`,
         );
-        return null;
       }
       const tab = await chrome.tabs.get(tabId);
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
         format: "png",
       });
-      return cropLogoFromScreenshot(
+      const dpr = found ? found.devicePixelRatio : 1;
+      const bannerPng = await cropLogoFromScreenshot(
         dataUrl,
-        found.best,
-        found.devicePixelRatio,
+        { x: 0, y: 0, w: 100000, h: BANNER_BAND_PX },
+        dpr,
       );
+      const logoPng =
+        found && found.best
+          ? await cropLogoFromScreenshot(
+              dataUrl,
+              found.best,
+              found.devicePixelRatio,
+            )
+          : null;
+      return { logoPng, bannerPng };
     })
     .catch((err) => {
-      console.warn("Cascade Phish Guard logo: capture failed", String(err));
-      return null;
+      console.warn("Cascade Phish Guard layer 3 capture failed", String(err));
+      return { logoPng: null, bannerPng: null };
     });
 }
