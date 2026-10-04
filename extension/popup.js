@@ -162,6 +162,16 @@ function gaugeRowHtml(fullScanMode, ns) {
   `;
 }
 
+function pulseGauge(id) {
+  const wrap = document
+    .getElementById(id)
+    ?.closest(".gauge-big-wrap, .gauge-small-wrap");
+  if (!wrap) return;
+  wrap.classList.remove("is-updating");
+  void wrap.offsetWidth;
+  wrap.classList.add("is-updating");
+}
+
 function animateResultGauges(result, fullScanMode, ns) {
   const overallStatus = statusForVerdict(result.verdict);
   animateGauge(`${ns}-gauge-overall`, {
@@ -274,8 +284,11 @@ function embeddedUrlSummaryHtml(features) {
 
 function layerCardHtml(step, index) {
   const substeps = LAYER_SUBSTEPS[index] || [];
+
   const showSubsteps =
-    substeps.length > 0 && (step.status === "active" || step.status === "done");
+    !step.receiving &&
+    substeps.length > 0 &&
+    (step.status === "active" || step.status === "done");
   // Default to 0 (not started) while still active, and only assume "fully
   // done" once the layer has actually resolved -- the previous fallback
   // defaulted to fully-done any time substepsDone wasn't set yet, which
@@ -290,7 +303,10 @@ function layerCardHtml(step, index) {
   // detail to show -- previously this fell back to repeating `sub`,
   // showing the exact same line twice for no reason.
   const hasDetail = Boolean(detail);
-  const expanded = hasDetail && step.status === "active";
+  const remembered = userExpanded[index];
+  const expanded =
+    hasDetail &&
+    (remembered !== undefined ? remembered : step.status === "active");
   const activeClass = step.status === "active" ? "is-active" : "";
   return `
     <div class="layer-card step-${step.status} ${activeClass} ${expanded ? "is-expanded" : ""}" data-step-index="${index}">
@@ -300,7 +316,7 @@ function layerCardHtml(step, index) {
           <p class="step-title">${step.title}</p>
           <p class="step-sub">${step.sub}</p>
         </div>
-        ${hasDetail ? '<span class="layer-card-chevron">&#9650;</span>' : ""}
+        ${hasDetail ? `<svg class="layer-card-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.4 3h13.2A2.4 2.4 0 0 1 21 5.4v13.2a2.4 2.4 0 0 1-2.4 2.4H5.4A2.4 2.4 0 0 1 3 18.6V5.4A2.4 2.4 0 0 1 5.4 3Zm7.307 5.293a1 1 0 0 0-1.414 0l-4 4a1 1 0 1 0 1.414 1.414L12 10.414l3.293 3.293a1 1 0 0 0 1.414-1.414l-4-4Z" fill="currentColor"/></svg>` : ""}
       </button>
       ${
         hasDetail
@@ -317,15 +333,19 @@ function layerCardHtml(step, index) {
 
 function stepsListHtml(steps) {
   // No outer "N of 3 layers" summary here -- per-layer progress (inside
-  // each card, via substepChecklistHtml) is enough on its own.
+  // each card, via substepChecklistHtml) is enough on its own. The overlay
   return `<div class="steps-list">${steps.map(layerCardHtml).join("")}</div>`;
 }
+
+const userExpanded = {};
 
 function wireLayerCardToggles(scope) {
   scope.querySelectorAll("[data-toggle-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const card = btn.closest(".layer-card");
       card.classList.toggle("is-expanded");
+      userExpanded[btn.dataset.toggleIndex] =
+        card.classList.contains("is-expanded");
     });
   });
 }
@@ -336,16 +356,22 @@ function targetNamespace(target) {
 
 function renderShell(fullScanMode, target) {
   const ns = targetNamespace(target);
+  Object.keys(userExpanded).forEach((key) => delete userExpanded[key]);
   render(
-    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-slot"></div>`,
+    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><svg class="flow-overlay" aria-hidden="true"></svg><div class="steps-slot"></div></div>`,
     target,
   );
 }
 
+// Rebuilding the list on every poll restarts the spinner animation and
+// collapses any card the user opened, so only rebuild when something changed.
 function updateSteps(steps, target) {
   const slot = target.querySelector(".steps-slot");
   if (!slot) return;
-  slot.innerHTML = stepsListHtml(steps);
+  const html = stepsListHtml(steps);
+  if (slot.dataset.renderedHtml === html) return;
+  slot.dataset.renderedHtml = html;
+  slot.innerHTML = html;
   wireLayerCardToggles(slot);
 }
 
@@ -388,7 +414,10 @@ function deriveStepOutcomes(result) {
 function layer3Outcome(result) {
   const layer3 = result.layer3_results;
   if (!layer3) {
-    return { status: "unavailable", sub: "Planned for a later phase of this project" };
+    return {
+      status: "unavailable",
+      sub: "Planned for a later phase of this project",
+    };
   }
   return {
     status: "done",
@@ -452,7 +481,112 @@ function finishWithResult(result, fullScanMode, target = content) {
   if (!target.querySelector(".gauge-row")) {
     renderShell(fullScanMode, target);
   }
-  renderDoneKeepingSteps(steps, result, fullScanMode, target);
+  const sources = flowSources(result);
+  const shown = steps.map((step, i) =>
+    sources.includes(i)
+      ? {
+          ...step,
+          status: "active",
+          sub: "Sending result to the web address check...",
+          detail: "",
+          extraDetail: "",
+        }
+      : step,
+  );
+  renderDoneKeepingSteps(shown, result, fullScanMode, target);
+  if (sources.length) playLayerFlows(sources, shown, steps, target);
+}
+
+const FLOW_START_DELAY_MS = 500;
+const FLOW_DURATION_MS = 1800;
+const FLOW_GAP_MS = 2000;
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+function flowSources(result) {
+  const sources = [];
+  if ((result.layers_used || []).includes("layer2")) sources.push(1);
+  if (result.layer3_results) sources.push(2);
+  return sources;
+}
+
+function stepCardOf(index, scope) {
+  return scope.querySelector(`.layer-card[data-step-index="${index}"]`);
+}
+
+function drawFlowConnector(fromIndex, target) {
+  const wrap = target.querySelector(".steps-wrap");
+  const overlay = wrap && wrap.querySelector(".flow-overlay");
+  const from = wrap && stepCardOf(fromIndex, wrap);
+  const to = wrap && stepCardOf(0, wrap);
+  if (!overlay || !from || !to) return null;
+
+  const listRect = wrap.getBoundingClientRect();
+  const f = from.getBoundingClientRect();
+  const t = to.getBoundingClientRect();
+  const gutterX = -10;
+  const startY = f.top + f.height / 2 - listRect.top;
+  const endY = t.top + t.height / 2 - listRect.top;
+  const startX = f.left - listRect.left;
+  const endX = t.left - listRect.left;
+
+  overlay.setAttribute("viewBox", `0 0 ${listRect.width} ${listRect.height}`);
+  const path = document.createElementNS(SVG_NS, "path");
+  path.setAttribute(
+    "d",
+    `M ${startX} ${startY} H ${gutterX} V ${endY} H ${endX}`,
+  );
+  path.setAttribute("class", "flow-line");
+  overlay.appendChild(path);
+  return { path };
+}
+
+function runFlow(fromIndex, delayMs, target, { onStart, onEnd }) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const drawn = drawFlowConnector(fromIndex, target);
+      if (!drawn) {
+        onEnd();
+        return resolve();
+      }
+      drawn.path.style.animationDuration = `${FLOW_DURATION_MS}ms`;
+      onStart();
+      setTimeout(() => {
+        drawn.path.remove();
+        onEnd();
+        resolve();
+      }, FLOW_DURATION_MS);
+    }, delayMs);
+  });
+}
+
+const LAYER_SOURCE_LABELS = { 1: "page content", 2: "visual comparison" };
+
+async function playLayerFlows(sources, shown, finalSteps, target) {
+  const ns = targetNamespace(target);
+  for (let i = 0; i < sources.length; i++) {
+    const src = sources[i];
+    const delay = FLOW_START_DELAY_MS + (i === 0 ? 0 : FLOW_GAP_MS);
+    await runFlow(src, delay, target, {
+      onStart: () => {
+        shown[0] = {
+          ...finalSteps[0],
+          status: "active",
+          sub: `Receiving the ${LAYER_SOURCE_LABELS[src]} result...`,
+          receiving: true,
+          detail: "",
+          extraDetail: "",
+        };
+        updateSteps(shown, target);
+      },
+      onEnd: () => {
+        shown[0] = finalSteps[0];
+        shown[src] = finalSteps[src];
+        updateSteps(shown, target);
+        pulseGauge(`${ns}-gauge-layer1`);
+      },
+    });
+  }
+  pulseGauge(`${ns}-gauge-overall`);
 }
 
 // --- Verdict + neutral states ----------------------------------------
@@ -562,10 +696,6 @@ function unknownStateHtml(message) {
   });
 }
 
-// Keeps the resolved step checklist on screen (auto-collapsed) and updates
-// the gauge(s) + verdict note in place -- the gauge shell itself was already
-// built by renderShell() earlier in the sequence and must not be recreated
-// here, or its in-flight animation gets orphaned.
 function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
   const ns = targetNamespace(target);
   const meta = VERDICT_META[result.verdict] || {
@@ -574,7 +704,10 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
     badgeText: "UNKNOWN",
   };
   setBadge(meta.key, meta.icon, meta.badgeText);
-  updateNote(escalateNoteHtml(result) + identityNoteHtml(result.layer3_results), target);
+  updateNote(
+    escalateNoteHtml(result) + identityNoteHtml(result.layer3_results),
+    target,
+  );
   updateSteps(steps, target);
   animateResultGauges(result, fullScanMode, ns);
 }
