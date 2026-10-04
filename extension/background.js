@@ -112,11 +112,11 @@ function runBackendCall(
   tabId,
   generation,
   url,
-  { fullScan, html, skipLayer2, logoPng = null },
+  { fullScan, html, skipLayer2, logoPng = null, bannerPng = null },
 ) {
   const requestId = crypto.randomUUID();
   const progress = pollProgressInto(tabId, generation, requestId);
-  return checkUrlWithBackend(url, fullScan, requestId, html, skipLayer2, logoPng)
+  return checkUrlWithBackend(url, fullScan, requestId, html, skipLayer2, logoPng, bannerPng)
     .then((outcome) => {
       const lastProgress = progress.getLast();
       if (
@@ -185,14 +185,17 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
           })
           .then((html) => {
             if (tabGeneration.get(tabId) !== generation) return;
-            const logoLookup = fullScan ? captureLogoPng(tabId) : Promise.resolve(null);
-            return logoLookup.then((logoPng) => {
+            const imageLookup = fullScan
+              ? captureLayer3Images(tabId)
+              : Promise.resolve({ logoPng: null, bannerPng: null });
+            return imageLookup.then(({ logoPng, bannerPng }) => {
               if (tabGeneration.get(tabId) !== generation) return;
               return runBackendCall(tabId, generation, url, {
                 fullScan,
                 html,
                 skipLayer2: false,
                 logoPng,
+                bannerPng,
               });
             }).then((finalOutcome) => {
               if (!finalOutcome) return;
