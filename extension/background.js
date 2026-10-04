@@ -1,4 +1,4 @@
-importScripts("shared.js");
+importScripts("shared.js", "layer3_capture.js");
 
 console.log("Cascade Phish Guard: background service worker loaded.");
 
@@ -112,11 +112,11 @@ function runBackendCall(
   tabId,
   generation,
   url,
-  { fullScan, html, skipLayer2 },
+  { fullScan, html, skipLayer2, logoPng = null },
 ) {
   const requestId = crypto.randomUUID();
   const progress = pollProgressInto(tabId, generation, requestId);
-  return checkUrlWithBackend(url, fullScan, requestId, html, skipLayer2)
+  return checkUrlWithBackend(url, fullScan, requestId, html, skipLayer2, logoPng)
     .then((outcome) => {
       const lastProgress = progress.getLast();
       if (
@@ -185,12 +185,21 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
           })
           .then((html) => {
             if (tabGeneration.get(tabId) !== generation) return;
-            return runBackendCall(tabId, generation, url, {
-              fullScan,
-              html,
-              skipLayer2: false,
-            }).then((finalOutcome) => {
+            const logoLookup = fullScan ? captureLogoPng(tabId) : Promise.resolve(null);
+            return logoLookup.then((logoPng) => {
               if (tabGeneration.get(tabId) !== generation) return;
+              return runBackendCall(tabId, generation, url, {
+                fullScan,
+                html,
+                skipLayer2: false,
+                logoPng,
+              });
+            }).then((finalOutcome) => {
+              if (!finalOutcome) return;
+              if (tabGeneration.get(tabId) !== generation) return;
+              if (finalOutcome.status === "done" && finalOutcome.result.layer3_results) {
+                console.log(`Cascade Phish Guard layer 3 for ${url}:`, finalOutcome.result.layer3_results);
+              }
               if (finalOutcome.status !== "done") {
                 console.warn(
                   `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
