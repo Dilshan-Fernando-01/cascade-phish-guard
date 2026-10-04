@@ -84,8 +84,13 @@ def capture(browser, brand, domain):
             return record
 
         record["final_url"] = page.url
-        html = page.content()
-        title = page.title() or ""
+        try:
+            html = page.content()
+            title = page.title() or ""
+        except Exception as exc:
+            # The page kept navigating after load (for example a redirect). Record it, don't crash.
+            record["error"] = f"page still changing: {type(exc).__name__}"
+            return record
         if _looks_like_bot_challenge(html, None):
             record["bot_challenge"] = True
             record["error"] = "bot-verification page, not the real home page"
@@ -130,7 +135,14 @@ def main():
             writer.writeheader()
         browser = p.chromium.launch()
         for i, (brand, domain) in enumerate(todo, 1):
-            record = capture(browser, brand, domain)
+            try:
+                record = capture(browser, brand, domain)
+            except Exception as exc:
+                record = {
+                    "brand": brand, "domain": domain, "final_url": "", "success": False,
+                    "bot_challenge": False, "error": f"unexpected: {type(exc).__name__}",
+                    "captured_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                }
             writer.writerow(record)
             mf.flush()
             status = "captured" if record["success"] else (record["error"] or "failed")
