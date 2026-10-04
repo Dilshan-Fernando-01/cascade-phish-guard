@@ -698,3 +698,61 @@ body {
 .manual-result:not(:empty) {
   margin-top: 12px;
 }
+
+.identity-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.identity-box.identity-good {
+  border-color: var(--status-good);
+}
+
+.identity-box.identity-warning {
+  border-color: var(--status-warning);
+}
+
+.identity-title {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.identity-text {
+  margin: 0 0 6px;
+}
+
+.identity-disclaimer {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.identity-candidates-title {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.identity-candidate {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.identity-candidate-domain {
+  color: var(--text-primary);
+}
+
+.identity-candidate-band {
+  color: var(--text-secondary);
+}
