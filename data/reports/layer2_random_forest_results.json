@@ -7,7 +7,7 @@
     "precision": 0.9787234042553191,
     "recall": 0.42592592592592593,
     "f1": 0.5935483870967742,
-    "auc_roc": 0.8963230056980058
+    "auc_roc": 0.9070957977207977
   },
   "confusion_matrix": [
     [
@@ -20,28 +20,27 @@
     ]
   ],
   "feature_importances": {
-    "form_count": 0.012148888397414789,
-    "password_input_count": 0.00295837352913699,
-    "hidden_input_count": 0.004305669338832746,
-    "external_script_count": 0.044793866749999404,
-    "external_form_action": 6.52816928933792e-05,
-    "external_resource_ratio": 0.28595034707152955,
-    "iframe_count": 0.0224371927902105,
-    "meta_redirect_present": 0.010142800169397495,
-    "link_to_text_ratio": 0.10854526323218677,
-    "dom_tree_depth": 0.06969553560883583,
-    "favicon_domain_mismatch": 0.009720936938797458,
-    "title_domain_mismatch": 0.0001686195459106714,
-    "brand_keyword_mismatch": 0.04360428138813246,
-    "overlay_detected": 0.0027107277977618865,
-    "css_anomaly_score": 0.005915857607214902,
-    "fake_browser_chrome_detected": 0.024266999769541796,
-    "script_obfuscation_score": 0.005964804143736964,
-    "suspicious_js_pattern_count": 0.017188301126589606,
-    "social_engineering_score": 0.0029636353010568488,
-    "suspicious_embedded_url_count": 0.013551761052796507,
-    "max_embedded_url_risk": 0.14163251259949736,
-    "avg_embedded_url_risk": 0.06438101191004234,
-    "duplicate_button_text_count": 0.10688733223848375
+    "form_count": 0.017042325564813315,
+    "password_input_count": 0.004719225605820661,
+    "hidden_input_count": 0.005493018599539815,
+    "external_script_count": 0.055828828109363626,
+    "external_form_action": 0.0003840518039985387,
+    "external_resource_ratio": 0.31352443118432327,
+    "iframe_count": 0.021826774469853812,
+    "meta_redirect_present": 0.010667213509403082,
+    "link_to_text_ratio": 0.10736803856258753,
+    "dom_tree_depth": 0.07504419118577885,
+    "favicon_domain_mismatch": 0.009448221447183927,
+    "title_domain_mismatch": 0.0003487201029750412,
+    "brand_keyword_mismatch": 0.07099612738739564,
+    "overlay_detected": 0.004367821657483214,
+    "css_anomaly_score": 0.007110599330568867,
+    "fake_browser_chrome_detected": 0.022729037251212624,
+    "script_obfuscation_score": 0.009752616003616618,
+    "suspicious_js_pattern_count": 0.020101968476842216,
+    "social_engineering_score": 0.0031901394603449083,
+    "suspicious_embedded_url_count": 0.015421666072041117,
+    "max_embedded_url_risk": 0.1518454383569004,
+    "avg_embedded_url_risk": 0.07278954585795284
   }
 }

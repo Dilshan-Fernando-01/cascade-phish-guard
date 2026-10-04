@@ -1,9 +1,6 @@
-from collections import Counter
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
-
-BUTTON_TEXT_MIN_LENGTH = 2
 
 
 def _hostname(url):
@@ -29,22 +26,6 @@ def _dom_depth(tag, depth=0):
     if not children:
         return depth
     return max(_dom_depth(child, depth + 1) for child in children)
-
-
-def _button_like_texts(soup):
-    texts = []
-    for tag in soup.find_all("button"):
-        texts.append(tag.get_text(separator=" ", strip=True))
-    for tag in soup.find_all("input", attrs={"type": lambda v: v and v.lower() in ("submit", "button")}):
-        texts.append(tag.get("value", ""))
-    for tag in soup.find_all("a"):
-        texts.append(tag.get_text(separator=" ", strip=True))
-    return [t.strip().lower() for t in texts if t and len(t.strip()) >= BUTTON_TEXT_MIN_LENGTH]
-
-
-def duplicate_button_text_count(soup):
-    counts = Counter(_button_like_texts(soup))
-    return sum(count - 1 for count in counts.values() if count > 1)
 
 
 def extract_structural_features(html, final_url):
@@ -97,5 +78,4 @@ def extract_structural_features(html, final_url):
         "meta_redirect_present": meta_redirect_present,
         "link_to_text_ratio": round(link_to_text_ratio, 4),
         "dom_tree_depth": dom_tree_depth,
-        "duplicate_button_text_count": duplicate_button_text_count(soup),
     }

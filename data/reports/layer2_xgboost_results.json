@@ -4,44 +4,43 @@
   "validation_rows": 212,
   "metrics": {
     "accuracy": 0.7594339622641509,
-    "precision": 0.9830508474576272,
-    "recall": 0.5370370370370371,
-    "f1": 0.6946107784431138,
-    "auc_roc": 0.8851940883190883
+    "precision": 0.9523809523809523,
+    "recall": 0.5555555555555556,
+    "f1": 0.7017543859649122,
+    "auc_roc": 0.899528133903134
   },
   "confusion_matrix": [
     [
-      103,
-      1
+      101,
+      3
     ],
     [
-      50,
-      58
+      48,
+      60
     ]
   ],
   "feature_importances": {
-    "form_count": 0.0007816593279130757,
-    "password_input_count": 0.009003380313515663,
-    "hidden_input_count": 0.014619529247283936,
-    "external_script_count": 0.0058646355755627155,
-    "external_form_action": 0.0032458342611789703,
-    "external_resource_ratio": 0.11644233763217926,
-    "iframe_count": 0.0030507128685712814,
-    "meta_redirect_present": 0.015186707489192486,
-    "link_to_text_ratio": 0.026105215772986412,
-    "dom_tree_depth": 0.003478508908301592,
-    "favicon_domain_mismatch": 0.04909387230873108,
+    "form_count": 0.0010630374308675528,
+    "password_input_count": 0.012911723926663399,
+    "hidden_input_count": 0.008747455663979053,
+    "external_script_count": 0.027647322043776512,
+    "external_form_action": 0.0045023709535598755,
+    "external_resource_ratio": 0.16044838726520538,
+    "iframe_count": 0.00696368096396327,
+    "meta_redirect_present": 0.017871344462037086,
+    "link_to_text_ratio": 0.10439487546682358,
+    "dom_tree_depth": 0.0071796090342104435,
+    "favicon_domain_mismatch": 0.004556082654744387,
     "title_domain_mismatch": 0.0,
-    "brand_keyword_mismatch": 0.01810786873102188,
+    "brand_keyword_mismatch": 0.10071475803852081,
     "overlay_detected": 0.0,
-    "css_anomaly_score": 0.013664094731211662,
-    "fake_browser_chrome_detected": 0.006847127340734005,
-    "script_obfuscation_score": 0.0,
-    "suspicious_js_pattern_count": 0.004525193944573402,
+    "css_anomaly_score": 0.01423718873411417,
+    "fake_browser_chrome_detected": 0.007690116297453642,
+    "script_obfuscation_score": 0.07043429464101791,
+    "suspicious_js_pattern_count": 0.005948960781097412,
     "social_engineering_score": 0.0,
-    "suspicious_embedded_url_count": 0.20841936767101288,
-    "max_embedded_url_risk": 0.03636467829346657,
-    "avg_embedded_url_risk": 0.010246745310723782,
-    "duplicate_button_text_count": 0.45495256781578064
+    "suspicious_embedded_url_count": 0.37499529123306274,
+    "max_embedded_url_risk": 0.06065496802330017,
+    "avg_embedded_url_risk": 0.009038547985255718
   }
 }
