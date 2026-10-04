@@ -662,6 +662,22 @@ function identityNoteHtml(layer3) {
    </div>`;
 }
 
+function noticeHtml(layer3) {
+  const combination = layer3 && layer3.combination;
+  if (!combination || !combination.notice) return "";
+  const logoBrand = layer3.logo_check && layer3.logo_check.identified_brand;
+  const hintBrand = (layer3.url_brand_hints || [])[0];
+  const brand = logoBrand || (hintBrand && hintBrand.brand) || "a known brand";
+  const disclaimer = layer3.identity_note
+    ? layer3.identity_note.disclaimer
+    : "";
+  return `<div class="identity-box identity-notice">
+     <p class="identity-title">Check this page further</p>
+     <p class="identity-text">This page looks like ${escapeHtml(brand)}, but its address is not ${escapeHtml(brand)}'s. Open the page's sign-in or sign-up area with this extension for a deeper check.</p>
+     <p class="identity-disclaimer">${escapeHtml(disclaimer)}</p>
+   </div>`;
+}
+
 function originalComparisonHtml(layer3) {
   const comparison = layer3 && layer3.original_comparison;
   if (!comparison || comparison.status !== "checked") return "";
@@ -711,7 +727,9 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
   };
   setBadge(meta.key, meta.icon, meta.badgeText);
   updateNote(
-    escalateNoteHtml(result) + identityNoteHtml(result.layer3_results),
+    escalateNoteHtml(result) +
+      identityNoteHtml(result.layer3_results) +
+      noticeHtml(result.layer3_results),
     target,
   );
   updateSteps(steps, target);
