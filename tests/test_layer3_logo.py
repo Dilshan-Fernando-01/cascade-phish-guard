@@ -38,6 +38,19 @@ def main():
     check("no logo supplied is reported, not penalized", none["status"] == "no_logo_provided")
     check("no logo supplied never sets mismatch", "mismatch" not in none)
 
+    note_real = analyze_layer3("https://www.microsoft.com/", dummy_screenshot, logo_png=logo_png)["identity_note"]
+    check("real domain gives the 'matches' level", note_real["level"] == "matches")
+
+    note_fake = analyze_layer3(
+        "https://microsoft-account-verify.tk/login", dummy_screenshot, logo_png=logo_png
+    )["identity_note"]
+    check("lookalike gives the 'closely resembles' level", note_fake["level"] == "closely resembles")
+    check("note never uses the word phishing", "phishing" not in note_fake["text"].lower())
+    check("note always carries the disclaimer", note_fake["disclaimer"].startswith("This is an automated analysis"))
+
+    note_none = analyze_layer3("https://www.microsoft.com/", dummy_screenshot, logo_png=None)["identity_note"]
+    check("no logo gives the 'could not confirm' level", note_none["level"] == "could not confirm")
+
     print()
     if FAILURES:
         print(f"{len(FAILURES)} check(s) failed: {FAILURES}")
