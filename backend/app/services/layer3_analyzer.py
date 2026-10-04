@@ -96,9 +96,44 @@ def _ocr_available():
         return False
 
 
-def analyze_layer3(url, screenshot_png, html=None, logo_png=None):
+DISCLAIMER = "This is an automated analysis. It is not a guarantee."
 
+LEVEL_MATCHES = "matches"
+LEVEL_CLOSELY_RESEMBLES = "closely resembles"
+LEVEL_MAY_BE_IMITATING = "may be imitating"
+LEVEL_COULD_NOT_CONFIRM = "could not confirm"
+
+
+def _identity_note(logo_result):
+    status = logo_result.get("status")
+    if status == STATUS_CHECKED and logo_result.get("identified_brand"):
+        brand = logo_result["identified_brand"]
+        if not logo_result.get("mismatch"):
+            level = LEVEL_MATCHES
+            text = f"The logo matches {brand}, and the address belongs to {brand}."
+        else:
+            level = LEVEL_CLOSELY_RESEMBLES
+            text = (
+                f"This page closely resembles {brand}. Its address is not {brand}'s. "
+                "Check the address before entering personal details."
+            )
+    elif status == STATUS_CHECKED:
+        level = LEVEL_COULD_NOT_CONFIRM
+        text = "A logo was found, but it could not be matched to a known brand."
+    elif status == STATUS_NO_LOGO:
+        level = LEVEL_COULD_NOT_CONFIRM
+        text = "No logo was found on this page to compare."
+    else:
+        level = LEVEL_COULD_NOT_CONFIRM
+        text = "The logo check is not available on this machine."
+    return {"level": level, "text": text, "disclaimer": DISCLAIMER}
+
+
+def analyze_layer3(url, screenshot_png, html=None, logo_png=None):
+   
+    logo_result = _logo_check(url, logo_png)
     return {
-        LOGO_CHECK: _logo_check(url, logo_png),
+        LOGO_CHECK: logo_result,
         BANNER_WORDING_CHECK: _banner_wording_check(screenshot_png),
+        "identity_note": _identity_note(logo_result),
     }
