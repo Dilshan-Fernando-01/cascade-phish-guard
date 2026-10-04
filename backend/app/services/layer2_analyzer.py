@@ -17,7 +17,6 @@ LAYER2_FEATURE_COLUMNS = [
     "overlay_detected", "css_anomaly_score", "fake_browser_chrome_detected",
     "script_obfuscation_score", "suspicious_js_pattern_count", "social_engineering_score",
     "suspicious_embedded_url_count", "max_embedded_url_risk", "avg_embedded_url_risk",
-    "duplicate_button_text_count",
 ]
 
 SPARSE_PAGE_BYTE_LIMIT = 5000
