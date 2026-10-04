@@ -381,8 +381,20 @@ function deriveStepOutcomes(result) {
   return [
     { status: "done", sub: "Web address analyzed" },
     { status: layer2Status, sub: layer2Sub, extraDetail: layer2ExtraDetail },
-    { status: "unavailable", sub: "Planned for a later phase of this project" },
+    layer3Outcome(result),
   ];
+}
+
+function layer3Outcome(result) {
+  const layer3 = result.layer3_results;
+  if (!layer3) {
+    return { status: "unavailable", sub: "Planned for a later phase of this project" };
+  }
+  return {
+    status: "done",
+    sub: "Logo checked against the address",
+    detail: originalComparisonHtml(layer3),
+  };
 }
 
 function stepsForStage(stage) {
@@ -435,6 +447,7 @@ function finishWithResult(result, fullScanMode, target = content) {
     sub: outcomes[i].sub,
     substepsDone: (LAYER_SUBSTEPS[i] || []).length,
     extraDetail: outcomes[i].extraDetail,
+    detail: outcomes[i].detail,
   }));
   if (!target.querySelector(".gauge-row")) {
     renderShell(fullScanMode, target);
@@ -473,6 +486,58 @@ function escalateNoteHtml(result) {
    </div>`;
 }
 
+// --- Layer 3 (visual identity) display ---------------------------------
+// Wording is fixed on purpose: levels say what was seen ("closely resembles",
+// "may be imitating", "could not confirm") and never claim phishing.
+
+const IDENTITY_LEVEL_KEYS = {
+  matches: "good",
+  "closely resembles": "warning",
+  "may be imitating": "warning",
+  "could not confirm": "neutral",
+};
+
+const BAND_LABELS = {
+  strong: "Strong logo match",
+  moderate: "Partial logo match",
+  weak: "Weak logo match",
+};
+
+function escapeHtml(text) {
+  return String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function identityNoteHtml(layer3) {
+  const note = layer3 && layer3.identity_note;
+  if (!note) return "";
+  const key = IDENTITY_LEVEL_KEYS[note.level] || "neutral";
+  return `<div class="identity-box identity-${key}">
+     <p class="identity-title">Visual identity check: ${escapeHtml(note.level)}</p>
+     <p class="identity-text">${escapeHtml(note.text)}</p>
+     <p class="identity-disclaimer">${escapeHtml(note.disclaimer)}</p>
+   </div>`;
+}
+
+function originalComparisonHtml(layer3) {
+  const comparison = layer3 && layer3.original_comparison;
+  if (!comparison || comparison.status !== "checked") return "";
+  if (!comparison.candidates || comparison.candidates.length === 0) return "";
+  const rows = comparison.candidates
+    .map((c) => {
+      const label = BAND_LABELS[c.band] || "No reference logo for this brand";
+      return `<div class="identity-candidate">
+        <span class="identity-candidate-domain">${escapeHtml(c.domain)}</span>
+        <span class="identity-candidate-band">${escapeHtml(label)}</span>
+      </div>`;
+    })
+    .join("");
+  return `<p class="identity-candidates-title">Compared with brands named by the address</p>${rows}`;
+}
+
 function errorStateHtml(message) {
   return emptyStateHtml({
     icon: "?",
@@ -509,7 +574,7 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
     badgeText: "UNKNOWN",
   };
   setBadge(meta.key, meta.icon, meta.badgeText);
-  updateNote(escalateNoteHtml(result), target);
+  updateNote(escalateNoteHtml(result) + identityNoteHtml(result.layer3_results), target);
   updateSteps(steps, target);
   animateResultGauges(result, fullScanMode, ns);
 }
