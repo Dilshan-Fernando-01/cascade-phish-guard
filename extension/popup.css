@@ -757,6 +757,10 @@ body {
   border-color: var(--status-warning);
 }
 
+.identity-box.identity-notice {
+  border-color: var(--status-warning);
+}
+
 .identity-title {
   margin: 0 0 4px;
   font-weight: 700;
