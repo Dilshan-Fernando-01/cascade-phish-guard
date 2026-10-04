@@ -94,6 +94,14 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     else:
         score_for_verdict = layer1_score
 
+    if layer3_results is not None and "error" not in layer3_results:
+        from services.layer3_rule import apply_layer3_rule
+
+        score_for_verdict, combination = apply_layer3_rule(
+            score_for_verdict, layer3_results, layer2_features, html
+        )
+        layer3_results["combination"] = combination
+
     if score_for_verdict > HIGH_THRESHOLD:
         verdict = Verdict.phishing
     elif score_for_verdict < LOW_THRESHOLD:
