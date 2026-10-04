@@ -61,14 +61,22 @@ chrome.webNavigation.onCompleted.addListener((details) => {
   });
 });
 
-// Reads the DOM the user is already looking at, instead of having the
-// backend visit the URL a second time itself -- the page only ever renders
-// once, in the user's own browser session.
 function grabRenderedHtml(tabId) {
   return chrome.scripting
     .executeScript({
       target: { tabId, frameIds: [0] },
-      func: () => document.documentElement.outerHTML,
+      func: () => {
+        const root = document.documentElement.cloneNode(true);
+        const LABEL_TYPES = ["submit", "button", "reset", "image"];
+        root.querySelectorAll("input").forEach((el) => {
+          const type = (el.getAttribute("type") || "text").toLowerCase();
+          if (!LABEL_TYPES.includes(type)) el.removeAttribute("value");
+        });
+        root.querySelectorAll("textarea, select").forEach((el) => {
+          el.textContent = "";
+        });
+        return root.outerHTML;
+      },
     })
     .then((results) => (results && results[0] ? results[0].result : null))
     .catch(() => null);
