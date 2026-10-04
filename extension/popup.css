@@ -161,11 +161,46 @@ body {
 /* --- Gauges --- */
 
 .gauge-row {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
   margin-bottom: 16px;
+}
+
+.steps-wrap {
+  position: relative;
+}
+
+.flow-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.flow-line {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 2 6;
+  opacity: 0.9;
+  animation-name: flow-dash;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes flow-dash {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -64;
+  }
 }
 
 .gauge-big-wrap {
@@ -426,13 +461,16 @@ body {
 
 .layer-card-chevron {
   flex-shrink: 0;
-  font-size: 10px;
+  width: 16px;
+  height: 16px;
   color: var(--text-muted);
+  /* The icon points up, so it is turned to point down while collapsed */
+  transform: rotate(180deg);
   transition: transform 0.3s ease;
 }
 
 .layer-card.is-expanded .layer-card-chevron {
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 }
 
 .layer-card-body-outer {
@@ -755,4 +793,20 @@ body {
 
 .identity-candidate-band {
   color: var(--text-secondary);
+}
+
+.gauge-big-wrap.is-updating .gauge-svg {
+  animation: gauge-pulse 0.9s ease-out 1;
+}
+
+@keyframes gauge-pulse {
+  0% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  40% {
+    filter: drop-shadow(0 0 10px var(--brand));
+  }
+  100% {
+    filter: none;
+  }
 }

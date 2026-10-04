@@ -188,7 +188,10 @@ def _identity_note(logo_result, url_hints=()):
         )
     elif status == STATUS_CHECKED:
         level = LEVEL_COULD_NOT_CONFIRM
-        text = "A logo was found, but it could not be matched to a known brand."
+        text = (
+            "A logo was found, but it could not be matched to a known brand. "
+            "The logo may be too small or unclear to compare."
+        )
     elif status == STATUS_NO_LOGO:
         level = LEVEL_COULD_NOT_CONFIRM
         text = "No logo was found on this page to compare."

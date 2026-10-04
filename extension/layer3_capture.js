@@ -1,9 +1,8 @@
-const LOGO_SEARCH_TOP_PX = 300;
-const LOGO_MIN_PX = 24;
-const LOGO_MAX_W_PX = 400;
-const LOGO_MAX_H_PX = 160;
-
 function findLogoCandidatesInPage() {
+  const LOGO_SEARCH_TOP_PX = 300;
+  const LOGO_MIN_PX = 24;
+  const LOGO_MAX_W_PX = 400;
+  const LOGO_MAX_H_PX = 160;
   const LOGO_WORD = /(logo|brand|site-?title|wordmark)/i;
   const inputs = Array.from(
     document.querySelectorAll("input, textarea, select"),
@@ -26,12 +25,16 @@ function findLogoCandidatesInPage() {
     ),
   );
   const candidates = [];
+  let considered = 0;
   for (const el of els) {
+    considered += 1;
     const r = el.getBoundingClientRect();
     if (r.width < LOGO_MIN_PX || r.height < LOGO_MIN_PX) continue;
     if (r.width > LOGO_MAX_W_PX || r.height > LOGO_MAX_H_PX) continue;
     if (r.bottom < 0 || r.top > LOGO_SEARCH_TOP_PX) continue;
     if (r.right < 0 || r.left > window.innerWidth) continue;
+    const isImage = el.matches("img, svg, picture, [role='img']");
+    if (!isImage && el.textContent.trim().length > 0) continue;
     const style = getComputedStyle(el);
     if (style.display === "none" || style.visibility === "hidden") continue;
     if (overlapsInput(r)) continue;
@@ -76,6 +79,9 @@ function findLogoCandidatesInPage() {
   return {
     best: candidates.length && candidates[0].score >= 2 ? candidates[0] : null,
     devicePixelRatio: window.devicePixelRatio || 1,
+    considered,
+    kept: candidates.length,
+    topScore: candidates.length ? candidates[0].score : null,
   };
 }
 
@@ -115,7 +121,13 @@ function captureLogoPng(tabId) {
     })
     .then(async (results) => {
       const found = results && results[0] ? results[0].result : null;
-      if (!found || !found.best) return null;
+      if (!found || !found.best) {
+        const stats = found || {};
+        console.log(
+          `Cascade Phish Guard logo: no logo found (looked at ${stats.considered ?? "?"} elements, ${stats.kept ?? "?"} passed size and position rules, best score ${stats.topScore ?? "none"})`,
+        );
+        return null;
+      }
       const tab = await chrome.tabs.get(tabId);
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
         format: "png",
@@ -126,5 +138,8 @@ function captureLogoPng(tabId) {
         found.devicePixelRatio,
       );
     })
-    .catch(() => null);
+    .catch((err) => {
+      console.warn("Cascade Phish Guard logo: capture failed", String(err));
+      return null;
+    });
 }
