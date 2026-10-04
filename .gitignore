@@ -35,3 +35,6 @@ data/layer3_phishing_screenshots/
 
 # Scratch work
 /temp/
+
+# Legitimate-site screenshots captured for the Layer 3 wording classifier (large image data)
+data/layer3/legit_screenshots/
