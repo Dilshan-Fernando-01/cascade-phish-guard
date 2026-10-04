@@ -20,6 +20,11 @@ STATUS_NO_LOGO = "no_logo_provided"
 STATUS_UNAVAILABLE = "unavailable"
 STATUS_NO_SCREENSHOT = "no_screenshot_provided"
 STATUS_UNREADABLE = "unreadable"
+STATUS_NO_CANDIDATES = "no_candidates"
+
+ORIGINAL_STRONG = 0.87
+ORIGINAL_MODERATE = 0.75
+ORIGINAL_COMPARISON = "original_comparison"
 
 _logo_state = None
 
@@ -73,6 +78,60 @@ def _logo_check(url, logo_png):
         state["domain_map"],
     )
     return {"status": STATUS_CHECKED, **result}
+
+
+def _ref_brand_domains(state):
+    if "ref_domains" not in state:
+        _ensure_logo_path()
+        from logo_identity import brand_converter
+
+        domain_map = state["domain_map"]
+        state["ref_domains"] = [
+            set(domain_map.get(brand_converter(os.path.basename(os.path.dirname(p))), []))
+            for p in state["ref_file_paths"]
+        ]
+    return state["ref_domains"]
+
+
+def _band(similarity):
+    if similarity >= ORIGINAL_STRONG:
+        return "strong"
+    if similarity >= ORIGINAL_MODERATE:
+        return "moderate"
+    return "weak"
+
+
+def _original_comparison(logo_png, url_hints):
+    if logo_png is None:
+        return {"status": STATUS_NO_LOGO, "candidates": []}
+    if not url_hints:
+        return {"status": STATUS_NO_CANDIDATES, "candidates": []}
+    if not os.path.exists(WEIGHTS_PATH) or not os.path.exists(CACHE_PATH):
+        return {"status": STATUS_UNAVAILABLE, "candidates": []}
+
+    import io
+
+    import numpy as np
+    from PIL import Image
+
+    _ensure_logo_path()
+    from logo_identity import get_embedding
+
+    state = _load_logo_state()
+    ref_domains = _ref_brand_domains(state)
+    crop_embedding = get_embedding(Image.open(io.BytesIO(logo_png)), state["model"])
+    sims = state["ref_embeddings"].dot(crop_embedding)
+
+    candidates = []
+    for hint in url_hints:
+        domain = hint["brand"]
+        indexes = [i for i, doms in enumerate(ref_domains) if domain in doms]
+        if not indexes:
+            candidates.append({"domain": domain, "band": "no reference logos", "similarity": None})
+            continue
+        best = float(np.max(sims[indexes]))
+        candidates.append({"domain": domain, "band": _band(best), "similarity": round(best, 4)})
+    return {"status": STATUS_CHECKED, "candidates": candidates}
 
 
 def _banner_wording_check(screenshot_png):
@@ -146,6 +205,7 @@ def analyze_layer3(url, screenshot_png, html=None, logo_png=None):
     return {
         LOGO_CHECK: logo_result,
         BANNER_WORDING_CHECK: _banner_wording_check(screenshot_png),
+        ORIGINAL_COMPARISON: _original_comparison(logo_png, url_hints),
         "url_brand_hints": url_hints,
         "identity_note": _identity_note(logo_result, url_hints),
     }
