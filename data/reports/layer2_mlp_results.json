@@ -1,22 +1,22 @@
 {
   "model": "layer2_mlp",
-  "train_rows": 618,
-  "validation_rows": 125,
+  "train_rows": 1149,
+  "validation_rows": 212,
   "metrics": {
-    "accuracy": 0.776,
-    "precision": 0.864406779661017,
-    "recall": 0.7183098591549296,
-    "f1": 0.7846153846153846,
-    "auc_roc": 0.7990349504434012
+    "accuracy": 0.7358490566037735,
+    "precision": 0.8611111111111112,
+    "recall": 0.5740740740740741,
+    "f1": 0.6888888888888889,
+    "auc_roc": 0.8794960826210826
   },
   "confusion_matrix": [
     [
-      46,
-      8
+      94,
+      10
     ],
     [
-      20,
-      51
+      46,
+      62
     ]
   ],
   "architecture": {
@@ -24,7 +24,7 @@
       64,
       32
     ],
-    "n_iterations_run": 38,
-    "final_training_loss": 0.18675024751589903
+    "n_iterations_run": 26,
+    "final_training_loss": 0.1606249380586017
   }
 }
