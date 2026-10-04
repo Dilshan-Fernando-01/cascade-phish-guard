@@ -8,6 +8,7 @@ function checkUrlWithBackend(
   requestId = null,
   html = null,
   skipLayer2 = false,
+  logoPng = null,
 ) {
   return fetch(BACKEND_URL, {
     method: "POST",
@@ -18,6 +19,7 @@ function checkUrlWithBackend(
       request_id: requestId,
       html,
       skip_layer2: skipLayer2,
+      logo_png_base64: logoPng,
     }),
   })
     .then(async (response) => {
