@@ -2,7 +2,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "backend", "app"))
-from services.reasons import MAX_REASONS, layer1_reasons, layer2_reasons, layer3_reasons  # noqa: E402
+from services.reasons import MAX_REASONS, layer1_reasons, layer2_reasons, layer3_reasons, public_reasons  # noqa: E402
 
 FAILURES = []
 
@@ -47,6 +47,14 @@ all_text = " ".join(layer1_reasons({**PLAIN_L1, "brand_keyword_in_host": 1}) + l
                     + layer3_reasons(L3_COPY))
 check("reasons contain no numbers or feature names",
       not any(ch.isdigit() for ch in all_text) and "_" not in all_text)
+
+DETAILED = {"layer1": ["The address contains the name of a known brand."], "layer2": [], "layer3": ["x"]}
+check("a safe result shows no reasons at all", public_reasons(DETAILED, "safe") == {})
+check("a suspicious result shows one general sentence per layer with a signal",
+      public_reasons(DETAILED, "suspicious") == {"layer1": ["The web address needs a closer look."],
+                                                  "layer3": ["The page's visual identity needs a closer look."]})
+check("public sentences name no check", all("brand" not in t and "password" not in t
+      for v in public_reasons(DETAILED, "phishing").values() for t in v))
 
 print()
 if FAILURES:

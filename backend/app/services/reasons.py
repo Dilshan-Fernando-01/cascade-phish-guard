@@ -66,3 +66,18 @@ def layer3_reasons(layer3_results):
     if wording.get("status") == "checked" and wording.get("matched_phrases"):
         reasons.append("Urgent wording was found at the top of the page (provisional check).")
     return _limit(reasons)
+
+
+
+PUBLIC_SUMMARY = {
+    "layer1": "The web address needs a closer look.",
+    "layer2": "The page content needs a closer look.",
+    "layer3": "The page's visual identity needs a closer look.",
+}
+
+
+def public_reasons(detailed, verdict):
+   
+    if verdict == "safe" or not detailed:
+        return {}
+    return {layer: [PUBLIC_SUMMARY[layer]] for layer, items in detailed.items() if items}

@@ -532,7 +532,10 @@ function layer3Outcome(result) {
       sub: "Could not run the visual check on this machine",
     };
   }
-  const substeps = layer3Substeps(layer3);
+
+  const substeps = layer3Substeps(layer3).map((row) =>
+    result.verdict === "safe" ? { ...row, detail: "" } : row,
+  );
   return {
     status: "done",
     sub: "Four checks run, in order",
@@ -868,8 +871,14 @@ function verdictReasonsHtml(result) {
   if (!result || result.verdict === "safe") return "";
   const reasons = result.reasons || {};
   const lines = [];
-  [["layer1", "Web address"], ["layer2", "Page content"], ["layer3", "Visual"]].forEach(([key, label]) => {
-    (reasons[key] || []).slice(0, 2).forEach((text) => lines.push(`${label}: ${text}`));
+  [
+    ["layer1", "Web address"],
+    ["layer2", "Page content"],
+    ["layer3", "Visual"],
+  ].forEach(([key, label]) => {
+    (reasons[key] || [])
+      .slice(0, 2)
+      .forEach((text) => lines.push(`${label}: ${text}`));
   });
   if (lines.length === 0) {
     return `<div class="note-box"><span class="note-icon">i</span><span>No specific signal was recorded for this result. The score comes from the combined model.</span></div>`;
