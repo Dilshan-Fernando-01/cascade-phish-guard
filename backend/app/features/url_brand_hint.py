@@ -1,6 +1,9 @@
+import re
+
 from rapidfuzz.distance import Levenshtein
 
 from .brand_reference import BRAND_DOMAINS
+from .official_domains import is_official
 from .url_features import _registrable_domain_guess
 
 MIN_KEYWORD_LEN = 4
@@ -21,12 +24,13 @@ def url_brand_hints(host, top_k=3):
 
     hints = []
     for brand in BRAND_DOMAINS:
-        if registrable == brand:
+        if registrable == brand or is_official(registrable, brand):
             continue
         brand_name = _name(brand)
         if len(brand_name) < MIN_KEYWORD_LEN:
             continue
-        if brand_name in host.lower():
+
+        if brand_name in re.split(r"[.\-]", host.lower()):
             hints.append({"brand": brand, "reason": "brand name appears in the address", "distance": 0})
             continue
         if len(own_name) >= MIN_FUZZY_LEN and len(brand_name) >= MIN_FUZZY_LEN:
