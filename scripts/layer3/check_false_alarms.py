@@ -95,6 +95,8 @@ def main():
     global OUTPUT_PATH
     if args.domains:
         OUTPUT_PATH = os.path.join(ROOT, "data", "layer3", "false_alarm_test_run.csv")
+        if os.path.exists(OUTPUT_PATH):
+            os.remove(OUTPUT_PATH)
     domains = args.domains or legit_domains()
     skip = done_domains() if not args.domains else set()
     todo = [d for d in domains if d not in skip]

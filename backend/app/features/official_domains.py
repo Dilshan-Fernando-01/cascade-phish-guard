@@ -21,6 +21,14 @@ OFFICIAL_DOMAINS = {
         "amzn.to", "amzn.com", "primevideo.com", "audible.com", "twitch.tv",
     ],
     "yahoo.com": ["yahoo.co.jp"],
+    # Added 2026-10-05 after the false-alarm check. Keys are the first domain in domain_map
+    "google.com": ["dns.google", "adtrafficquality.google", "pki.goog"],
+    "amazon.com": ["amazonalexa.com", "amazon.com.mx"],
+    "whatsapp.net": ["whatsapp.com"],
+    "src3.yahoo.com": ["yahoo.com", "yahoo.co.jp"],
+    "steamcommunity.com": ["steampowered.com"],
+    "irs.com": ["irs.gov"],
+    "adobe.com": ["adobe.io"],
 }
 
 
