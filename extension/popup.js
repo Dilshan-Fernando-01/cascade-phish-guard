@@ -411,6 +411,98 @@ function deriveStepOutcomes(result) {
   ];
 }
 
+const VISUAL_SUBSTEP_LABELS = [
+  "Brand on the page (logo)",
+  "Brand named in the address",
+  "Home-page logos compared",
+  "Alarming banner wording",
+];
+const VISUAL_REVEAL_MS = 700;
+
+function layer3Substeps(layer3) {
+  const logo = layer3.logo_check || {};
+  let logoRow;
+  if (logo.status === "checked") {
+    logoRow = logo.identified_brand
+      ? { status: "done", detail: `Logo matches ${logo.identified_brand}` }
+      : { status: "done", detail: "Logo found, no known brand matched" };
+  } else if (logo.status === "no_logo_provided") {
+    logoRow = {
+      status: "unavailable",
+      detail: "No logo of usable size found on this page",
+    };
+  } else {
+    logoRow = {
+      status: "unavailable",
+      detail: "Logo check not available on this machine",
+    };
+  }
+
+  const hints = layer3.url_brand_hints || [];
+  const addressRow = hints.length
+    ? { status: "done", detail: `The address names ${hints[0].brand}` }
+    : { status: "done", detail: "No brand named in the address" };
+
+  const background = layer3.background;
+  let homeRow;
+  if (!background) {
+    homeRow = { status: "skipped", detail: "Not needed for this page" };
+  } else if (background.status === "checked") {
+    homeRow = {
+      status: "done",
+      detail: `Home-page logos: ${BAND_LABELS[background.band] || background.band}`,
+    };
+  } else {
+    homeRow = {
+      status: "unavailable",
+      detail: background.reason || "Could not compare the home pages",
+    };
+  }
+
+  const wording = layer3.banner_wording_check || {};
+  const wordingRow =
+    wording.status === "checked"
+      ? {
+          status: "done",
+          detail: (wording.matched_phrases || []).length
+            ? "Alarming wording found (provisional check)"
+            : "No alarming wording found (provisional check)",
+        }
+      : { status: "unavailable", detail: "Banner text not checked" };
+
+  return [logoRow, addressRow, homeRow, wordingRow].map((row, i) => ({
+    label: VISUAL_SUBSTEP_LABELS[i],
+    ...row,
+  }));
+}
+
+function visualSubstepsHtml(substeps) {
+  const rows = substeps
+    .map((step) => {
+      const icon =
+        step.status === "done"
+          ? "&#10003;"
+          : step.status === "skipped"
+            ? "&#8211;"
+            : step.status === "unavailable"
+              ? "&#8230;"
+              : "";
+      const detail = step.detail
+        ? `<p class="substep-detail">${escapeHtml(step.detail)}</p>`
+        : "";
+      return `
+      <div class="substep-row ${step.status === "done" ? "is-done" : ""}">
+        <span class="substep-icon">${icon}</span>
+        <div class="substep-text">
+          <span class="substep-label">${escapeHtml(step.label)}</span>
+          ${detail}
+        </div>
+      </div>`;
+    })
+    .join("");
+  return `${progressSummaryHtml(substeps)}<div class="substep-list">${rows}</div>`;
+}
+
 function layer3Outcome(result) {
   const layer3 = result.layer3_results;
   if (!layer3) {
@@ -425,11 +517,55 @@ function layer3Outcome(result) {
       sub: "Could not run the visual check on this machine",
     };
   }
+  const substeps = layer3Substeps(layer3);
   return {
     status: "done",
-    sub: "Logo checked against the address",
-    detail: originalComparisonHtml(layer3),
+    sub: "Four checks run, in order",
+    substeps,
+    detail: visualSubstepsHtml(substeps),
   };
+}
+
+function visualPendingStep(step) {
+  const pending = (step.substeps || []).map((s) => ({
+    label: s.label,
+    status: "pending",
+    detail: "",
+  }));
+  return {
+    ...step,
+    status: "active",
+    sub: "Checking the visual signals...",
+    detail: visualSubstepsHtml(pending),
+    extraDetail: "",
+  };
+}
+
+async function revealVisualSubsteps(shown, finalSteps, target) {
+  const finalSubs = finalSteps[2].substeps || [];
+  const revealed = finalSubs.map((s) => ({
+    label: s.label,
+    status: "pending",
+    detail: "",
+  }));
+  const showCard = () => {
+    shown[2] = {
+      ...finalSteps[2],
+      status: "active",
+      sub: "Checking the visual signals...",
+      detail: visualSubstepsHtml(revealed),
+      extraDetail: "",
+    };
+    updateSteps(shown, target);
+  };
+  showCard();
+  for (let i = 0; i < finalSubs.length; i++) {
+    await new Promise((resolve) => setTimeout(resolve, VISUAL_REVEAL_MS));
+    revealed[i] = finalSubs[i];
+    showCard();
+  }
+  shown[2] = finalSteps[2];
+  updateSteps(shown, target);
 }
 
 function stepsForStage(stage) {
@@ -483,24 +619,32 @@ function finishWithResult(result, fullScanMode, target = content) {
     substepsDone: (LAYER_SUBSTEPS[i] || []).length,
     extraDetail: outcomes[i].extraDetail,
     detail: outcomes[i].detail,
+    substeps: outcomes[i].substeps,
   }));
   if (!target.querySelector(".gauge-row")) {
     renderShell(fullScanMode, target);
   }
   const sources = flowSources(result);
   const shown = steps.map((step, i) =>
-    sources.includes(i)
-      ? {
-          ...step,
-          status: "active",
-          sub: "Sending result to the web address check...",
-          detail: "",
-          extraDetail: "",
-        }
-      : step,
+    i === 2 && sources.includes(2)
+      ? visualPendingStep(step)
+      : sources.includes(i)
+        ? {
+            ...step,
+            status: "active",
+            sub: "Sending result to the web address check...",
+            detail: "",
+            extraDetail: "",
+          }
+        : step,
   );
   renderDoneKeepingSteps(shown, result, fullScanMode, target);
-  if (sources.length) playLayerFlows(sources, shown, steps, target);
+  if (sources.length) {
+    playLayerFlows(sources, shown, steps, target).then(() => {
+      if (sources.includes(2))
+        return revealVisualSubsteps(shown, steps, target);
+    });
+  }
 }
 
 const FLOW_START_DELAY_MS = 500;
@@ -586,7 +730,7 @@ async function playLayerFlows(sources, shown, finalSteps, target) {
       },
       onEnd: () => {
         shown[0] = finalSteps[0];
-        shown[src] = finalSteps[src];
+        if (src !== 2) shown[src] = finalSteps[src];
         updateSteps(shown, target);
         pulseGauge(`${ns}-gauge-layer1`);
       },
@@ -676,22 +820,6 @@ function noticeHtml(layer3) {
      <p class="identity-text">This page looks like ${escapeHtml(brand)}, but its address is not ${escapeHtml(brand)}'s. Open the page's sign-in or sign-up area with this extension for a deeper check.</p>
      <p class="identity-disclaimer">${escapeHtml(disclaimer)}</p>
    </div>`;
-}
-
-function originalComparisonHtml(layer3) {
-  const comparison = layer3 && layer3.original_comparison;
-  if (!comparison || comparison.status !== "checked") return "";
-  if (!comparison.candidates || comparison.candidates.length === 0) return "";
-  const rows = comparison.candidates
-    .map((c) => {
-      const label = BAND_LABELS[c.band] || "No reference logo for this brand";
-      return `<div class="identity-candidate">
-        <span class="identity-candidate-domain">${escapeHtml(c.domain)}</span>
-        <span class="identity-candidate-band">${escapeHtml(label)}</span>
-      </div>`;
-    })
-    .join("");
-  return `<p class="identity-candidates-title">Compared with brands named by the address</p>${rows}`;
 }
 
 function errorStateHtml(message) {
