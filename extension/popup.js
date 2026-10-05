@@ -862,6 +862,22 @@ function unknownStateHtml(message) {
   });
 }
 
+// Under the verdict: the main reasons behind a suspicious or phishing result,
+// taken from each layer (first two per layer). Never shown for a safe result.
+function verdictReasonsHtml(result) {
+  if (!result || result.verdict === "safe") return "";
+  const reasons = result.reasons || {};
+  const lines = [];
+  [["layer1", "Web address"], ["layer2", "Page content"], ["layer3", "Visual"]].forEach(([key, label]) => {
+    (reasons[key] || []).slice(0, 2).forEach((text) => lines.push(`${label}: ${text}`));
+  });
+  if (lines.length === 0) {
+    return `<div class="note-box"><span class="note-icon">i</span><span>No specific signal was recorded for this result. The score comes from the combined model.</span></div>`;
+  }
+  const items = lines.map((line) => `<li>${escapeHtml(line)}</li>`).join("");
+  return `<div class="note-box verdict-reasons"><span class="note-icon">i</span><div><p class="reasons-title">What led to this result</p><ul class="reasons-list">${items}</ul></div></div>`;
+}
+
 function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
   const ns = targetNamespace(target);
   const meta = VERDICT_META[result.verdict] || {
@@ -871,7 +887,8 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
   };
   setBadge(meta.key, meta.icon, meta.badgeText);
   updateNote(
-    escalateNoteHtml(result) +
+    verdictReasonsHtml(result) +
+      escalateNoteHtml(result) +
       identityNoteHtml(result.layer3_results) +
       noticeHtml(result.layer3_results),
     target,
