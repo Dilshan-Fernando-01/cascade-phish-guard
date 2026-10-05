@@ -48,7 +48,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
 
     _set_progress(request_id, {"stage": STAGE_CHECKING_ADDRESS})
 
-    layer1_score, _features = layer1_predict(url)
+    layer1_score, layer1_features = layer1_predict(url)
     would_escalate = LOW_THRESHOLD <= layer1_score <= HIGH_THRESHOLD
 
     layers_used = ["layer1"]
@@ -111,6 +111,14 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     else:
         verdict = Verdict.suspicious
 
+    from services.reasons import layer1_reasons, layer2_reasons, layer3_reasons
+
+    reasons = {
+        "layer1": layer1_reasons(layer1_features),
+        "layer2": layer2_reasons(layer2_features),
+        "layer3": layer3_reasons(layer3_results),
+    }
+
     result = AnalyzeResponse(
         url=url,
         verdict=verdict,
@@ -120,6 +128,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         would_escalate=would_escalate,
         layer2_features=layer2_features,
         layer3_results=layer3_results,
+        reasons=reasons,
     )
     _set_progress(request_id, {"stage": STAGE_DONE, "result": result.model_dump(mode="json")})
     return result
