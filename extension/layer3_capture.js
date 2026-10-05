@@ -19,11 +19,16 @@ function findLogoCandidatesInPage() {
         r.bottom > i.top,
     );
 
-  const els = Array.from(
-    document.querySelectorAll(
-      'img, svg, picture, [role="img"], [class*="logo" i], [id*="logo" i]',
-    ),
-  );
+  const LOGO_SELECTOR =
+    'img, svg, picture, [role="img"], [class*="logo" i], [id*="logo" i]';
+  const collectLogoElements = (root, out) => {
+    out.push(...root.querySelectorAll(LOGO_SELECTOR));
+    for (const host of root.querySelectorAll("*")) {
+      if (host.shadowRoot) collectLogoElements(host.shadowRoot, out);
+    }
+    return out;
+  };
+  const els = collectLogoElements(document, []);
   const candidates = [];
   let considered = 0;
   for (const el of els) {
@@ -33,9 +38,12 @@ function findLogoCandidatesInPage() {
     if (r.width > LOGO_MAX_W_PX || r.height > LOGO_MAX_H_PX) continue;
     if (r.bottom < 0 || r.top > LOGO_SEARCH_TOP_PX) continue;
     if (r.right < 0 || r.left > window.innerWidth) continue;
-    const isImage = el.matches("img, svg, picture, [role='img']");
-    if (!isImage && el.textContent.trim().length > 0) continue;
     const style = getComputedStyle(el);
+    const hasBackgroundImage =
+      style.backgroundImage && style.backgroundImage !== "none";
+    const isImage =
+      el.matches("img, svg, picture, [role='img']") || hasBackgroundImage;
+    if (!isImage && el.textContent.trim().length > 0) continue;
     if (style.display === "none" || style.visibility === "hidden") continue;
     if (overlapsInput(r)) continue;
 
