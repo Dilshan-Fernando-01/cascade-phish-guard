@@ -38,3 +38,9 @@ data/layer3_phishing_screenshots/
 
 # Legitimate-site screenshots captured for the Layer 3 wording classifier (large image data)
 data/layer3/legit_screenshots/
+
+# Brand home-page captures for the Layer 3 background comparison (third-party site screenshots; not for git)
+data/layer3/brand_home/
+data/layer3/brand_home_test/
+data/layer3/brand_home_manifest.csv
+data/layer3/brand_home_test_manifest.csv
