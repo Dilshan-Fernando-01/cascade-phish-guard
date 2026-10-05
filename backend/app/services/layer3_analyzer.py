@@ -77,6 +77,15 @@ def _logo_check(url, logo_png):
         state["ref_file_paths"],
         state["domain_map"],
     )
+
+    if result.get("mismatch") and result.get("identified_brand"):
+        from features.official_domains import is_official
+        from features.url_features import _registrable_domain_guess
+
+        main = state["domain_map"].get(result["identified_brand"], [None])[0]
+        host = urlparse(url).netloc.split(":")[0]
+        if is_official(_registrable_domain_guess(host), main):
+            result = {**result, "mismatch": False}
     return {"status": STATUS_CHECKED, **result}
 
 
