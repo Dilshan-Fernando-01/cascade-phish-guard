@@ -36,6 +36,8 @@ L3_COPY = {"identity_note": {"level": "closely resembles"},
            "background": {"status": "checked", "band": "strong"}}
 check("a copy with input lists the mismatch", any("not that brand" in r for r in layer3_reasons(L3_COPY)))
 check("a copy with input lists the input request", any("asks the visitor" in r for r in layer3_reasons(L3_COPY)))
+check("input alone (no mismatch) is not a reason",
+      layer3_reasons({"combination": {"brand_mismatch": False, "input_signal": True}, "identity_note": {"level": "could not confirm"}}) == [])
 check("a strong home-page match is a reason", any("home page" in r for r in layer3_reasons(L3_COPY)))
 check("a layer 3 error gives no reasons", layer3_reasons({"error": "could not run"}) == [])
 check("no layer 3 result gives no reasons", layer3_reasons(None) == [])

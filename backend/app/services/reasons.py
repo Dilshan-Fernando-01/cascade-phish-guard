@@ -55,8 +55,8 @@ def layer3_reasons(layer3_results):
     level = note.get("level")
     if combination.get("brand_mismatch"):
         reasons.append("The page shows a known brand's logo, but its address is not that brand's.")
-    if combination.get("input_signal"):
-        reasons.append("The page asks the visitor for information.")
+    if combination.get("input_signal") and combination.get("brand_mismatch"):
+        reasons.append("A page that copies a known brand's logo asks the visitor for information.")
     background = layer3_results.get("background") or {}
     if background.get("status") == "checked" and background.get("band") == "strong":
         reasons.append("The logo on the brand's own home page matches the logo on this page.")
