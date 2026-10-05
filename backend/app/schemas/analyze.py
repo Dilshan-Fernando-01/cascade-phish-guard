@@ -56,6 +56,10 @@ class AnalyzeResponse(BaseModel):
         default=None,
         description="Raw Layer 2 DOM features, when Layer 2 actually ran. ",
     )
+    reasons: Optional[dict] = Field(
+        default=None,
+        description="Plain-language signals behind each layer's result (no thresholds or values)",
+    )
     layer3_results: Optional[dict] = Field(
         default=None,
         description="Layer 3 checks, reported separately (logo_check, banner_wording_check). Present only when Layer 3 actually ran.",

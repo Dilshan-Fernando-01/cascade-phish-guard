@@ -380,6 +380,12 @@ function updateNote(html, target) {
   if (slot) slot.innerHTML = html;
 }
 
+function reasonsHtml(reasons) {
+  if (!reasons || reasons.length === 0) return "";
+  const items = reasons.map((text) => `<li>${escapeHtml(text)}</li>`).join("");
+  return `<div class="reasons"><p class="reasons-title">Why</p><ul class="reasons-list">${items}</ul></div>`;
+}
+
 function deriveStepOutcomes(result) {
   const layer2Attempted = (result.layers_used || []).includes("layer2");
   const layer2Failed =
@@ -404,9 +410,18 @@ function deriveStepOutcomes(result) {
     layer2Status = "skipped";
     layer2Sub = "Skipped -- the web address check alone was conclusive";
   }
+  const reasons = result.reasons || {};
   return [
-    { status: "done", sub: "Web address analyzed" },
-    { status: layer2Status, sub: layer2Sub, extraDetail: layer2ExtraDetail },
+    {
+      status: "done",
+      sub: "Web address analyzed",
+      extraDetail: reasonsHtml(reasons.layer1),
+    },
+    {
+      status: layer2Status,
+      sub: layer2Sub,
+      extraDetail: layer2ExtraDetail + reasonsHtml(reasons.layer2),
+    },
     layer3Outcome(result),
   ];
 }
@@ -522,7 +537,8 @@ function layer3Outcome(result) {
     status: "done",
     sub: "Four checks run, in order",
     substeps,
-    detail: visualSubstepsHtml(substeps),
+    detail:
+      visualSubstepsHtml(substeps) + reasonsHtml((result.reasons || {}).layer3),
   };
 }
 
