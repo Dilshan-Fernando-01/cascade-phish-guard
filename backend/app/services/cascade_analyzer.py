@@ -111,13 +111,14 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     else:
         verdict = Verdict.suspicious
 
-    from services.reasons import layer1_reasons, layer2_reasons, layer3_reasons
+    from services.reasons import layer1_reasons, layer2_reasons, layer3_reasons, public_reasons
 
-    reasons = {
+    detailed_reasons = {
         "layer1": layer1_reasons(layer1_features),
         "layer2": layer2_reasons(layer2_features),
         "layer3": layer3_reasons(layer3_results),
     }
+    reasons = public_reasons(detailed_reasons, verdict.value)
 
     result = AnalyzeResponse(
         url=url,
