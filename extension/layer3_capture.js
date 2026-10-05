@@ -19,11 +19,16 @@ function findLogoCandidatesInPage() {
         r.bottom > i.top,
     );
 
-  const els = Array.from(
-    document.querySelectorAll(
-      'img, svg, picture, [role="img"], [class*="logo" i], [id*="logo" i]',
-    ),
-  );
+  const LOGO_SELECTOR =
+    'img, svg, picture, [role="img"], [class*="logo" i], [id*="logo" i]';
+  const collectLogoElements = (root, out) => {
+    out.push(...root.querySelectorAll(LOGO_SELECTOR));
+    for (const host of root.querySelectorAll("*")) {
+      if (host.shadowRoot) collectLogoElements(host.shadowRoot, out);
+    }
+    return out;
+  };
+  const els = collectLogoElements(document, []);
   const candidates = [];
   let considered = 0;
   for (const el of els) {
