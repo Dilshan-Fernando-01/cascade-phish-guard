@@ -38,9 +38,12 @@ function findLogoCandidatesInPage() {
     if (r.width > LOGO_MAX_W_PX || r.height > LOGO_MAX_H_PX) continue;
     if (r.bottom < 0 || r.top > LOGO_SEARCH_TOP_PX) continue;
     if (r.right < 0 || r.left > window.innerWidth) continue;
-    const isImage = el.matches("img, svg, picture, [role='img']");
-    if (!isImage && el.textContent.trim().length > 0) continue;
     const style = getComputedStyle(el);
+    const hasBackgroundImage =
+      style.backgroundImage && style.backgroundImage !== "none";
+    const isImage =
+      el.matches("img, svg, picture, [role='img']") || hasBackgroundImage;
+    if (!isImage && el.textContent.trim().length > 0) continue;
     if (style.display === "none" || style.visibility === "hidden") continue;
     if (overlapsInput(r)) continue;
 
