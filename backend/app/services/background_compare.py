@@ -64,30 +64,30 @@ def fetch_root_logo_png(url):
         return None, f"background check unavailable ({type(exc).__name__})"
 
 
-def compare_with_brand(logo_png, brand_domain):
-    """Compare a logo with one brand's cached reference logos. Returns band and similarity."""
+def compare_logo_pair(visited_png, brand_png):
+
     import numpy as np
 
     from services import layer3_analyzer as l3
 
     state = l3._load_logo_state()
-    ref_domains = l3._ref_brand_domains(state)
     l3._ensure_logo_path()
     from logo_identity import get_embedding
 
-    indexes = [i for i, doms in enumerate(ref_domains) if brand_domain in doms]
-    if not indexes:
-        return {"band": "no reference logos", "similarity": None}
-    embedding = get_embedding(Image.open(io.BytesIO(logo_png)), state["model"])
-    sims = state["ref_embeddings"].dot(embedding)
-    best = float(np.max(sims[indexes]))
-    return {"band": l3._band(best), "similarity": round(best, 4)}
+    model = state["model"]
+    visited = get_embedding(Image.open(io.BytesIO(visited_png)), model)
+    brand = get_embedding(Image.open(io.BytesIO(brand_png)), model)
+    similarity = float(np.dot(visited, brand))
+    return {"band": l3._band(similarity), "similarity": round(similarity, 4)}
 
 
 def background_check(url, brand_domain):
-    """The full background check for one visited URL and one claimed brand domain."""
-    logo_png, reason = fetch_root_logo_png(url)
-    if logo_png is None:
-        return {"status": STATUS_COULD_NOT_CONFIRM, "reason": reason, "brand_domain": brand_domain}
-    result = compare_with_brand(logo_png, brand_domain)
-    return {"status": STATUS_CHECKED, "brand_domain": brand_domain, **result}
+
+    visited_png, reason = fetch_root_logo_png(url)
+    if visited_png is None:
+        return {"status": STATUS_COULD_NOT_CONFIRM, "reason": f"visited site: {reason}", "brand_domain": brand_domain}
+    brand_png, reason = fetch_root_logo_png(f"https://{brand_domain}/")
+    if brand_png is None:
+        return {"status": STATUS_COULD_NOT_CONFIRM, "reason": f"brand's home page: {reason}", "brand_domain": brand_domain}
+    result = compare_logo_pair(visited_png, brand_png)
+    return {"status": STATUS_CHECKED, "brand_domain": brand_domain, "source": "live", **result}
