@@ -114,6 +114,13 @@ def main():
         context = browser.new_context(viewport=VIEWPORT, ignore_https_errors=True)
         page = context.new_page()
         for i, domain in enumerate(todo, 1):
+            
+            if i > 1 and (i - 1) % 50 == 0:
+                page.close()
+                browser.close()
+                browser = p.chromium.launch()
+                context = browser.new_context(viewport=VIEWPORT, ignore_https_errors=True)
+                page = context.new_page()
             try:
                 row = check_one(page, finder_js, domain)
             except Exception as exc:
