@@ -47,3 +47,7 @@ data/layer3/brand_home_test_manifest.csv
 
 data/layer3/copy_test/
 data/layer3/false_alarm_test_run*.csv
+
+# Page code (HTML) captured for the metadata test (third-party site code; not for git)
+data/layer3/html_test/
+data/layer3/html_test/phishing/
