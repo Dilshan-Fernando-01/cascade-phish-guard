@@ -33,10 +33,11 @@ def legit_domains():
 
 
 def done_domains():
+    """Domains already checked successfully. Rows that hit an error are retried on restart."""
     if not os.path.exists(OUTPUT_PATH):
         return set()
     with open(OUTPUT_PATH, newline="") as f:
-        return {row["domain"] for row in csv.DictReader(f)}
+        return {row["domain"] for row in csv.DictReader(f) if not row["logo_status"].startswith("error:")}
 
 
 def check_one(page, finder_js, domain):
@@ -113,7 +114,24 @@ def main():
         context = browser.new_context(viewport=VIEWPORT, ignore_https_errors=True)
         page = context.new_page()
         for i, domain in enumerate(todo, 1):
-            row = check_one(page, finder_js, domain)
+            try:
+                row = check_one(page, finder_js, domain)
+            except Exception as exc:
+               
+                row = {"domain": domain, "loaded": False, "logo_found": False,
+                       "logo_status": f"error: {type(exc).__name__}", "identified_brand": "",
+                       "identity_level": "", "false_alarm": False}
+                try:
+                    page.close()
+                except Exception:
+                    pass
+                try:
+                    page = context.new_page()
+                except Exception:
+                    browser.close()
+                    browser = p.chromium.launch()
+                    context = browser.new_context(viewport=VIEWPORT, ignore_https_errors=True)
+                    page = context.new_page()
             writer.writerow(row)
             out.flush()
             rows_now.append(row)
