@@ -82,7 +82,7 @@ function grabRenderedHtml(tabId) {
     .catch(() => null);
 }
 
-function pollProgressInto(tabId, generation, requestId) {
+function pollProgressInto(tabId, generation, requestId, previewDataUrl = null) {
   let lastProgress = null;
   const interval = setInterval(() => {
     if (tabGeneration.get(tabId) !== generation) {
@@ -98,6 +98,7 @@ function pollProgressInto(tabId, generation, requestId) {
           status: "analyzing",
           stage: progress.stage,
           layer1_score: progress.layer1_score,
+          previewDataUrl,
         });
       }
     });
@@ -112,10 +113,10 @@ function runBackendCall(
   tabId,
   generation,
   url,
-  { fullScan, html, skipLayer2, logoPng = null, bannerPng = null },
+  { fullScan, html, skipLayer2, logoPng = null, bannerPng = null, previewDataUrl = null },
 ) {
   const requestId = crypto.randomUUID();
-  const progress = pollProgressInto(tabId, generation, requestId);
+  const progress = pollProgressInto(tabId, generation, requestId, previewDataUrl);
   return checkUrlWithBackend(url, fullScan, requestId, html, skipLayer2, logoPng, bannerPng)
     .then((outcome) => {
       const lastProgress = progress.getLast();

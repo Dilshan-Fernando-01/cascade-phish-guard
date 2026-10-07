@@ -119,6 +119,28 @@ async function cropLogoFromScreenshot(dataUrl, box, dpr) {
   return blobToBase64(cropped);
 }
 
+const PREVIEW_MAX_WIDTH = 480;
+
+async function downscaleForPreview(dataUrl, maxWidth) {
+  const blob = await (await fetch(dataUrl)).blob();
+  const bitmap = await createImageBitmap(blob);
+  const scale = Math.min(1, maxWidth / bitmap.width);
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = new OffscreenCanvas(w, h);
+  canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
+  const thumb = await canvas.convertToBlob({
+    type: "image/jpeg",
+    quality: 0.6,
+  });
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(thumb);
+  });
+}
+
 const BANNER_BAND_PX = 300;
 
 function captureLayer3Images(tabId) {
@@ -153,10 +175,14 @@ function captureLayer3Images(tabId) {
               found.devicePixelRatio,
             )
           : null;
-      return { logoPng, bannerPng };
+      const previewDataUrl = await downscaleForPreview(
+        dataUrl,
+        PREVIEW_MAX_WIDTH,
+      ).catch(() => null);
+      return { logoPng, bannerPng, previewDataUrl };
     })
     .catch((err) => {
       console.warn("Cascade Phish Guard layer 3 capture failed", String(err));
-      return { logoPng: null, bannerPng: null };
+      return { logoPng: null, bannerPng: null, previewDataUrl: null };
     });
 }

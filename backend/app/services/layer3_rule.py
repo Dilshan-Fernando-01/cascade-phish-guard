@@ -45,6 +45,21 @@ def is_brand_mismatch(layer3_results):
     return note.get("level") in MISMATCH_LEVELS
 
 
+IDENTITY_LEVEL_SCORE = {
+    "matches": 0.0,
+    "may be imitating": SUSPICIOUS_FLOOR,
+    "closely resembles": STRONG_FLOOR,
+}
+
+
+def identity_level_score(layer3_results):
+    """Returns a 0-1 display score for the Visual gauge, or None (shown as N/A)."""
+    if not layer3_results or "error" in layer3_results:
+        return None
+    level = (layer3_results.get("identity_note") or {}).get("level")
+    return IDENTITY_LEVEL_SCORE.get(level)
+
+
 def apply_layer3_rule(score, layer3_results, layer2_features, layer2_score, html):
     """Return (score, combination). The combination is recorded in the response,
     so the popup and the log can say what happened."""

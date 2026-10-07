@@ -7,6 +7,7 @@ from services.layer3_rule import (  # noqa: E402
     SUSPICIOUS_FLOOR,
     apply_layer3_rule,
     html_has_user_input,
+    identity_level_score,
 )
 
 FAILURES = []
@@ -83,6 +84,13 @@ score, comb = run(0.10, None, {"password_input_count": 1}, 0.10, TEXT_HTML)
 check("no Layer 3 result changes nothing", score == 0.10 and comb["brand_mismatch"] is False)
 score, comb = apply_layer3_rule(0.10, {"error": "could not run"}, {"password_input_count": 1}, 0.10, TEXT_HTML)
 check("a Layer 3 error changes nothing", score == 0.10 and comb["brand_mismatch"] is False)
+
+check("a matching brand displays as 0", identity_level_score(l3("matches")) == 0.0)
+check("may be imitating displays at the suspicious floor", identity_level_score(l3("may be imitating")) == SUSPICIOUS_FLOOR)
+check("closely resembles displays at the strong floor", identity_level_score(l3("closely resembles")) == STRONG_FLOOR)
+check("could not confirm has no display score (shown as N/A, not 0)", identity_level_score(l3("could not confirm")) is None)
+check("no Layer 3 result has no display score", identity_level_score(None) is None)
+check("a Layer 3 error has no display score", identity_level_score({"error": "could not run"}) is None)
 
 print()
 if FAILURES:

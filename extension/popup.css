@@ -604,6 +604,58 @@ body {
   line-height: 1.45;
 }
 
+.scan-preview-box {
+  position: relative;
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  line-height: 0;
+}
+
+.scan-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: cover;
+  filter: saturate(0.85) brightness(0.8);
+}
+
+.scan-preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: linear-gradient(180deg, rgba(13, 13, 13, 0.35) 0%, rgba(13, 13, 13, 0.75) 100%);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.scan-preview-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+  animation: scan-preview-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes scan-preview-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
 .note-icon {
   flex-shrink: 0;
   width: 16px;
