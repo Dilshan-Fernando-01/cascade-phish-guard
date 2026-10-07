@@ -21,6 +21,7 @@ _PROGRESS_TTL_SECONDS = 300
 
 STAGE_CHECKING_ADDRESS = "checking_address"
 STAGE_REVIEWING_CONTENT = "reviewing_content"
+STAGE_COMPARING_VISUAL_IDENTITY = "comparing_visual_identity"
 STAGE_DONE = "done"
 
 
@@ -82,7 +83,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     if full_scan and (screenshot_png is not None or logo_png is not None):
         from services.layer3_analyzer import analyze_layer3
 
-
+        _set_progress(request_id, {"stage": STAGE_COMPARING_VISUAL_IDENTITY, "layer1_score": layer1_score})
         try:
             layer3_results = analyze_layer3(
                 url, screenshot_png, html=html, logo_png=logo_png, background=True
@@ -97,12 +98,15 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         score_for_verdict = layer1_score
 
     if layer3_results is not None and "error" not in layer3_results:
-        from services.layer3_rule import apply_layer3_rule
+        from services.layer3_rule import apply_layer3_rule, identity_level_score
 
         score_for_verdict, combination = apply_layer3_rule(
             score_for_verdict, layer3_results, layer2_features, layer2_score, html
         )
         layer3_results["combination"] = combination
+        layer3_score = identity_level_score(layer3_results)
+        if layer3_score is not None:
+            layer_scores["layer3"] = layer3_score
 
     if score_for_verdict > HIGH_THRESHOLD:
         verdict = Verdict.phishing

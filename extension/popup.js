@@ -3,6 +3,7 @@ const HIGH_THRESHOLD = 0.8;
 
 const STAGE_CHECKING_ADDRESS = "checking_address";
 const STAGE_REVIEWING_CONTENT = "reviewing_content";
+const STAGE_COMPARING_VISUAL_IDENTITY = "comparing_visual_identity";
 const STAGE_DONE = "done";
 
 const STEP_TITLES = [
@@ -208,11 +209,21 @@ function animateResultGauges(result, fullScanMode, ns) {
     });
   }
 
-  animateGauge(`${ns}-gauge-layer3`, {
-    value: 0,
-    statusKey: "neutral",
-    statusLabel: "N/A",
-  });
+  const layer3Score = result.layer_scores && result.layer_scores.layer3;
+  if (typeof layer3Score === "number") {
+    const s = statusForScore(layer3Score);
+    animateGauge(`${ns}-gauge-layer3`, {
+      value: layer3Score * 100,
+      statusKey: s.key,
+      statusLabel: s.label,
+    });
+  } else {
+    animateGauge(`${ns}-gauge-layer3`, {
+      value: 0,
+      statusKey: "neutral",
+      statusLabel: "N/A",
+    });
+  }
 }
 
 function stepIconHtml(status) {
@@ -377,7 +388,9 @@ function updateSteps(steps, target) {
 
 function updateNote(html, target) {
   const slot = target.querySelector(".note-slot");
-  if (slot) slot.innerHTML = html;
+  if (!slot || slot.dataset.renderedHtml === html) return;
+  slot.dataset.renderedHtml = html;
+  slot.innerHTML = html;
 }
 
 function reasonsHtml(reasons) {
@@ -471,7 +484,10 @@ function layer3Substeps(layer3) {
           status: "done",
           detail: `Home-page logos: ${BAND_LABELS[background.band] || background.band}`,
         }
-      : { status: "unavailable", detail: "No logo found to compare on one of the home pages" };
+      : {
+          status: "unavailable",
+          detail: "No logo found to compare on one of the home pages",
+        };
 
     const region = background.region || {};
     layoutRow =
@@ -482,7 +498,10 @@ function layer3Substeps(layer3) {
               ? "Home-page layout matches"
               : "Home-page layout does not match",
           }
-        : { status: "unavailable", detail: "Not enough detail on the page to compare layout" };
+        : {
+            status: "unavailable",
+            detail: "Not enough detail on the page to compare layout",
+          };
   } else {
     homeRow = {
       status: "unavailable",
@@ -505,10 +524,12 @@ function layer3Substeps(layer3) {
         }
       : { status: "unavailable", detail: "Banner text not checked" };
 
-  return [logoRow, addressRow, homeRow, layoutRow, wordingRow].map((row, i) => ({
-    label: VISUAL_SUBSTEP_LABELS[i],
-    ...row,
-  }));
+  return [logoRow, addressRow, homeRow, layoutRow, wordingRow].map(
+    (row, i) => ({
+      label: VISUAL_SUBSTEP_LABELS[i],
+      ...row,
+    }),
+  );
 }
 
 function visualSubstepsHtml(substeps) {
@@ -613,7 +634,11 @@ function stepsForStage(stage) {
     status: "pending",
     sub: "Waiting...",
   }));
-  if (stage === STAGE_REVIEWING_CONTENT || stage === STAGE_DONE) {
+  if (
+    stage === STAGE_REVIEWING_CONTENT ||
+    stage === STAGE_COMPARING_VISUAL_IDENTITY ||
+    stage === STAGE_DONE
+  ) {
     steps[0].status = "done";
     steps[0].sub = "Web address analyzed";
     steps[0].substepsDone = (LAYER_SUBSTEPS[0] || []).length;
@@ -625,13 +650,39 @@ function stepsForStage(stage) {
     steps[1].status = "active";
     steps[1].sub = "Reviewing page content...";
   }
+  if (stage === STAGE_COMPARING_VISUAL_IDENTITY) {
+    steps[1].status = "done";
+    steps[1].sub = "Page content reviewed";
+    steps[1].substepsDone = (LAYER_SUBSTEPS[1] || []).length;
+    steps[2].status = "active";
+    steps[2].sub = "Comparing visual identity...";
+  }
   return steps;
+}
+
+function scanningPreviewHtml(previewDataUrl) {
+  if (!previewDataUrl) return "";
+  return `<div class="scan-preview-box">
+    <img class="scan-preview-img" src="${previewDataUrl}" alt="" />
+    <div class="scan-preview-overlay">
+      <span class="scan-preview-dot"></span>
+      <span>Comparing visual identity&hellip;</span>
+    </div>
+  </div>`;
 }
 
 function applyLiveProgress(progress, fullScanMode, target) {
   if (!progress) return;
   const ns = targetNamespace(target);
   updateSteps(stepsForStage(progress.stage), target);
+  if (fullScanMode) {
+    updateNote(
+      progress.stage === STAGE_COMPARING_VISUAL_IDENTITY
+        ? scanningPreviewHtml(progress.previewDataUrl)
+        : "",
+      target,
+    );
+  }
   if (typeof progress.layer1_score === "number") {
     const s = statusForScore(progress.layer1_score);
     animateGauge(`${ns}-gauge-overall`, {
