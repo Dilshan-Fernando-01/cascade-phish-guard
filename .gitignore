@@ -53,3 +53,7 @@ data/layer3/html_test/
 data/layer3/html_test/phishing/
 data/layer3/region_test/
 data/layer3/region_review/
+data/layer3/region_test/settled/
+
+# macOS system file
+.DS_Store
