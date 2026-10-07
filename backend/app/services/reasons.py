@@ -60,6 +60,9 @@ def layer3_reasons(layer3_results):
     background = layer3_results.get("background") or {}
     if background.get("status") == "checked" and background.get("band") == "strong":
         reasons.append("The logo on the brand's own home page matches the logo on this page.")
+    region = background.get("region") or {}
+    if region.get("status") == "checked" and region.get("both_match"):
+        reasons.append("This page's layout matches the brand's own home page.")
     if level == "matches":
         reasons.append("The logo and the address agree on the same brand.")
     wording = layer3_results.get("banner_wording_check") or {}
