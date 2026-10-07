@@ -42,6 +42,14 @@ check("a strong home-page match is a reason", any("home page" in r for r in laye
 check("a layer 3 error gives no reasons", layer3_reasons({"error": "could not run"}) == [])
 check("no layer 3 result gives no reasons", layer3_reasons(None) == [])
 
+
+L3_MATCHES_OWN_BRAND = {"identity_note": {"level": "matches"}, "combination": {"brand_mismatch": False, "input_signal": True}}
+check("a brand matching its own address gives no layer 3 reasons", layer3_reasons(L3_MATCHES_OWN_BRAND) == [])
+check(
+    "so a suspicious verdict from layer 2 alone does not also blame layer 3",
+    "layer3" not in public_reasons({"layer1": [], "layer2": ["x"], "layer3": layer3_reasons(L3_MATCHES_OWN_BRAND)}, "suspicious"),
+)
+
 # No reason should expose a threshold, a score or a feature name
 all_text = " ".join(layer1_reasons({**PLAIN_L1, "brand_keyword_in_host": 1}) + layer2_reasons({"password_input_count": 1})
                     + layer3_reasons(L3_COPY))

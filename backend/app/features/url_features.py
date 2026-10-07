@@ -123,6 +123,8 @@ KNOWN_SHARED_HOSTS_NOT_IN_PSL = {
 
 
 def _is_shared_hosting(host):
+   
+    host = host.lower()
     if _private_extract(host).suffix != _icann_extract(host).suffix:
         return True
     return any(
@@ -132,6 +134,7 @@ def _is_shared_hosting(host):
 
 
 def tranco_rank_bucket(host):
+    host = host.lower()
     if _is_shared_hosting(host):
 
         return 0
@@ -154,6 +157,7 @@ def tranco_rank_bucket(host):
 
 
 def _registrable_domain_guess(host):
+    host = host.lower()
     return _icann_extract(host).registered_domain or host
 
 
@@ -164,7 +168,7 @@ def brand_distance_score(host):
 
 
 def brand_keyword_in_host(host):
- 
+    host = host.lower()
     registrable = _registrable_domain_guess(host)
     for brand in BRAND_DOMAINS:
         brand_name = brand.split(".")[0]
@@ -174,11 +178,12 @@ def brand_keyword_in_host(host):
 
 
 def domain_age_days(host):
+    host = host.lower()
     if _is_shared_hosting(host):
 
         return None
 
-    
+
     try:
         resp = requests.get(f"https://rdap.org/domain/{host}", timeout=5)
         if resp.status_code == 200:
