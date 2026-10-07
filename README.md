@@ -1,93 +1,69 @@
 # Cascade Phish Guard
 
-A three-layer, cascaded machine learning system for real-time phishing website detection — a browser extension backed by a local Python analysis service.
+A three-layer phishing detector: a Chrome extension (Manifest V3) backed by a local
+Python service. Each visited page is scored by up to three layers. Later layers run only
+when earlier ones leave the page uncertain (Full scan runs all three).
 
-## What it does
+Final-year research project. Nothing leaves the machine except the page address and the
+images needed for the visual check: no form values are sent, and screenshots are not stored.
 
-Most phishing detectors look at one signal: the URL, or the page's structure, or its visual appearance. Each view alone misses attacks the others would catch. This project scores every visited page through up to three layers, escalating only when necessary:
+## The three layers
 
-1. **Layer 1 — URL Analysis.** Lexical and domain-level features, scored instantly by an ML classifier.
-2. **Layer 2 — DOM Analysis.** If Layer 1 is uncertain, the page is loaded in a sandboxed headless browser and its structure, scripts, and embedded content are analysed. URLs found inside the page are re-scored through Layer 1 as secondary evidence.
-3. **Layer 3 — Visual Analysis.** If still uncertain, a screenshot is compared against known brand reference images using CNN-based similarity models.
+1. **Layer 1: web address.** A random forest on address features (length, HTTPS, brand
+   names in the address, edit distance to brand names, TLD risk, numeric-IP hosts,
+   popularity rank, WHOIS age when available). Trained on 27,940 addresses.
+2. **Layer 2: page content.** Runs in a headless browser on the rendered page: forms,
+   password fields, external form actions, iframes, redirects, link ratios, and risk
+   scores for embedded links. A random forest on 22 features, trained on 1,583 captured
+   pages (1,149 train, 212 validation, 222 test).
+3. **Layer 3: visual identity.** Asks whether a page imitates a known brand. Sub-layers:
+   - the logo on the page, compared with reference logos for about 267 brands;
+   - a brand named in the address;
+   - a live comparison of the visited home page's logo with the brand's own home page;
+   - alarming wording at the top of the page (provisional, not part of the verdict).
 
-Cheap checks resolve the obvious cases; expensive analysis only runs on genuinely ambiguous pages. Everything runs locally — no page content or URL is ever sent to an external server.
+   A brand mismatch raises the verdict to "suspicious" only together with an input field or
+   sign-in link on the page. Layer 3 never sets "phishing" alone and never lowers a verdict.
 
-## Architecture
+**Verdict:** the Layer 2 score when Layer 2 ran, otherwise Layer 1. Below 0.2 is safe,
+above 0.8 is phishing, and anything between is suspicious.
 
-```
-Browser Extension (JS)
-        │  visited URL
-        ▼
-FastAPI local backend
-        │
-   ┌────┴────┐
-   │ Layer 1 │  URL features → Logistic Regression / Random Forest / XGBoost / MLP
-   └────┬────┘
-        │ uncertain?
-        ▼
-   ┌─────────┐
-   │ Layer 2 │  DOM features (Playwright + BeautifulSoup) → RF / XGBoost / SVM / MLP
-   └────┬────┘  + bounded re-scan of embedded URLs through Layer 1
-        │ uncertain?
-        ▼
-   ┌─────────┐
-   │ Layer 3 │  Screenshot vs. brand reference → MobileNetV2 / EfficientNet-B0 / ResNet-50 / Siamese
-   └────┬────┘
-        ▼
-   Final verdict + confidence
-```
+## Results so far
 
-## Tech stack
+- **Layer 1:** tested on 4,528 addresses (2,520 phishing, 2,008 legitimate).
+- **Layer 2:** test F1 about 0.78 at a threshold chosen on validation data. Its score can
+  move with what the page shows at scan time.
+- **False alarms on 833 legitimate home pages:** 13 (1.6% of the 798 that loaded).
+- **Metadata identity check:** tested and not used in the verdict (negative result; see
+  `temp/writing/METADATA_NEGATIVE_RESULT.md`).
+- **Region comparison (experimental):** passed a false-match test on unrelated pages. It
+  has not yet been tested on real copies of brand pages, so it is supporting evidence only.
 
-- **Backend:** Python, FastAPI, scikit-learn, XGBoost, PyTorch/Keras, Playwright, BeautifulSoup
-- **Extension:** JavaScript (Chromium, Manifest V3)
-- **Data:** PhishTank + OpenPhish (dual-source confirmed phishing), Tranco (legitimate)
+Known limits: the unranked-address bias in Layer 1, the subdomain-count bug (counts dots,
+not subdomains), WHOIS data that is often missing, small or CSS-drawn logos that the logo
+finder cannot read, stored reference logos that can be out of date, and pages that
+imitate no known brand.
 
-## Project structure
+## Project layout
 
 ```
 backend/
-  api/            # FastAPI routes
+  api/                 FastAPI routes (/analyze, /health, /version)
   app/
-    features/     # feature extraction modules (url_features.py, brand_reference.py)
-    models/       # thin wrappers around trained model artifacts
-    services/     # orchestration (page loading, analyzers, cascade logic)
-    schemas/      # Pydantic request/response models
+    features/          feature extraction (URL, DOM, brand hints, official domains, metadata)
+    models/            trained model wrappers (Layer 1, Layer 2)
+    services/          cascade, Layer 2 and Layer 3 analysers, reasons, region comparison
+    schemas/           request and response models
+extension/             Chrome extension (background, popup, logo finder, shared settings)
 scripts/
-  data_collection/  # one script per data source
-  data_filtering/   # validation, dedup, agreement checks, feature build, splits
-  training/         # one script per model (common.py holds shared prep/eval logic)
-  reporting/        # evidence-pack generation for the paper
-data/
-  raw/            # untouched downloads (not tracked in git)
-  processed/      # cleaned/labelled datasets, feature tables, train/val/test splits
-  reports/        # model comparison tables, filtering summaries, figures/
-  models/         # trained model artifacts (.joblib, not tracked in git)
-notebooks/        # exploratory data analysis, model comparison reports
-extension/        # browser extension
-tests/            # backend smoke test
-docs/             # architecture notes, future-feature ideas
+  data_collection/     data sources
+  data_filtering/      cleaning, feature building, splits
+  training/            model training and comparison
+  layer3/              page capture, logo cache, false-alarm and region tests
+data/                  datasets, reports and models (git-ignored where large or sensitive)
+temp/                  working notes, status documents and the report briefing
+tests/                 unit and plumbing tests for each layer
 ```
-
-## Project status
-
-Layer 2 is temporarily paused (it needs a sandboxed environment to load
-real phishing pages, currently pending a separate VM). In the meantime,
-the backend and extension were built through Layer 1 only, as a working
-end-to-end skeleton — the extension genuinely calls a live backend and
-returns a real verdict today, just without Layer 2/3 escalation yet.
-
-| Phase | Status |
-|---|---|
-| 0 — Project setup | ☑ |
-| 1–3 — Dataset collection, filtering, EDA | ☑ (dataset collection continues running in the background; pipeline itself is complete) |
-| 4 — Layer 1 (URL) | ☑ all 4 models trained (Logistic Regression, Random Forest, XGBoost, MLP), compared, winner selected |
-| 5 — Layer 2 (DOM) | ☐ paused — resumes once a sandboxed VM is available |
-| 6 — FastAPI backend | ☑ `/health`, `/version`, `/analyze` — Layer 1 only for now |
-| 7 — Browser extension | ☑ manifest, live verdict on page visit, manual URL check — Layer 1 only for now |
-| 8 — Layer 3 (visual) | ☐ |
-| 9 — Ensemble / cascade integration | ☐ |
-| 10 — Evaluation & evidence pack | ☐ |
 
 ## Setup
 
@@ -99,24 +75,37 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Running the backend + extension
+Layer 3's logo check also needs the reference model files in `data/external/phishpedia/`
+(not in git) and PyTorch and torchvision.
+
+## Running the backend and the extension
 
 ```bash
 cd backend
+export API_KEY="<the key in extension/shared.js>"
+export ENABLE_LAYER2=true        # optional: runs Layer 2 on uncertain and Full-scan pages
 ../.venv/bin/uvicorn api.main:app --port 8000
 ```
 
-Then in Chrome: `chrome://extensions` → enable Developer mode → **Load
-unpacked** → select the `extension/` folder. Visiting any page shows a
-live verdict in the popup; the popup also has a field to check any URL
-directly without visiting it.
+Then in Chrome: `chrome://extensions`, turn on Developer mode, and click **Load unpacked**
+on the `extension/` folder. Open a page and pick **Quick scan** (address only) or **Full scan**
+(address, page content and visual identity). The popup also checks any pasted address,
+without opening it, using the address layer only.
 
-To check the backend on its own without a browser:
+## Tests
 
 ```bash
-.venv/bin/python tests/test_backend_smoke.py
+.venv/bin/python tests/test_layer3_rule.py
+.venv/bin/python tests/test_reasons.py
+.venv/bin/python tests/test_layer3_background.py
+.venv/bin/python tests/test_metadata_identity.py
+.venv/bin/python tests/test_region_compare.py
+.venv/bin/python tests/test_official_domains.py
 ```
+
+Each test file prints one line per check and ends with "All checks passed" when they pass.
 
 ## Academic context
 
-This is a final-year research project. The accompanying paper is titled *"A Multi-Layer Machine Learning Framework for Real-Time Phishing Website Detection."* See the project's research documentation for full objectives, scope, and evaluation methodology.
+This is a final-year research project. The accompanying paper is titled *"A Multi-Layer
+Machine Learning Framework for Real-Time Phishing Website Detection."*
