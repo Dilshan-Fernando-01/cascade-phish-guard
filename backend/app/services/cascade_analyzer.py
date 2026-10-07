@@ -113,9 +113,12 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
 
     from services.reasons import layer1_reasons, layer2_reasons, layer3_reasons, public_reasons
 
+   
+    layer1_safe = layer1_score < LOW_THRESHOLD
+    layer2_safe = layer2_score is None or layer2_score < LOW_THRESHOLD
     detailed_reasons = {
-        "layer1": layer1_reasons(layer1_features),
-        "layer2": layer2_reasons(layer2_features),
+        "layer1": [] if layer1_safe else layer1_reasons(layer1_features),
+        "layer2": [] if layer2_safe else layer2_reasons(layer2_features),
         "layer3": layer3_reasons(layer3_results),
     }
     reasons = public_reasons(detailed_reasons, verdict.value)

@@ -430,6 +430,7 @@ const VISUAL_SUBSTEP_LABELS = [
   "Brand on the page (logo)",
   "Brand named in the address",
   "Home-page logos compared",
+  "Home-page layout compared",
   "Alarming banner wording",
 ];
 const VISUAL_REVEAL_MS = 700;
@@ -460,15 +461,34 @@ function layer3Substeps(layer3) {
 
   const background = layer3.background;
   let homeRow;
+  let layoutRow;
   if (!background) {
     homeRow = { status: "skipped", detail: "Not needed for this page" };
+    layoutRow = { status: "skipped", detail: "Not needed for this page" };
   } else if (background.status === "checked") {
-    homeRow = {
-      status: "done",
-      detail: `Home-page logos: ${BAND_LABELS[background.band] || background.band}`,
-    };
+    homeRow = background.band
+      ? {
+          status: "done",
+          detail: `Home-page logos: ${BAND_LABELS[background.band] || background.band}`,
+        }
+      : { status: "unavailable", detail: "No logo found to compare on one of the home pages" };
+
+    const region = background.region || {};
+    layoutRow =
+      region.status === "checked"
+        ? {
+            status: "done",
+            detail: region.both_match
+              ? "Home-page layout matches"
+              : "Home-page layout does not match",
+          }
+        : { status: "unavailable", detail: "Not enough detail on the page to compare layout" };
   } else {
     homeRow = {
+      status: "unavailable",
+      detail: background.reason || "Could not compare the home pages",
+    };
+    layoutRow = {
       status: "unavailable",
       detail: background.reason || "Could not compare the home pages",
     };
@@ -485,7 +505,7 @@ function layer3Substeps(layer3) {
         }
       : { status: "unavailable", detail: "Banner text not checked" };
 
-  return [logoRow, addressRow, homeRow, wordingRow].map((row, i) => ({
+  return [logoRow, addressRow, homeRow, layoutRow, wordingRow].map((row, i) => ({
     label: VISUAL_SUBSTEP_LABELS[i],
     ...row,
   }));

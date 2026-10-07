@@ -220,12 +220,28 @@ def _background_upgrade(url, url_hints, identity):
     from services.background_compare import background_check
 
     background = background_check(url, claimed)
-    if background["status"] == "checked" and background.get("band") in ("strong", "moderate"):
+    if background["status"] != "checked":
+        return background, identity
+
+    logo_confirms = background.get("band") in ("strong", "moderate")
+    region = background.get("region") or {}
+    region_confirms = region.get("status") == "checked" and region.get("both_match")
+
+    if logo_confirms:
         identity = {
             "level": LEVEL_CLOSELY_RESEMBLES,
             "text": (
                 f"The address closely resembles {claimed}, and the logo on its home page "
                 "matches that brand. Check the address before entering personal details."
+            ),
+            "disclaimer": DISCLAIMER,
+        }
+    elif region_confirms:
+        identity = {
+            "level": LEVEL_CLOSELY_RESEMBLES,
+            "text": (
+                f"The address closely resembles {claimed}, and this page's layout matches "
+                "that brand's home page. Check the address before entering personal details."
             ),
             "disclaimer": DISCLAIMER,
         }
@@ -242,8 +258,7 @@ def analyze_layer3(url, screenshot_png, html=None, logo_png=None, background=Fal
         ORIGINAL_COMPARISON: _original_comparison(logo_png, url_hints),
         "url_brand_hints": url_hints,
     }
-    already_mismatch = identity["level"] in (LEVEL_CLOSELY_RESEMBLES, LEVEL_MAY_BE_IMITATING)
-    if background and url_hints and not already_mismatch:
+    if background and identity["level"] == LEVEL_MAY_BE_IMITATING:
         background_result, identity = _background_upgrade(url, url_hints, identity)
         if background_result is not None:
             results["background"] = background_result

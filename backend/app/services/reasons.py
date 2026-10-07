@@ -51,8 +51,6 @@ def layer3_reasons(layer3_results):
         return []
     reasons = []
     combination = layer3_results.get("combination") or {}
-    note = layer3_results.get("identity_note") or {}
-    level = note.get("level")
     if combination.get("brand_mismatch"):
         reasons.append("The page shows a known brand's logo, but its address is not that brand's.")
     if combination.get("input_signal") and combination.get("brand_mismatch"):
@@ -60,8 +58,10 @@ def layer3_reasons(layer3_results):
     background = layer3_results.get("background") or {}
     if background.get("status") == "checked" and background.get("band") == "strong":
         reasons.append("The logo on the brand's own home page matches the logo on this page.")
-    if level == "matches":
-        reasons.append("The logo and the address agree on the same brand.")
+    region = background.get("region") or {}
+    if region.get("status") == "checked" and region.get("both_match"):
+        reasons.append("This page's layout matches the brand's own home page.")
+   
     wording = layer3_results.get("banner_wording_check") or {}
     if wording.get("status") == "checked" and wording.get("matched_phrases"):
         reasons.append("Urgent wording was found at the top of the page (provisional check).")
