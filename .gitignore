@@ -57,3 +57,6 @@ data/layer3/region_test/settled/
 
 # macOS system file
 .DS_Store
+
+data/layer3/fresh_phishing/
+data/layer3/fresh_phishing_live_results.csv
