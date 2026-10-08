@@ -83,7 +83,10 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     if full_scan and (screenshot_png is not None or logo_png is not None):
         from services.layer3_analyzer import analyze_layer3
 
-        _set_progress(request_id, {"stage": STAGE_COMPARING_VISUAL_IDENTITY, "layer1_score": layer1_score})
+        _set_progress(
+            request_id,
+            {"stage": STAGE_COMPARING_VISUAL_IDENTITY, "layer1_score": layer1_score, "layer2_score": layer2_score},
+        )
         try:
             layer3_results = analyze_layer3(
                 url, screenshot_png, html=html, logo_png=logo_png, background=True

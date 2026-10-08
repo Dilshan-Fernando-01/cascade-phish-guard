@@ -698,6 +698,20 @@ function applyLiveProgress(progress, fullScanMode, target) {
       });
     }
   }
+
+  if (fullScanMode && typeof progress.layer2_score === "number") {
+    const s2 = statusForScore(progress.layer2_score);
+    animateGauge(`${ns}-gauge-layer2`, {
+      value: progress.layer2_score * 100,
+      statusKey: s2.key,
+      statusLabel: s2.label,
+    });
+    animateGauge(`${ns}-gauge-overall`, {
+      value: progress.layer2_score * 100,
+      statusKey: s2.key,
+      statusLabel: s2.label,
+    });
+  }
 }
 
 function finishWithResult(result, fullScanMode, target = content) {
