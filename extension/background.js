@@ -113,11 +113,31 @@ function runBackendCall(
   tabId,
   generation,
   url,
-  { fullScan, html, skipLayer2, logoPng = null, bannerPng = null, previewDataUrl = null },
+  {
+    fullScan,
+    html,
+    skipLayer2,
+    logoPng = null,
+    bannerPng = null,
+    previewDataUrl = null,
+  },
 ) {
   const requestId = crypto.randomUUID();
-  const progress = pollProgressInto(tabId, generation, requestId, previewDataUrl);
-  return checkUrlWithBackend(url, fullScan, requestId, html, skipLayer2, logoPng, bannerPng)
+  const progress = pollProgressInto(
+    tabId,
+    generation,
+    requestId,
+    previewDataUrl,
+  );
+  return checkUrlWithBackend(
+    url,
+    fullScan,
+    requestId,
+    html,
+    skipLayer2,
+    logoPng,
+    bannerPng,
+  )
     .then((outcome) => {
       const lastProgress = progress.getLast();
       if (
@@ -171,12 +191,6 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
           return;
         }
 
-        // Stay "analyzing" -- a deeper content check is still coming. Wait
-        // for the real navigation to finish, then read its rendered DOM.
-        // If that fails for any reason (restricted page, injection error),
-        // fall back to the backend's own Playwright-based Layer 2 exactly
-        // as before -- html stays null, which is what the backend already
-        // treats as "load it yourself".
         return waitForPageComplete(tabId, generation)
           .then((stillCurrent) => {
             if (!stillCurrent || tabGeneration.get(tabId) !== generation) {
@@ -189,29 +203,38 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
             const imageLookup = fullScan
               ? captureLayer3Images(tabId)
               : Promise.resolve({ logoPng: null, bannerPng: null });
-            return imageLookup.then(({ logoPng, bannerPng }) => {
-              if (tabGeneration.get(tabId) !== generation) return;
-              return runBackendCall(tabId, generation, url, {
-                fullScan,
-                html,
-                skipLayer2: false,
-                logoPng,
-                bannerPng,
+            return imageLookup
+              .then(({ logoPng, bannerPng, previewDataUrl }) => {
+                if (tabGeneration.get(tabId) !== generation) return;
+                return runBackendCall(tabId, generation, url, {
+                  fullScan,
+                  html,
+                  skipLayer2: false,
+                  logoPng,
+                  bannerPng,
+                  previewDataUrl,
+                });
+              })
+              .then((finalOutcome) => {
+                if (!finalOutcome) return;
+                if (tabGeneration.get(tabId) !== generation) return;
+                if (
+                  finalOutcome.status === "done" &&
+                  finalOutcome.result.layer3_results
+                ) {
+                  console.log(
+                    `Cascade Phish Guard layer 3 for ${url}:`,
+                    finalOutcome.result.layer3_results,
+                  );
+                }
+                if (finalOutcome.status !== "done") {
+                  console.warn(
+                    `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
+                    finalOutcome.message || finalOutcome,
+                  );
+                }
+                tabResults.set(tabId, { ...finalOutcome, modeUsed: mode });
               });
-            }).then((finalOutcome) => {
-              if (!finalOutcome) return;
-              if (tabGeneration.get(tabId) !== generation) return;
-              if (finalOutcome.status === "done" && finalOutcome.result.layer3_results) {
-                console.log(`Cascade Phish Guard layer 3 for ${url}:`, finalOutcome.result.layer3_results);
-              }
-              if (finalOutcome.status !== "done") {
-                console.warn(
-                  `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
-                  finalOutcome.message || finalOutcome,
-                );
-              }
-              tabResults.set(tabId, { ...finalOutcome, modeUsed: mode });
-            });
           });
       });
     })

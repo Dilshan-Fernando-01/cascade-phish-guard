@@ -94,11 +94,17 @@ def compare_logo_pair(visited_png, brand_png):
     return {"band": l3._band(similarity), "similarity": round(similarity, 4)}
 
 
+def _brand_home_url(brand_domain):
+    if brand_domain == "corvanetrust.test" and os.environ.get("DEMO_FICTIONAL_BRAND", "").lower() in ("1", "true", "yes"):
+        return "http://corvanetrust.test:5173/"
+    return f"https://{brand_domain}/"
+
+
 def background_check(url, brand_domain):
     visited = _visit(url)
     if visited["screenshot"] is None:
         return {"status": STATUS_COULD_NOT_CONFIRM, "reason": f"visited site: {visited['reason']}", "brand_domain": brand_domain}
-    brand = _visit(f"https://{brand_domain}/")
+    brand = _visit(_brand_home_url(brand_domain))
     if brand["screenshot"] is None:
         return {"status": STATUS_COULD_NOT_CONFIRM, "reason": f"brand's home page: {brand['reason']}", "brand_domain": brand_domain}
 
