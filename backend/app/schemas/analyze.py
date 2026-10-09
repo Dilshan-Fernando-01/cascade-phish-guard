@@ -52,6 +52,10 @@ class AnalyzeResponse(BaseModel):
     would_escalate: bool = Field(
         ..., description="Whether the cascade rule judged this uncertain and would escalate, if a next layer existed"
     )
+    layer1_features: Optional[dict] = Field(
+        default=None,
+        description="Raw Layer 1 URL features. Always computed (Layer 1 always runs); kept out of the default popup display and meant for a developer/debug view.",
+    )
     layer2_features: Optional[dict] = Field(
         default=None,
         description="Raw Layer 2 DOM features, when Layer 2 actually ran. ",

@@ -1,47 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Cascade Phish Guard</title>
-  <link rel="stylesheet" href="popup.css" />
-</head>
-<body>
-  <div class="card">
-    <div class="header-row">
-      <span class="brand-title">Cascade Phish Guard</span>
-      <span class="badge" id="badge">--</span>
-    </div>
-    <p class="subtitle" id="subtitle">&nbsp;</p>
-
-    <div class="scan-mode-row">
-      <div class="scan-mode-toggle" id="scan-mode-toggle" role="group" aria-label="Scan mode">
-        <button type="button" class="scan-mode-option" data-mode="quick">Quick scan</button>
-        <button type="button" class="scan-mode-option" data-mode="full">Full scan</button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cascade Phish Guard</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="card">
+      <div class="header-row">
+        <span class="brand-title">Cascade Phish Guard</span>
+        <span class="badge" id="badge">--</span>
       </div>
-      <p class="scan-mode-hint" id="scan-mode-hint"></p>
-    </div>
+      <p class="subtitle" id="subtitle">&nbsp;</p>
 
-    <div id="content"></div>
-
-    <div class="divider"></div>
-
-    <form id="manual-form" class="manual-section">
-      <label class="manual-label" for="manual-url">Check a URL directly</label>
-      <div class="manual-input-wrap">
-        <span class="manual-icon">&#128279;</span>
-        <input
-          type="text"
-          id="manual-url"
-          class="manual-input"
-          placeholder="https://example.com"
-          autocomplete="off"
-        />
+      <div class="scan-mode-row">
+        <div
+          class="scan-mode-toggle"
+          id="scan-mode-toggle"
+          role="group"
+          aria-label="Scan mode"
+        >
+          <button type="button" class="scan-mode-option" data-mode="quick">
+            Quick scan
+          </button>
+          <button type="button" class="scan-mode-option" data-mode="full">
+            Full scan
+          </button>
+        </div>
+        <p class="scan-mode-hint" id="scan-mode-hint"></p>
       </div>
-      <button type="submit" class="manual-button">Check</button>
-      <div id="manual-result" class="manual-result"></div>
-    </form>
-  </div>
-  <script src="shared.js"></script>
-  <script src="popup.js"></script>
-</body>
+
+      <label class="dev-mode-row" id="dev-mode-row">
+        <input type="checkbox" id="dev-mode-toggle" />
+        <span
+          >Developer mode - show what each layer captured and how its score was
+          reached</span
+        >
+      </label>
+
+      <div id="content"></div>
+
+      <div class="divider"></div>
+
+      <form id="manual-form" class="manual-section">
+        <label class="manual-label" for="manual-url"
+          >Check a URL directly</label
+        >
+        <div class="manual-input-wrap">
+          <span class="manual-icon">&#128279;</span>
+          <input
+            type="text"
+            id="manual-url"
+            class="manual-input"
+            placeholder="https://example.com"
+            autocomplete="off"
+          />
+        </div>
+        <button type="submit" class="manual-button">Check</button>
+        <div id="manual-result" class="manual-result"></div>
+      </form>
+    </div>
+    <script src="shared.js"></script>
+    <script src="popup.js"></script>
+  </body>
 </html>

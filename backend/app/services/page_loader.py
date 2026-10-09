@@ -25,7 +25,6 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS, s
         "error": None,
     }
     abort_reason = {"reason": None}
-    visited = []
     network_urls = []
     browser = None
 
@@ -45,20 +44,12 @@ def load_page(url, timeout_ms=DEFAULT_TIMEOUT_MS, max_redirects=MAX_REDIRECTS, s
 
             page.on("request", track_request)
 
-            def track_navigation(frame):
-                if frame != page.main_frame:
-                    return
-                visited.append(frame.url)
-                if visited.count(frame.url) > 1:
-                    abort_reason["reason"] = "redirect loop detected"
-                    page.close()
-                elif len(visited) > max_redirects + 1:
-                    abort_reason["reason"] = "too many client-side redirects"
-                    page.close()
-
-            page.on("framenavigated", track_navigation)
-
+          
             response = page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
+            try:
+                page.wait_for_load_state("networkidle", timeout=8000)
+            except Exception:
+                pass  
 
             hop_count = 0
             req = response.request if response else None
