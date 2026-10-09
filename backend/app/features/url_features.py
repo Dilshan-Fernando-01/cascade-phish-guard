@@ -19,8 +19,13 @@ SPECIAL_CHARS = set("-_@%=?&")
 
 
 HIGH_RISK_TLDS = {
-    "tk", "ml", "ga", "cf", "gq", "xyz", "top", "club", "work",
-    "click", "loan", "men", "date", "racing", "review", "win", "bid", "stream",
+    # tk/ml/ga/cf/gq: Freenom's free ccTLDs, long and widely documented in the security
+    # industry as disproportionately abused.
+    "tk", "ml", "ga", "cf", "gq",
+    "xyz", "top", "club", "work", "click", "loan", "men", "date", "racing", "review",
+    "win", "bid", "stream",
+
+    "xin", "bond", "help", "cfd",
 }
 LOW_RISK_TLDS = {"com", "org", "net", "edu", "gov"}
 
