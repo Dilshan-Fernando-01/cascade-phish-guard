@@ -173,7 +173,7 @@ function gaugeRowHtml(fullScanMode, ns) {
           <p class="gauge-small-label">Page content</p>
         </div>
         <div class="gauge-small-col">
-          ${gaugeHtml({ id: `${ns}-gauge-layer3`, size: 72, strokeWidth: 8, big: false, label: "N/A" })}
+          ${gaugeHtml({ id: `${ns}-gauge-layer3`, size: 72, strokeWidth: 8, big: false })}
           <p class="gauge-small-label">Visual</p>
         </div>
       </div>
