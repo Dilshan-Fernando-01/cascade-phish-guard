@@ -3,11 +3,11 @@
   "train_rows": 18862,
   "validation_rows": 4550,
   "metrics": {
-    "accuracy": 0.9813186813186813,
-    "precision": 0.9995812395309883,
-    "recall": 0.9660056657223796,
-    "f1": 0.9825066886190574,
-    "auc_roc": 0.9970772067089348
+    "accuracy": 0.9786813186813187,
+    "precision": 0.9995791245791246,
+    "recall": 0.9611493322541481,
+    "f1": 0.9799876212089953,
+    "auc_roc": 0.9976070664051238
   },
   "confusion_matrix": [
     [
@@ -15,8 +15,8 @@
       1
     ],
     [
-      84,
-      2387
+      96,
+      2375
     ]
   ],
   "architecture": {
@@ -24,7 +24,7 @@
       64,
       32
     ],
-    "n_iterations_run": 21,
-    "final_training_loss": 0.006293598276295206
+    "n_iterations_run": 19,
+    "final_training_loss": 0.006184014313374764
   }
 }

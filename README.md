@@ -1,8 +1,12 @@
 # Cascade Phish Guard
 
-A three-layer phishing detector: a Chrome extension (Manifest V3) backed by a local
-Python service. Each visited page is scored by up to three layers. Later layers run only
-when earlier ones leave the page uncertain (Full scan runs all three).
+A three-layer phishing risk analysis system: a Chrome extension (Manifest V3) backed by
+a local Python service. Each visited page is analyzed by up to three layers, which
+produce a risk signal from available evidence (URL structure, page content, visual
+identity) rather than a certain, binary detection - no externally observable analysis
+can confirm a page operator's intent, so every verdict is phrased as a probability, never
+a guarantee. Later layers run only when earlier ones leave the page uncertain (Full scan
+runs all three).
 
 Final-year research project. Nothing leaves the machine except the page address and the
 images needed for the visual check: no form values are sent, and screenshots are not stored.
@@ -107,5 +111,5 @@ Each test file prints one line per check and ends with "All checks passed" when 
 
 ## Academic context
 
-This is a final-year research project. The accompanying paper is titled *"A Multi-Layer
-Machine Learning Framework for Real-Time Phishing Website Detection."*
+This is a final-year research project. The accompanying paper is titled _"A Multi-Layer
+Machine Learning Framework for Real-Time Phishing Website Detection."_

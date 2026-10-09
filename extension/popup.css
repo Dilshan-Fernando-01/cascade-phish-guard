@@ -82,6 +82,42 @@ body {
 
 .badge-icon {
   font-size: 10px;
+  display: inline-flex;
+}
+
+.icon-svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+  fill: currentColor;
+}
+
+.step-icon .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+.substep-icon .icon-svg,
+.progress-summary-icon .icon-svg {
+  width: 11px;
+  height: 11px;
+}
+.note-icon .icon-svg {
+  width: 11px;
+  height: 11px;
+}
+.badge-icon .icon-svg {
+  width: 12px;
+  height: 12px;
+}
+
+.badge-spinner {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid rgba(57, 135, 229, 0.25);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .badge-safe {
@@ -158,6 +194,80 @@ body {
   min-height: 14px;
 }
 
+.dev-mode-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--surface-raised);
+  cursor: pointer;
+}
+
+.dev-mode-row input {
+  margin-top: 2px;
+  accent-color: var(--brand);
+  flex-shrink: 0;
+}
+
+.dev-mode-row span {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.dev-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.dev-details-title {
+  margin: 0 0 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent-text, var(--brand));
+}
+
+.dev-details-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 10px;
+  font-size: 11px;
+}
+
+.dev-details-grid dt {
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  overflow-wrap: anywhere;
+}
+
+.dev-details-grid dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dev-details-json {
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--page);
+  border-radius: 8px;
+  padding: 8px 10px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
 /* --- Gauges --- */
 
 .gauge-row {
@@ -171,36 +281,6 @@ body {
 
 .steps-wrap {
   position: relative;
-}
-
-.flow-overlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.flow-line {
-  fill: none;
-  stroke: var(--brand);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 2 6;
-  opacity: 0.9;
-  animation-name: flow-dash;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-}
-
-@keyframes flow-dash {
-  from {
-    stroke-dashoffset: 0;
-  }
-  to {
-    stroke-dashoffset: -64;
-  }
 }
 
 .gauge-big-wrap {
@@ -630,7 +710,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  background: linear-gradient(180deg, rgba(13, 13, 13, 0.35) 0%, rgba(13, 13, 13, 0.75) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(13, 13, 13, 0.35) 0%,
+    rgba(13, 13, 13, 0.75) 100%
+  );
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;
@@ -646,7 +730,8 @@ body {
 }
 
 @keyframes scan-preview-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.35;
     transform: scale(0.85);
   }

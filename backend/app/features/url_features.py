@@ -24,6 +24,8 @@ HIGH_RISK_TLDS = {
 }
 LOW_RISK_TLDS = {"com", "org", "net", "edu", "gov"}
 
+LOW_RISK_SLD_LABELS = {"ac", "edu", "gov", "sch", "mil"}
+
 
 def shannon_entropy(s):
     if not s:
@@ -33,13 +35,42 @@ def shannon_entropy(s):
     return -sum((c / length) * math.log2(c / length) for c in counts.values())
 
 
+def _suffix_labels(host):
+    suffix = _icann_extract(host.lower()).suffix
+    return suffix.split(".") if suffix else []
+
+
 def tld_risk_score(host):
-    tld = host.rsplit(".", 1)[-1].lower() if "." in host else ""
-    if tld in HIGH_RISK_TLDS:
+    labels = _suffix_labels(host)
+    if not labels:
+        return 0.5
+    if labels[-1] in HIGH_RISK_TLDS:
         return 1.0
-    if tld in LOW_RISK_TLDS:
+    if labels[-1] in LOW_RISK_TLDS:
+        return 0.0
+    if len(labels) >= 2 and labels[0] in LOW_RISK_SLD_LABELS:
         return 0.0
     return 0.5
+
+
+def is_institutional_suffix(host):
+    """True only for a real, registry-parsed two-part suffix restricted to verified
+    institutions (ac./edu./gov./sch./mil. + a country code) - not just a domain that
+    contains that text. Used to cap the "no popularity ranking, no WHOIS record" penalty
+    below: those two facts are each individually strong evidence for a throwaway domain
+    nobody could get this kind of suffix for, so it is worth more than their absence is
+    worth against it. A domain cannot get a real match here by naming itself cleverly;
+    this only ever looks at the suffix the registry actually assigned."""
+    labels = _suffix_labels(host)
+    return len(labels) >= 2 and labels[0] in LOW_RISK_SLD_LABELS
+
+
+def subdomain_count(host):
+    """How many labels sit before the registrable domain - not a raw dot count, which
+    overcounts for any multi-part suffix (ac.lk, co.uk, com.au, ...): "nibm.ac.lk" has two
+    dots but zero real subdomains, the same shape as "nibm.com"."""
+    sub = _icann_extract(host.lower()).subdomain
+    return len(sub.split(".")) if sub else 0
 
 
 def _decode_punycode_label(label):
@@ -84,7 +115,7 @@ def extract_basic_features(url):
 
     return {
         "url_length": len(url),
-        "subdomain_count": host.count("."),
+        "subdomain_count": subdomain_count(host),
         "has_https": int(parsed.scheme == "https"),
         "special_char_count": sum(1 for c in url if c in SPECIAL_CHARS),
         "keyword_score": sum(1 for kw in SUSPICIOUS_KEYWORDS if kw in url.lower()),

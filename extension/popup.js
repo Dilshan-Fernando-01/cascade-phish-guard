@@ -26,14 +26,32 @@ const LAYER_SUBSTEPS = [
   [],
 ];
 
+const ICON_CHECK =
+  '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21ZM11.7682 15.6402L16.7682 9.64018L15.2318 8.35982L10.9328 13.5186L8.70711 11.2929L7.29289 12.7071L10.2929 15.7071L11.0672 16.4814L11.7682 15.6402Z" fill="currentColor"/></svg>';
+
+const ICON_CHECK_MARK =
+  '<svg class="icon-svg" viewBox="6.8 7.2 10.4 10.4" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.7682 15.6402L16.7682 9.64018L15.2318 8.35982L10.9328 13.5186L8.70711 11.2929L7.29289 12.7071L10.2929 15.7071L11.0672 16.4814L11.7682 15.6402Z" fill="currentColor"/></svg>';
+const ICON_FAIL =
+  '<svg class="icon-svg" viewBox="0 -8 528 528" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M264 456Q210 456 164 429 118 402 91 356 64 310 64 256 64 202 91 156 118 110 164 83 210 56 264 56 318 56 364 83 410 110 437 156 464 202 464 256 464 310 437 356 410 402 364 429 318 456 264 456ZM264 288L328 352 360 320 296 256 360 192 328 160 264 224 200 160 168 192 232 256 168 320 200 352 264 288Z"/></svg>';
+const ICON_SKIP =
+  '<svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M17.28 7.78a.75.75 0 00-1.06-1.06l-9.5 9.5a.75.75 0 101.06 1.06l9.5-9.5z"/><path fill-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zM2.5 12a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"/></svg>';
+const ICON_INFO =
+  '<svg class="icon-svg" viewBox="0 0 48.296 48.257" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M24.149,0C10.812,0,0,10.8,0,24.125c0,13.326,10.812,24.132,24.149,24.132c13.334,0,24.147-10.807,24.147-24.132 C48.296,10.8,37.483,0,24.149,0z M26.171,35.919c0,1.115-0.907,2.021-2.022,2.021c-1.12,0-2.025-0.908-2.025-2.021V22.507 c0-1.114,0.905-2.022,2.025-2.022c1.115,0,2.022,0.908,2.022,2.022V35.919z M26.171,15.101c0,1.119-0.907,2.022-2.022,2.022 c-1.12,0-2.025-0.903-2.025-2.022v-0.633c0-1.119,0.905-2.022,2.025-2.022c1.115,0,2.022,0.903,2.022,2.022V15.101z"/></svg>';
+const ICON_SPINNER = '<span class="badge-spinner"></span>';
+
 const badge = document.getElementById("badge");
 const subtitleEl = document.getElementById("subtitle");
 const content = document.getElementById("content");
 const scanModeToggle = document.getElementById("scan-mode-toggle");
 const scanModeHint = document.getElementById("scan-mode-hint");
+const devModeToggle = document.getElementById("dev-mode-toggle");
 
 let scanMode = "quick";
+let devMode = false;
 let currentTab = null;
+
+let lastResult = null;
+let lastFullScanMode = false;
 
 function setBadge(key, icon, text) {
   badge.className = `badge badge-${key}`;
@@ -228,15 +246,12 @@ function animateResultGauges(result, fullScanMode, ns) {
 
 function stepIconHtml(status) {
   if (status === "active") return `<div class="step-spinner"></div>`;
-  if (status === "done") return "&#10003;";
-  if (status === "skipped") return "&#8211;";
-  if (status === "unavailable") return "&#8230;";
+  if (status === "done") return ICON_CHECK_MARK;
+  if (status === "skipped") return ICON_SKIP;
+  if (status === "unavailable") return ICON_FAIL;
   return "";
 }
 
-// A summary pill showing analysis PROGRESS (how many layers have run) --
-// distinct from the gauges above, which show the RISK score. "Resolved"
-// covers done/skipped/unavailable -- anything no longer waiting or active.
 function progressSummaryHtml(steps) {
   const resolved = steps.filter((s) =>
     ["done", "skipped", "unavailable"].includes(s.status),
@@ -245,7 +260,7 @@ function progressSummaryHtml(steps) {
   const allDone = resolved === steps.length;
   return `
     <div class="progress-summary">
-      <div class="progress-summary-icon ${allDone ? "is-done" : ""}">${allDone ? "&#10003;" : ""}</div>
+      <div class="progress-summary-icon ${allDone ? "is-done" : ""}">${allDone ? ICON_CHECK_MARK : ""}</div>
       <span class="progress-summary-count">${resolved} of ${steps.length}</span>
       <div class="progress-summary-track">
         <div class="progress-summary-fill" style="width: ${pct}%"></div>
@@ -267,7 +282,7 @@ function substepChecklistHtml(index, doneCount) {
     .map(
       (label, i) => `
       <div class="substep-row ${i < doneCount ? "is-done" : ""}">
-        <span class="substep-icon">${i < doneCount ? "&#10003;" : ""}</span>
+        <span class="substep-icon">${i < doneCount ? ICON_CHECK_MARK : ""}</span>
         <span class="substep-label">${label}</span>
       </div>
     `,
@@ -284,11 +299,11 @@ function embeddedUrlSummaryHtml(features) {
   const linkWord = checked === 1 ? "link" : "links";
   let line;
   if (suspicious === 0) {
-    line = `Checked ${checked} embedded ${linkWord} on this page -- none looked suspicious.`;
+    line = `Checked ${checked} embedded ${linkWord} on this page - none looked suspicious.`;
   } else {
     const maxRisk = Math.round((features.max_embedded_url_risk || 0) * 100);
     const flagWord = suspicious === 1 ? "link" : "links";
-    line = `Checked ${checked} embedded ${linkWord} on this page -- ${suspicious} ${flagWord} looked suspicious (highest risk: ${maxRisk}%).`;
+    line = `Checked ${checked} embedded ${linkWord} on this page - ${suspicious} ${flagWord} looked suspicious (highest risk: ${maxRisk}%).`;
   }
   return `<div class="embedded-url-summary">${line}</div>`;
 }
@@ -300,19 +315,11 @@ function layerCardHtml(step, index) {
     !step.receiving &&
     substeps.length > 0 &&
     (step.status === "active" || step.status === "done");
-  // Default to 0 (not started) while still active, and only assume "fully
-  // done" once the layer has actually resolved -- the previous fallback
-  // defaulted to fully-done any time substepsDone wasn't set yet, which
-  // included the very first render of a newly-active layer, showing 100%
-  // before the animation had even started.
   const defaultSubstepsDone = step.status === "done" ? substeps.length : 0;
   const detail = showSubsteps
     ? substepChecklistHtml(index, step.substepsDone ?? defaultSubstepsDone) +
       (step.extraDetail || "")
     : step.detail;
-  // Only show the expandable body/chevron when there's real additional
-  // detail to show -- previously this fell back to repeating `sub`,
-  // showing the exact same line twice for no reason.
   const hasDetail = Boolean(detail);
   const remembered = userExpanded[index];
   const expanded =
@@ -327,7 +334,7 @@ function layerCardHtml(step, index) {
           <p class="step-title">${step.title}</p>
           <p class="step-sub">${step.sub}</p>
         </div>
-        ${hasDetail ? `<svg class="layer-card-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.4 3h13.2A2.4 2.4 0 0 1 21 5.4v13.2a2.4 2.4 0 0 1-2.4 2.4H5.4A2.4 2.4 0 0 1 3 18.6V5.4A2.4 2.4 0 0 1 5.4 3Zm7.307 5.293a1 1 0 0 0-1.414 0l-4 4a1 1 0 1 0 1.414 1.414L12 10.414l3.293 3.293a1 1 0 0 0 1.414-1.414l-4-4Z" fill="currentColor"/></svg>` : ""}
+        ${hasDetail ? `<svg class="layer-card-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3a9 9 0 100 18 9 9 0 000-18ZM12.707 8.293a1 1 0 0 0-1.414 0l-4 4a1 1 0 1 0 1.414 1.414L12 10.414l3.293 3.293a1 1 0 0 0 1.414-1.414l-4-4Z" fill="currentColor"/></svg>` : ""}
       </button>
       ${
         hasDetail
@@ -343,8 +350,6 @@ function layerCardHtml(step, index) {
 }
 
 function stepsListHtml(steps) {
-  // No outer "N of 3 layers" summary here -- per-layer progress (inside
-  // each card, via substepChecklistHtml) is enough on its own. The overlay
   return `<div class="steps-list">${steps.map(layerCardHtml).join("")}</div>`;
 }
 
@@ -369,7 +374,7 @@ function renderShell(fullScanMode, target) {
   const ns = targetNamespace(target);
   Object.keys(userExpanded).forEach((key) => delete userExpanded[key]);
   render(
-    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><svg class="flow-overlay" aria-hidden="true"></svg><div class="steps-slot"></div></div>`,
+    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><div class="steps-slot"></div></div>`,
     target,
   );
 }
@@ -399,7 +404,36 @@ function reasonsHtml(reasons) {
   return `<div class="reasons"><p class="reasons-title">Why</p><ul class="reasons-list">${items}</ul></div>`;
 }
 
-function deriveStepOutcomes(result) {
+function devScoreFirst(result, layerKey, features) {
+  if (!features) return features;
+  const score = (result.layer_scores || {})[layerKey];
+  if (typeof score !== "number") return features;
+  return { score: `${(score * 100).toFixed(1)}%`, ...features };
+}
+
+function devDetailsHtml(title, data, { asJson = false } = {}) {
+  if (!data || (typeof data === "object" && Object.keys(data).length === 0))
+    return "";
+  if (!devMode) return "";
+  if (asJson) {
+    return `<div class="dev-details">
+      <p class="dev-details-title">${escapeHtml(title)}</p>
+      <pre class="dev-details-json">${escapeHtml(JSON.stringify(data, null, 2))}</pre>
+    </div>`;
+  }
+  const rows = Object.entries(data)
+    .map(
+      ([key, value]) =>
+        `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(String(value))}</dd>`,
+    )
+    .join("");
+  return `<div class="dev-details">
+    <p class="dev-details-title">${escapeHtml(title)}</p>
+    <dl class="dev-details-grid">${rows}</dl>
+  </div>`;
+}
+
+function deriveStepOutcomes(result, fullScanMode) {
   const layer2Attempted = (result.layers_used || []).includes("layer2");
   const layer2Failed =
     layer2Attempted && result.layer2_features && result.layer2_features.error;
@@ -421,21 +455,32 @@ function deriveStepOutcomes(result) {
       "Would run for a borderline case like this (not enabled on this device)";
   } else {
     layer2Status = "skipped";
-    layer2Sub = "Skipped -- the web address check alone was conclusive";
+    layer2Sub = "Skipped - the web address check alone was conclusive";
   }
   const reasons = result.reasons || {};
   return [
     {
       status: "done",
       sub: "Web address analyzed",
-      extraDetail: reasonsHtml(reasons.layer1),
+      extraDetail:
+        reasonsHtml(reasons.layer1) +
+        devDetailsHtml(
+          "Layer 1 captured (score decided from these)",
+          devScoreFirst(result, "layer1", result.layer1_features),
+        ),
     },
     {
       status: layer2Status,
       sub: layer2Sub,
-      extraDetail: layer2ExtraDetail + reasonsHtml(reasons.layer2),
+      extraDetail:
+        layer2ExtraDetail +
+        reasonsHtml(reasons.layer2) +
+        devDetailsHtml(
+          "Layer 2 captured (score decided from these)",
+          devScoreFirst(result, "layer2", result.layer2_features),
+        ),
     },
-    layer3Outcome(result),
+    layer3Outcome(result, fullScanMode),
   ];
 }
 
@@ -537,11 +582,11 @@ function visualSubstepsHtml(substeps) {
     .map((step) => {
       const icon =
         step.status === "done"
-          ? "&#10003;"
+          ? ICON_CHECK_MARK
           : step.status === "skipped"
-            ? "&#8211;"
+            ? ICON_SKIP
             : step.status === "unavailable"
-              ? "&#8230;"
+              ? ICON_FAIL
               : "";
       const detail = step.detail
         ? `<p class="substep-detail">${escapeHtml(step.detail)}</p>`
@@ -559,12 +604,16 @@ function visualSubstepsHtml(substeps) {
   return `${progressSummaryHtml(substeps)}<div class="substep-list">${rows}</div>`;
 }
 
-function layer3Outcome(result) {
+function layer3Outcome(result, fullScanMode) {
   const layer3 = result.layer3_results;
   if (!layer3) {
+    if (!fullScanMode) {
+      return { status: "skipped", sub: "Only runs on a Full scan" };
+    }
+
     return {
       status: "unavailable",
-      sub: "Planned for a later phase of this project",
+      sub: "Not available for a pasted address - open the page in a tab for this check",
     };
   }
   if (layer3.error) {
@@ -582,7 +631,13 @@ function layer3Outcome(result) {
     sub: "Four checks run, in order",
     substeps,
     detail:
-      visualSubstepsHtml(substeps) + reasonsHtml((result.reasons || {}).layer3),
+      visualSubstepsHtml(substeps) +
+      reasonsHtml((result.reasons || {}).layer3) +
+      devDetailsHtml(
+        "Layer 3 full detail (score decided from this)",
+        devScoreFirst(result, "layer3", layer3),
+        { asJson: true },
+      ),
   };
 }
 
@@ -715,7 +770,11 @@ function applyLiveProgress(progress, fullScanMode, target) {
 }
 
 function finishWithResult(result, fullScanMode, target = content) {
-  const outcomes = deriveStepOutcomes(result);
+  if (target === content) {
+    lastResult = result;
+    lastFullScanMode = fullScanMode;
+  }
+  const outcomes = deriveStepOutcomes(result, fullScanMode);
   const steps = STEP_TITLES.map((title, i) => ({
     title,
     status: outcomes[i].status,
@@ -754,7 +813,6 @@ function finishWithResult(result, fullScanMode, target = content) {
 const FLOW_START_DELAY_MS = 500;
 const FLOW_DURATION_MS = 1800;
 const FLOW_GAP_MS = 2000;
-const SVG_NS = "http://www.w3.org/2000/svg";
 
 function flowSources(result) {
   const sources = [];
@@ -763,49 +821,11 @@ function flowSources(result) {
   return sources;
 }
 
-function stepCardOf(index, scope) {
-  return scope.querySelector(`.layer-card[data-step-index="${index}"]`);
-}
-
-function drawFlowConnector(fromIndex, target) {
-  const wrap = target.querySelector(".steps-wrap");
-  const overlay = wrap && wrap.querySelector(".flow-overlay");
-  const from = wrap && stepCardOf(fromIndex, wrap);
-  const to = wrap && stepCardOf(0, wrap);
-  if (!overlay || !from || !to) return null;
-
-  const listRect = wrap.getBoundingClientRect();
-  const f = from.getBoundingClientRect();
-  const t = to.getBoundingClientRect();
-  const gutterX = -10;
-  const startY = f.top + f.height / 2 - listRect.top;
-  const endY = t.top + t.height / 2 - listRect.top;
-  const startX = f.left - listRect.left;
-  const endX = t.left - listRect.left;
-
-  overlay.setAttribute("viewBox", `0 0 ${listRect.width} ${listRect.height}`);
-  const path = document.createElementNS(SVG_NS, "path");
-  path.setAttribute(
-    "d",
-    `M ${startX} ${startY} H ${gutterX} V ${endY} H ${endX}`,
-  );
-  path.setAttribute("class", "flow-line");
-  overlay.appendChild(path);
-  return { path };
-}
-
 function runFlow(fromIndex, delayMs, target, { onStart, onEnd }) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const drawn = drawFlowConnector(fromIndex, target);
-      if (!drawn) {
-        onEnd();
-        return resolve();
-      }
-      drawn.path.style.animationDuration = `${FLOW_DURATION_MS}ms`;
       onStart();
       setTimeout(() => {
-        drawn.path.remove();
         onEnd();
         resolve();
       }, FLOW_DURATION_MS);
@@ -843,14 +863,12 @@ async function playLayerFlows(sources, shown, finalSteps, target) {
   pulseGauge(`${ns}-gauge-overall`);
 }
 
-// --- Verdict + neutral states ----------------------------------------
-
 const VERDICT_META = {
   safe: {
     key: "safe",
     label: "Looks safe",
     badgeText: "SAFE",
-    icon: "&#10003;",
+    icon: ICON_CHECK,
   },
   suspicious: {
     key: "suspicious",
@@ -869,14 +887,10 @@ const VERDICT_META = {
 function escalateNoteHtml(result) {
   if (!result.would_escalate) return "";
   return `<div class="note-box">
-     <span class="note-icon">i</span>
-     <span>This page falls in a gray zone our deeper checks aren't built yet to resolve -- treat it with extra caution.</span>
+     <span class="note-icon">${ICON_INFO}</span>
+     <span>This page falls in a gray zone our deeper checks aren't built yet to resolve - treat it with extra caution.</span>
    </div>`;
 }
-
-// --- Layer 3 (visual identity) display ---------------------------------
-// Wording is fixed on purpose: levels say what was seen ("closely resembles",
-// "may be imitating", "could not confirm") and never claim phishing.
 
 const IDENTITY_LEVEL_KEYS = {
   matches: "good",
@@ -966,10 +980,10 @@ function verdictReasonsHtml(result) {
       .forEach((text) => lines.push(`${label}: ${text}`));
   });
   if (lines.length === 0) {
-    return `<div class="note-box"><span class="note-icon">i</span><span>No specific signal was recorded for this result. The score comes from the combined model.</span></div>`;
+    return `<div class="note-box"><span class="note-icon">${ICON_INFO}</span><span>No specific signal was recorded for this result. The score comes from the combined model.</span></div>`;
   }
   const items = lines.map((line) => `<li>${escapeHtml(line)}</li>`).join("");
-  return `<div class="note-box verdict-reasons"><span class="note-icon">i</span><div><p class="reasons-title">What led to this result</p><ul class="reasons-list">${items}</ul></div></div>`;
+  return `<div class="note-box verdict-reasons"><span class="note-icon">${ICON_INFO}</span><div><p class="reasons-title">What led to this result</p><ul class="reasons-list">${items}</ul></div></div>`;
 }
 
 function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
@@ -1013,7 +1027,7 @@ function renderInitialChecking(fullScanMode, target = content) {
     sub: i === 0 ? "Checking the web address..." : "Waiting...",
   }));
   renderShell(fullScanMode, target);
-  setBadge("loading", "&#8987;", "CHECKING");
+  setBadge("loading", ICON_SPINNER, "CHECKING");
   updateSteps(steps, target);
 }
 
@@ -1026,21 +1040,12 @@ function handleResolvedStatus(status, payload, tabId, target = content) {
   } else if (status === "error") {
     renderError(payload.message, target);
   } else if (status === "analyzing" && tabId != null) {
-    // A newer navigation superseded the request that just resolved (e.g.
-    // multiple redirects on a login page) while it was in flight -- the
-    // real analysis is still legitimately running, so keep polling instead
-    // of showing "nothing to check" for a page that's actually being
-    // analyzed right now.
     pollUntilDone(tabId, 0, target);
   } else {
     renderUnknown(target);
   }
 }
 
-// 90 attempts * 500ms = 45s -- must stay above the backend's own
-// REQUEST_TIMEOUT_SECONDS (40s), or the popup gives up and shows a false
-// "taking longer than expected" error for a page that's still legitimately
-// working and might succeed a few seconds later.
 const MAX_POLL_ATTEMPTS = 90;
 
 function pollUntilDone(tabId, attempt = 0, target = content) {
@@ -1094,9 +1099,19 @@ scanModeToggle.addEventListener("click", (event) => {
   }
 });
 
+devModeToggle.addEventListener("change", () => {
+  devMode = devModeToggle.checked;
+  chrome.storage.local.set({ devMode });
+  if (lastResult) {
+    finishWithResult(lastResult, lastFullScanMode, content);
+  }
+});
+
 async function main() {
-  const stored = await chrome.storage.local.get(["scanMode"]);
+  const stored = await chrome.storage.local.get(["scanMode", "devMode"]);
   setScanModeUI(stored.scanMode || "quick");
+  devMode = Boolean(stored.devMode);
+  devModeToggle.checked = devMode;
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (
