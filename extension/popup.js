@@ -1120,6 +1120,13 @@ scanModeToggle.addEventListener("click", (event) => {
   }
 });
 
+const sidePanelButton = document.getElementById("side-panel-button");
+sidePanelButton.addEventListener("click", async () => {
+  if (!chrome.sidePanel) return; // older Chrome without side panel support
+  const win = await chrome.windows.getCurrent();
+  chrome.sidePanel.open({ windowId: win.id });
+});
+
 devModeToggle.addEventListener("change", () => {
   devMode = devModeToggle.checked;
   chrome.storage.local.set({ devMode });
@@ -1133,20 +1140,20 @@ devModeToggle.addEventListener("change", () => {
   }
 });
 
-async function main() {
-  const stored = await chrome.storage.local.get(["scanMode", "devMode"]);
-  setScanModeUI(stored.scanMode || "quick");
-  devMode = Boolean(stored.devMode);
-  devModeToggle.checked = devMode;
-
+async function loadActiveTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (
     !tab ||
     !tab.url ||
     !(tab.url.startsWith("http://") || tab.url.startsWith("https://"))
   ) {
+    currentTab = null;
     setSubtitle("");
     renderUnknown();
+    return;
+  }
+
+  if (currentTab && currentTab.id === tab.id && currentTab.url === tab.url) {
     return;
   }
 
@@ -1180,6 +1187,26 @@ async function main() {
       handleResolvedStatus(response.status, response, tab.id);
     },
   );
+}
+
+async function main() {
+  const stored = await chrome.storage.local.get(["scanMode", "devMode"]);
+  setScanModeUI(stored.scanMode || "quick");
+  devMode = Boolean(stored.devMode);
+  devModeToggle.checked = devMode;
+
+  await loadActiveTab();
+
+  // A popup is short-lived (closes on blur) so these never fire in that
+  // context. A side panel stays open across tab switches, so without this it
+  // would keep showing whichever tab was active when it was first opened -
+  // these keep it following the tab the user is actually looking at.
+  chrome.tabs.onActivated.addListener(() => loadActiveTab());
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.status === "complete" && tabId === currentTab?.id) {
+      loadActiveTab();
+    }
+  });
 }
 
 main();
