@@ -1,6 +1,8 @@
 function findLogoCandidatesInPage() {
   const LOGO_SEARCH_TOP_PX = 300;
   const LOGO_MIN_PX = 24;
+  const LOGO_MIN_DIMENSION_PX = 10;
+  const LOGO_MIN_AREA_PX = LOGO_MIN_PX * LOGO_MIN_PX;
   const LOGO_MAX_W_PX = 400;
   const LOGO_MAX_H_PX = 160;
   const LOGO_WORD = /(logo|brand|site-?title|wordmark)/i;
@@ -34,7 +36,10 @@ function findLogoCandidatesInPage() {
   for (const el of els) {
     considered += 1;
     const r = el.getBoundingClientRect();
-    if (r.width < LOGO_MIN_PX || r.height < LOGO_MIN_PX) continue;
+
+    if (r.width < LOGO_MIN_DIMENSION_PX || r.height < LOGO_MIN_DIMENSION_PX)
+      continue;
+    if (r.width * r.height < LOGO_MIN_AREA_PX) continue;
     if (r.width > LOGO_MAX_W_PX || r.height > LOGO_MAX_H_PX) continue;
     if (r.bottom < 0 || r.top > LOGO_SEARCH_TOP_PX) continue;
     if (r.right < 0 || r.left > window.innerWidth) continue;
@@ -50,6 +55,8 @@ function findLogoCandidatesInPage() {
     let score = 0;
     if (el.closest("header, [role='banner'], nav")) score += 3;
     const anchor = el.closest("a");
+
+    let isHomeLink = false;
     if (anchor) {
       try {
         const target = new URL(
@@ -60,7 +67,8 @@ function findLogoCandidatesInPage() {
           target.origin === location.origin &&
           (target.pathname === "/" || target.pathname === "")
         ) {
-          score += 3;
+          isHomeLink = true;
+          score += 6;
         }
       } catch (e) {
         // ignore malformed links
@@ -71,7 +79,8 @@ function findLogoCandidatesInPage() {
     if (labelled) score += 2;
     if (r.top < 220) score += 2;
     if (el.closest("footer, [role='contentinfo']")) score -= 4;
-    if (!labelled && (r.width < 40 || r.height < 40)) score -= 3;
+
+    if (!labelled && !isHomeLink && (r.width < 40 || r.height < 40)) score -= 3;
 
     candidates.push({
       score,
