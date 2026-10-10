@@ -39,6 +39,7 @@ def _looks_like_bot_challenge(html, network_urls=None):
 def analyze_layer2(url, html=None, screenshot_path=None):
 
     network_urls = None
+    page_quality_raw = None
     if html is None:
         loaded = load_page(url, screenshot_path=screenshot_path)
         if not loaded["success"]:
@@ -46,6 +47,12 @@ def analyze_layer2(url, html=None, screenshot_path=None):
         html = loaded["html"]
         final_url = loaded["final_url"]
         network_urls = loaded["network_urls"]
+        page_quality_raw = {
+            "headers": loaded["headers"],
+            "all_requests": loaded["all_requests"],
+            "final_url": final_url,
+            "html": html,
+        }
     else:
         final_url = url
 
@@ -62,4 +69,9 @@ def analyze_layer2(url, html=None, screenshot_path=None):
     features.update(extract_behavioral_features(html))
     features.update(analyze_embedded_urls(html, final_url, network_urls))
 
-    return {"success": True, "features": features, "error": None}
+    return {
+        "success": True,
+        "features": features,
+        "error": None,
+        "page_quality_raw": page_quality_raw,
+    }

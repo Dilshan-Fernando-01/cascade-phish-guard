@@ -38,6 +38,8 @@ const ICON_SKIP =
 const ICON_INFO =
   '<svg class="icon-svg" viewBox="0 0 48.296 48.257" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M24.149,0C10.812,0,0,10.8,0,24.125c0,13.326,10.812,24.132,24.149,24.132c13.334,0,24.147-10.807,24.147-24.132 C48.296,10.8,37.483,0,24.149,0z M26.171,35.919c0,1.115-0.907,2.021-2.022,2.021c-1.12,0-2.025-0.908-2.025-2.021V22.507 c0-1.114,0.905-2.022,2.025-2.022c1.115,0,2.022,0.908,2.022,2.022V35.919z M26.171,15.101c0,1.119-0.907,2.022-2.022,2.022 c-1.12,0-2.025-0.903-2.025-2.022v-0.633c0-1.119,0.905-2.022,2.025-2.022c1.115,0,2.022,0.903,2.022,2.022V15.101z"/></svg>';
 const ICON_SPINNER = '<span class="badge-spinner"></span>';
+const ICON_CHEVRON =
+  '<svg class="layer-card-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3a9 9 0 100 18 9 9 0 000-18ZM12.707 8.293a1 1 0 0 0-1.414 0l-4 4a1 1 0 1 0 1.414 1.414L12 10.414l3.293 3.293a1 1 0 0 0 1.414-1.414l-4-4Z" fill="currentColor"/></svg>';
 
 const badge = document.getElementById("badge");
 const subtitleEl = document.getElementById("subtitle");
@@ -335,7 +337,7 @@ function layerCardHtml(step, index) {
           <p class="step-title">${step.title}</p>
           <p class="step-sub">${step.sub}</p>
         </div>
-        ${hasDetail ? `<svg class="layer-card-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3a9 9 0 100 18 9 9 0 000-18ZM12.707 8.293a1 1 0 0 0-1.414 0l-4 4a1 1 0 1 0 1.414 1.414L12 10.414l3.293 3.293a1 1 0 0 0 1.414-1.414l-4-4Z" fill="currentColor"/></svg>` : ""}
+        ${hasDetail ? ICON_CHEVRON : ""}
       </button>
       ${
         hasDetail
@@ -375,7 +377,7 @@ function renderShell(fullScanMode, target) {
   const ns = targetNamespace(target);
   Object.keys(userExpanded).forEach((key) => delete userExpanded[key]);
   render(
-    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><div class="steps-slot"></div></div>`,
+    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><div class="steps-slot"></div></div><div class="quality-slot"></div>`,
     target,
   );
 }
@@ -397,6 +399,54 @@ function updateNote(html, target) {
   if (!slot || slot.dataset.renderedHtml === html) return;
   slot.dataset.renderedHtml = html;
   slot.innerHTML = html;
+}
+
+function updateQuality(html, target) {
+  const slot = target.querySelector(".quality-slot");
+  if (!slot || slot.dataset.renderedHtml === html) return;
+  slot.dataset.renderedHtml = html;
+  slot.innerHTML = html;
+  if (html) wireQualityToggle(slot);
+}
+
+const QUALITY_BAND_META = {
+  good: { label: "Good", key: "good" },
+  fair: { label: "Fair", key: "fair" },
+  poor: { label: "Poor", key: "poor" },
+};
+
+function pageQualityHtml(pageQuality) {
+  if (!pageQuality) return "";
+  const meta = QUALITY_BAND_META[pageQuality.band] || { label: pageQuality.band, key: "neutral" };
+  const findings = pageQuality.findings
+    .map((f) => `<li>${escapeHtml(f.label)}</li>`)
+    .join("");
+  const findingsBlock = pageQuality.findings.length
+    ? `<ul class="quality-findings-list">${findings}</ul>`
+    : `<p class="quality-all-clear">No issues found in these checks.</p>`;
+  return `<div class="quality-box">
+    <button type="button" class="quality-header" id="quality-toggle" aria-expanded="false">
+      <span class="quality-title">Page quality - things to consider</span>
+      <span class="quality-badge quality-badge-${meta.key}">${meta.label} (${pageQuality.score}/100)</span>
+      <span class="quality-chevron">${ICON_CHEVRON}</span>
+    </button>
+    <div class="quality-detail" id="quality-detail" hidden>
+      ${findingsBlock}
+      <p class="quality-disclaimer">${escapeHtml(pageQuality.disclaimer)}</p>
+    </div>
+  </div>`;
+}
+
+function wireQualityToggle(slot) {
+  const toggle = slot.querySelector("#quality-toggle");
+  const detail = slot.querySelector("#quality-detail");
+  if (!toggle || !detail) return;
+  toggle.addEventListener("click", () => {
+    const expanded = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!expanded));
+    detail.hidden = expanded;
+    slot.classList.toggle("quality-open", !expanded);
+  });
 }
 
 function reasonsHtml(reasons) {
@@ -1018,6 +1068,7 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
     target,
   );
   updateSteps(steps, target);
+  updateQuality(pageQualityHtml(result.page_quality), target);
   animateResultGauges(result, fullScanMode, ns);
 }
 

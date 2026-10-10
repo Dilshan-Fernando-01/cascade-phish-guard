@@ -74,6 +74,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         },
     )
 
+    page_quality_raw = None
     if will_run_layer2:
         from services.layer2_analyzer import analyze_layer2
         from models.layer2_model import predict_from_features
@@ -84,6 +85,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
             layer2_features = layer2_result["features"]
             layer2_score = predict_from_features(layer2_features)
             layer_scores["layer2"] = layer2_score
+            page_quality_raw = layer2_result.get("page_quality_raw")
         else:
             layer2_features = {"error": layer2_result["error"]}
 
@@ -121,6 +123,21 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         if layer3_score is not None:
             layer_scores["layer3"] = layer3_score
 
+
+    page_quality = None
+    if full_scan and page_quality_raw:
+        from features.page_quality import compute_page_quality
+
+        try:
+            page_quality = compute_page_quality(
+                html=page_quality_raw["html"],
+                headers=page_quality_raw["headers"],
+                all_requests=page_quality_raw["all_requests"],
+                page_url=page_quality_raw["final_url"],
+            )
+        except Exception:
+            page_quality = None
+
     if score_for_verdict > HIGH_THRESHOLD:
         verdict = Verdict.phishing
     elif score_for_verdict < LOW_THRESHOLD:
@@ -151,6 +168,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         layer2_features=layer2_features,
         layer3_results=layer3_results,
         reasons=reasons,
+        page_quality=page_quality,
     )
     _set_progress(request_id, {"stage": STAGE_DONE, "result": result.model_dump(mode="json")})
     return result

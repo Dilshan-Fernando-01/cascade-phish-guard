@@ -68,4 +68,8 @@ class AnalyzeResponse(BaseModel):
         default=None,
         description="Layer 3 checks, reported separately (logo_check, banner_wording_check). Present only when Layer 3 actually ran.",
     )
+    page_quality: Optional[dict] = Field(
+        default=None,
+        description="Production-readiness context (security headers, mixed content, information exposure, inline styles, console logging) - informational only, never factored into verdict/confidence. Present only on a Full scan where Layer 2 did its own page load (not the open-tab content-script path).",
+    )
     analyzed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
