@@ -52,6 +52,7 @@ let currentTab = null;
 
 let lastResult = null;
 let lastFullScanMode = false;
+let lastCapturedLogoPng = null;
 
 function setBadge(key, icon, text) {
   badge.className = `badge badge-${key}`;
@@ -433,7 +434,15 @@ function devDetailsHtml(title, data, { asJson = false } = {}) {
   </div>`;
 }
 
-function deriveStepOutcomes(result, fullScanMode) {
+function devLogoCaptureHtml(capturedLogoPng) {
+  if (!devMode || !capturedLogoPng) return "";
+  return `<div class="dev-details">
+    <p class="dev-details-title">Captured logo crop (dev mode only - checks capture quality, never sent to the report)</p>
+    <img class="dev-logo-capture" src="data:image/png;base64,${capturedLogoPng}" alt="Captured logo crop" />
+  </div>`;
+}
+
+function deriveStepOutcomes(result, fullScanMode, capturedLogoPng) {
   const layer2Attempted = (result.layers_used || []).includes("layer2");
   const layer2Failed =
     layer2Attempted && result.layer2_features && result.layer2_features.error;
@@ -480,7 +489,7 @@ function deriveStepOutcomes(result, fullScanMode) {
           devScoreFirst(result, "layer2", result.layer2_features),
         ),
     },
-    layer3Outcome(result, fullScanMode),
+    layer3Outcome(result, fullScanMode, capturedLogoPng),
   ];
 }
 
@@ -604,7 +613,7 @@ function visualSubstepsHtml(substeps) {
   return `${progressSummaryHtml(substeps)}<div class="substep-list">${rows}</div>`;
 }
 
-function layer3Outcome(result, fullScanMode) {
+function layer3Outcome(result, fullScanMode, capturedLogoPng) {
   const layer3 = result.layer3_results;
   if (!layer3) {
     if (!fullScanMode) {
@@ -633,6 +642,7 @@ function layer3Outcome(result, fullScanMode) {
     detail:
       visualSubstepsHtml(substeps) +
       reasonsHtml((result.reasons || {}).layer3) +
+      devLogoCaptureHtml(capturedLogoPng) +
       devDetailsHtml(
         "Layer 3 full detail (score decided from this)",
         devScoreFirst(result, "layer3", layer3),
@@ -769,12 +779,18 @@ function applyLiveProgress(progress, fullScanMode, target) {
   }
 }
 
-function finishWithResult(result, fullScanMode, target = content) {
+function finishWithResult(
+  result,
+  fullScanMode,
+  target = content,
+  capturedLogoPng = null,
+) {
   if (target === content) {
     lastResult = result;
     lastFullScanMode = fullScanMode;
+    lastCapturedLogoPng = capturedLogoPng;
   }
-  const outcomes = deriveStepOutcomes(result, fullScanMode);
+  const outcomes = deriveStepOutcomes(result, fullScanMode, capturedLogoPng);
   const steps = STEP_TITLES.map((title, i) => ({
     title,
     status: outcomes[i].status,
@@ -1034,7 +1050,12 @@ function renderInitialChecking(fullScanMode, target = content) {
 function handleResolvedStatus(status, payload, tabId, target = content) {
   const fullScanMode = scanMode === "full";
   if (status === "done") {
-    finishWithResult(payload.result, fullScanMode, target);
+    finishWithResult(
+      payload.result,
+      fullScanMode,
+      target,
+      payload.capturedLogoPng,
+    );
   } else if (status === "offline") {
     renderOffline(target);
   } else if (status === "error") {
@@ -1103,7 +1124,12 @@ devModeToggle.addEventListener("change", () => {
   devMode = devModeToggle.checked;
   chrome.storage.local.set({ devMode });
   if (lastResult) {
-    finishWithResult(lastResult, lastFullScanMode, content);
+    finishWithResult(
+      lastResult,
+      lastFullScanMode,
+      content,
+      lastCapturedLogoPng,
+    );
   }
 });
 

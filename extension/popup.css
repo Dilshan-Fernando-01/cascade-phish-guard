@@ -253,6 +253,16 @@ body {
   white-space: nowrap;
 }
 
+.dev-logo-capture {
+  display: block;
+  max-width: 100%;
+  max-height: 160px;
+  width: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: repeating-conic-gradient(#80808022 0% 25%, transparent 0% 50%) 0 0 / 12px 12px;
+}
+
 .dev-details-json {
   margin: 0;
   font-family: var(--font-mono, ui-monospace, monospace);
