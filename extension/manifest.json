@@ -8,7 +8,8 @@
     "webNavigation",
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "sidePanel"
   ],
   "host_permissions": [
     "<all_urls>",
@@ -19,6 +20,9 @@
   ],
   "background": {
     "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
   },
   "action": {
     "default_popup": "popup.html",
