@@ -3,7 +3,7 @@ function findLogoCandidatesInPage() {
   const LOGO_MIN_PX = 24;
   const LOGO_MIN_DIMENSION_PX = 10;
   const LOGO_MIN_AREA_PX = LOGO_MIN_PX * LOGO_MIN_PX;
-  const LOGO_MAX_W_PX = 400;
+  const LOGO_MAX_W_PX = 480;
   const LOGO_MAX_H_PX = 160;
   const LOGO_WORD = /(logo|brand|site-?title|wordmark)/i;
   const inputs = Array.from(
