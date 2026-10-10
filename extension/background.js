@@ -203,8 +203,8 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
             const imageLookup = fullScan
               ? captureLayer3Images(tabId)
               : Promise.resolve({ logoPng: null, bannerPng: null });
-            return imageLookup
-              .then(({ logoPng, bannerPng, previewDataUrl }) => {
+            return imageLookup.then(
+              ({ logoPng, bannerPng, previewDataUrl }) => {
                 if (tabGeneration.get(tabId) !== generation) return;
                 return runBackendCall(tabId, generation, url, {
                   fullScan,
@@ -213,28 +213,33 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
                   logoPng,
                   bannerPng,
                   previewDataUrl,
+                }).then((finalOutcome) => {
+                  if (!finalOutcome) return;
+                  if (tabGeneration.get(tabId) !== generation) return;
+                  if (
+                    finalOutcome.status === "done" &&
+                    finalOutcome.result.layer3_results
+                  ) {
+                    console.log(
+                      `Cascade Phish Guard layer 3 for ${url}:`,
+                      finalOutcome.result.layer3_results,
+                    );
+                  }
+                  if (finalOutcome.status !== "done") {
+                    console.warn(
+                      `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
+                      finalOutcome.message || finalOutcome,
+                    );
+                  }
+
+                  tabResults.set(tabId, {
+                    ...finalOutcome,
+                    modeUsed: mode,
+                    capturedLogoPng: logoPng,
+                  });
                 });
-              })
-              .then((finalOutcome) => {
-                if (!finalOutcome) return;
-                if (tabGeneration.get(tabId) !== generation) return;
-                if (
-                  finalOutcome.status === "done" &&
-                  finalOutcome.result.layer3_results
-                ) {
-                  console.log(
-                    `Cascade Phish Guard layer 3 for ${url}:`,
-                    finalOutcome.result.layer3_results,
-                  );
-                }
-                if (finalOutcome.status !== "done") {
-                  console.warn(
-                    `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
-                    finalOutcome.message || finalOutcome,
-                  );
-                }
-                tabResults.set(tabId, { ...finalOutcome, modeUsed: mode });
-              });
+              },
+            );
           });
       });
     })
