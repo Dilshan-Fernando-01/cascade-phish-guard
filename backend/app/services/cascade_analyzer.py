@@ -13,6 +13,14 @@ HIGH_THRESHOLD = 0.8
 
 LAYER2_ENABLED = os.environ.get("ENABLE_LAYER2", "").lower() in ("1", "true", "yes")
 
+LAYER1_CONFIDENT_FLOOR = 0.5
+
+
+def _layer1_confidence_floor(layer1_score, score_for_verdict):
+    if layer1_score > HIGH_THRESHOLD:
+        return max(score_for_verdict, LAYER1_CONFIDENT_FLOOR)
+    return score_for_verdict
+
 
 _progress_store = {}
 _progress_lock = threading.Lock()
@@ -99,6 +107,8 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         score_for_verdict = layer2_score
     else:
         score_for_verdict = layer1_score
+
+    score_for_verdict = _layer1_confidence_floor(layer1_score, score_for_verdict)
 
     if layer3_results is not None and "error" not in layer3_results:
         from services.layer3_rule import apply_layer3_rule, identity_level_score
