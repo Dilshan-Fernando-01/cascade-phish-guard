@@ -5,9 +5,11 @@ import sys
 import time
 
 import requests
+from dotenv import load_dotenv
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
+load_dotenv()
 os.environ.setdefault("ENABLE_LAYER2", "true")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
