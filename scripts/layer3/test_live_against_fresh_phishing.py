@@ -27,6 +27,7 @@ BANNER_BAND_PX = 300
 FIELDS = [
     "url", "loaded", "logo_found", "verdict", "layer1_score", "layer2_score",
     "layer3_level", "layer3_score", "combination_strength", "reasons", "sb_verdict", "status",
+    "analysis_ms",
 ]
 
 SB_API_KEY = os.environ.get("GOOGLE_SAFE_BROWSING_API_KEY")
@@ -101,7 +102,9 @@ def check_one(page, finder_js, url):
     shot.crop((0, 0, shot.width, min(BANNER_BAND_PX, shot.height))).save(banner_buf, "PNG")
     banner_png = banner_buf.getvalue()
 
+    t0 = time.time()
     result = analyze(url, full_scan=True, html=html, skip_layer2=False, screenshot_png=banner_png, logo_png=logo_png)
+    row["analysis_ms"] = round((time.time() - t0) * 1000)
     row["verdict"] = result.verdict.value
     row["layer1_score"] = round(result.layer_scores.get("layer1", 0), 4)
     row["layer2_score"] = round(result.layer_scores["layer2"], 4) if "layer2" in result.layer_scores else ""
@@ -172,6 +175,11 @@ def main():
     print(f"attempted: {len(rows)}  loaded: {len(loaded)}  flagged (suspicious+phishing): {len(phishing_or_susp)}")
     if loaded:
         print(f"detection rate on live phishing URLs: {100 * len(phishing_or_susp) / len(loaded):.1f}%")
+    timed = sorted(float(r["analysis_ms"]) for r in loaded if r.get("analysis_ms"))
+    if timed:
+        mid = timed[len(timed) // 2]
+        print(f"full-scan analysis time (full_scan=True, Layer 1+2+3): "
+              f"min={timed[0]:.0f}ms  median={mid:.0f}ms  max={timed[-1]:.0f}ms  n={len(timed)}")
     if SB_API_KEY:
         sb_flagged = [r for r in loaded if r["sb_verdict"] == "flagged"]
         we_flagged_sb_did_not = [r for r in loaded if r["sb_verdict"] == "clean" and r["verdict"] in ("phishing", "suspicious")]
