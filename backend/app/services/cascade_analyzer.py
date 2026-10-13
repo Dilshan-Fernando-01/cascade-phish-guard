@@ -57,7 +57,11 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
 
     _set_progress(request_id, {"stage": STAGE_CHECKING_ADDRESS})
 
+    layer_timings_ms = {}
+
+    _t0 = time.time()
     layer1_score, layer1_features = layer1_predict(url)
+    layer_timings_ms["layer1"] = round((time.time() - _t0) * 1000)
     would_escalate = LOW_THRESHOLD <= layer1_score <= HIGH_THRESHOLD
 
     layers_used = ["layer1"]
@@ -79,7 +83,9 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         from services.layer2_analyzer import analyze_layer2
         from models.layer2_model import predict_from_features
 
+        _t0 = time.time()
         layer2_result = analyze_layer2(url, html=html)
+        layer_timings_ms["layer2"] = round((time.time() - _t0) * 1000)
         layers_used.append("layer2")
         if layer2_result["success"]:
             layer2_features = layer2_result["features"]
@@ -97,12 +103,14 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
             request_id,
             {"stage": STAGE_COMPARING_VISUAL_IDENTITY, "layer1_score": layer1_score, "layer2_score": layer2_score},
         )
+        _t0 = time.time()
         try:
             layer3_results = analyze_layer3(
                 url, screenshot_png, html=html, logo_png=logo_png, background=True
             )
         except Exception as exc:
             layer3_results = {"error": f"Layer 3 could not run on this machine: {exc}"}
+        layer_timings_ms["layer3"] = round((time.time() - _t0) * 1000)
         layers_used.append("layer3")
 
     if layer2_score is not None:
@@ -167,6 +175,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         layer1_features=layer1_features,
         layer2_features=layer2_features,
         layer3_results=layer3_results,
+        layer_timings_ms=layer_timings_ms,
         reasons=reasons,
         page_quality=page_quality,
     )

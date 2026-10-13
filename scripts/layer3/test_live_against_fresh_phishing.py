@@ -27,7 +27,7 @@ BANNER_BAND_PX = 300
 FIELDS = [
     "url", "loaded", "logo_found", "verdict", "layer1_score", "layer2_score",
     "layer3_level", "layer3_score", "combination_strength", "reasons", "sb_verdict", "status",
-    "analysis_ms",
+    "analysis_ms", "layer1_ms", "layer2_ms", "layer3_ms",
 ]
 
 SB_API_KEY = os.environ.get("GOOGLE_SAFE_BROWSING_API_KEY")
@@ -105,6 +105,9 @@ def check_one(page, finder_js, url):
     t0 = time.time()
     result = analyze(url, full_scan=True, html=html, skip_layer2=False, screenshot_png=banner_png, logo_png=logo_png)
     row["analysis_ms"] = round((time.time() - t0) * 1000)
+    row["layer1_ms"] = result.layer_timings_ms.get("layer1", "")
+    row["layer2_ms"] = result.layer_timings_ms.get("layer2", "")
+    row["layer3_ms"] = result.layer_timings_ms.get("layer3", "")
     row["verdict"] = result.verdict.value
     row["layer1_score"] = round(result.layer_scores.get("layer1", 0), 4)
     row["layer2_score"] = round(result.layer_scores["layer2"], 4) if "layer2" in result.layer_scores else ""
@@ -178,8 +181,13 @@ def main():
     timed = sorted(float(r["analysis_ms"]) for r in loaded if r.get("analysis_ms"))
     if timed:
         mid = timed[len(timed) // 2]
-        print(f"full-scan analysis time (full_scan=True, Layer 1+2+3): "
+        print(f"end-to-end full-scan time (Layer 1+2+3 together): "
               f"min={timed[0]:.0f}ms  median={mid:.0f}ms  max={timed[-1]:.0f}ms  n={len(timed)}")
+    for layer_key, layer_label in (("layer1_ms", "Layer 1"), ("layer2_ms", "Layer 2"), ("layer3_ms", "Layer 3")):
+        vals = sorted(float(r[layer_key]) for r in loaded if r.get(layer_key))
+        if vals:
+            vmid = vals[len(vals) // 2]
+            print(f"  {layer_label} alone: min={vals[0]:.0f}ms  median={vmid:.0f}ms  max={vals[-1]:.0f}ms  n={len(vals)}")
     if SB_API_KEY:
         sb_flagged = [r for r in loaded if r["sb_verdict"] == "flagged"]
         we_flagged_sb_did_not = [r for r in loaded if r["sb_verdict"] == "clean" and r["verdict"] in ("phishing", "suspicious")]

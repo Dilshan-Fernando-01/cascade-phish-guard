@@ -72,4 +72,8 @@ class AnalyzeResponse(BaseModel):
         default=None,
         description="Production-readiness context (security headers, mixed content, information exposure, inline styles, console logging) - informational only, never factored into verdict/confidence. Present only on a Full scan where Layer 2 did its own page load (not the open-tab content-script path).",
     )
+    layer_timings_ms: dict[str, int] = Field(
+        default_factory=dict,
+        description="Per-layer wall-clock time in milliseconds, keyed by layer name. Only keys for layers that actually ran are present.",
+    )
     analyzed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
