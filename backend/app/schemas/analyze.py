@@ -76,4 +76,8 @@ class AnalyzeResponse(BaseModel):
         default_factory=dict,
         description="Per-layer wall-clock time in milliseconds, keyed by layer name. Only keys for layers that actually ran are present.",
     )
+    embedded_url_warning: Optional[dict] = Field(
+        default=None,
+        description="Separate from the main verdict/reasons: present whenever a link, iframe, form target, or redirect found on this page itself scored as risky when automatically re-checked through Layer 1, regardless of this page's own verdict. Deliberately bypasses the general 'keep reasons generic' gating, since it names a page other than the one just analysed, not an internal detection signal. Shape: {checked_count, suspicious_count, flagged: [{url, score}]}.",
+    )
     analyzed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
