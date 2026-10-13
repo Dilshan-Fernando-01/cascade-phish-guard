@@ -377,7 +377,7 @@ function renderShell(fullScanMode, target) {
   const ns = targetNamespace(target);
   Object.keys(userExpanded).forEach((key) => delete userExpanded[key]);
   render(
-    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><div class="steps-slot"></div></div><div class="quality-slot"></div>`,
+    `${gaugeRowHtml(fullScanMode, ns)}<div class="note-slot"></div><div class="steps-wrap"><div class="steps-slot"></div></div><div class="embedded-warning-slot"></div><div class="quality-slot"></div>`,
     target,
   );
 }
@@ -399,6 +399,28 @@ function updateNote(html, target) {
   if (!slot || slot.dataset.renderedHtml === html) return;
   slot.dataset.renderedHtml = html;
   slot.innerHTML = html;
+}
+
+function updateEmbeddedWarning(html, target) {
+  const slot = target.querySelector(".embedded-warning-slot");
+  if (!slot || slot.dataset.renderedHtml === html) return;
+  slot.dataset.renderedHtml = html;
+  slot.innerHTML = html;
+}
+
+function embeddedUrlWarningHtml(warning) {
+  if (!warning || !warning.flagged || warning.flagged.length === 0) return "";
+  const links = warning.flagged
+    .map(
+      (f) =>
+        `<li><span class="embedded-warning-url">${escapeHtml(f.url)}</span> <span class="embedded-warning-score">(${Math.round(f.score * 100)}% risk)</span></li>`,
+    )
+    .join("");
+  return `<div class="embedded-warning-box">
+    <p class="embedded-warning-title">⚠ ${warning.suspicious_count} of ${warning.checked_count} linked addresses on this page looked risky when checked automatically</p>
+    <ul class="embedded-warning-list">${links}</ul>
+    <p class="embedded-warning-advice">This page itself may still look fine - the risk is in where it links to. If you follow one of these, keep the extension open so it can scan that page too, or paste the address into "Check a URL directly" (Full scan) first.</p>
+  </div>`;
 }
 
 function updateQuality(html, target) {
@@ -1069,6 +1091,7 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
   );
   updateSteps(steps, target);
   updateQuality(pageQualityHtml(result.page_quality), target);
+  updateEmbeddedWarning(embeddedUrlWarningHtml(result.embedded_url_warning), target);
   animateResultGauges(result, fullScanMode, ns);
 }
 

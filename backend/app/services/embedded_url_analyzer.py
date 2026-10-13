@@ -64,35 +64,43 @@ def extract_embedded_urls(html, base_url, network_urls=None):
     return resolved
 
 
+MAX_FLAGGED_URLS_RETURNED = 3
+
+
 def analyze_embedded_urls(html, base_url, network_urls=None):
     urls = extract_embedded_urls(html, base_url, network_urls)
     urls = [u for u in urls if not _is_known_waf_vendor(urlparse(u).netloc.split(":")[0])]
 
-    scores = []
+    scored = []
     start = time.monotonic()
     for embedded_url in urls:
         if time.monotonic() - start > TIME_BUDGET_SECONDS:
             break
         try:
             score, _features = layer1_predict(embedded_url)
-            scores.append(score)
+            scored.append((embedded_url, score))
         except Exception:
-           
+
             continue
 
-    if not scores:
+    if not scored:
         return {
             "checked_embedded_url_count": 0,
             "suspicious_embedded_url_count": 0,
             "max_embedded_url_risk": 0.0,
             "avg_embedded_url_risk": 0.0,
+            "flagged_embedded_urls": [],
         }
 
+    scores = [s for _u, s in scored]
     suspicious_count = sum(1 for s in scores if s > SUSPICIOUS_THRESHOLD)
+    flagged = sorted((pair for pair in scored if pair[1] > SUSPICIOUS_THRESHOLD), key=lambda p: -p[1])
+    flagged_urls = [{"url": u, "score": round(s, 4)} for u, s in flagged[:MAX_FLAGGED_URLS_RETURNED]]
 
     return {
         "checked_embedded_url_count": len(scores),
         "suspicious_embedded_url_count": suspicious_count,
         "max_embedded_url_risk": round(max(scores), 4),
         "avg_embedded_url_risk": round(sum(scores) / len(scores), 4),
+        "flagged_embedded_urls": flagged_urls,
     }

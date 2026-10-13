@@ -165,6 +165,14 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     }
     reasons = public_reasons(detailed_reasons, verdict.value)
 
+    embedded_url_warning = None
+    if layer2_features and (layer2_features.get("suspicious_embedded_url_count") or 0) > 0:
+        embedded_url_warning = {
+            "checked_count": layer2_features.get("checked_embedded_url_count", 0),
+            "suspicious_count": layer2_features.get("suspicious_embedded_url_count", 0),
+            "flagged": layer2_features.get("flagged_embedded_urls", []),
+        }
+
     result = AnalyzeResponse(
         url=url,
         verdict=verdict,
@@ -178,6 +186,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         layer_timings_ms=layer_timings_ms,
         reasons=reasons,
         page_quality=page_quality,
+        embedded_url_warning=embedded_url_warning,
     )
     _set_progress(request_id, {"stage": STAGE_DONE, "result": result.model_dump(mode="json")})
     return result
