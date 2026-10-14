@@ -98,6 +98,7 @@ function pollProgressInto(tabId, generation, requestId, previewDataUrl = null) {
           status: "analyzing",
           stage: progress.stage,
           layer1_score: progress.layer1_score,
+          layer2_score: progress.layer2_score,
           previewDataUrl,
         });
       }
