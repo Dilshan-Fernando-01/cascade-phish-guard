@@ -1,0 +1,10 @@
+{
+  "total_candidates_attempted": 4951,
+  "succeeded": 1787,
+  "failed": 3164,
+  "success_rate": 0.3609,
+  "by_source": {
+    "templated_authflow": 1618,
+    "commoncrawl": 169
+  }
+}

@@ -1,6 +1,10 @@
 import os
 import sys
 
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,7 +27,7 @@ _COMPARISON_PATH = Path(__file__).resolve().parents[2] / "data" / "reports" / "l
 _API_KEY = os.environ.get("API_KEY")
 
 
-REQUEST_TIMEOUT_SECONDS = 40
+REQUEST_TIMEOUT_SECONDS = 90
 
 EXTENSION_ORIGIN = "chrome-extension://ecnkllhbcnponkmgmeenkoijnpkociaj"
 
@@ -37,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
+_executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
 
 
 def verify_api_key(x_api_key: str = Header(default=None)):

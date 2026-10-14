@@ -51,9 +51,12 @@ def extract_embedded_urls(html, base_url, network_urls=None):
     resolved = []
     seen = set()
     for raw in raw_urls:
-        if not raw or raw.startswith(("javascript:", "data:", "#", "mailto:")):
+        if not raw or raw.startswith("#"):
             continue
         absolute = urljoin(base_url, raw)
+
+        if urlparse(absolute).scheme not in ("http", "https"):
+            continue
         if absolute in seen:
             continue
         seen.add(absolute)

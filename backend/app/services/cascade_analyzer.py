@@ -95,6 +95,11 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         else:
             layer2_features = {"error": layer2_result["error"]}
 
+        _set_progress(
+            request_id,
+            {"stage": STAGE_REVIEWING_CONTENT, "layer1_score": layer1_score, "layer2_score": layer2_score},
+        )
+
     layer3_results = None
     if full_scan and (screenshot_png is not None or logo_png is not None):
         from services.layer3_analyzer import analyze_layer3

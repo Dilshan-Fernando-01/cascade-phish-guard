@@ -232,9 +232,24 @@ def domain_age_days(host):
         pass
 
     try:
+        import threading
         import whois
 
-        w = whois.whois(host, timeout=5)
+        box = {}
+
+        def _lookup():
+            try:
+                box["result"] = whois.whois(host, timeout=5)
+            except Exception as exc:
+                box["error"] = exc
+
+
+        t = threading.Thread(target=_lookup, daemon=True)
+        t.start()
+        t.join(timeout=6)
+        if t.is_alive() or "result" not in box:
+            return None
+        w = box["result"]
         creation = w.creation_date
         if isinstance(creation, list):
             creation = creation[0]

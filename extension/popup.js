@@ -1141,7 +1141,7 @@ function handleResolvedStatus(status, payload, tabId, target = content) {
   }
 }
 
-const MAX_POLL_ATTEMPTS = 90;
+const MAX_POLL_ATTEMPTS = 220;
 
 function pollUntilDone(tabId, attempt = 0, target = content) {
   if (attempt > MAX_POLL_ATTEMPTS) {

@@ -44,6 +44,13 @@ def analyze_layer2(url, html=None, screenshot_path=None):
         loaded = load_page(url, screenshot_path=screenshot_path)
         if not loaded["success"]:
             return {"success": False, "features": None, "error": loaded["error"]}
+        status = loaded["status"]
+        if status is not None and not (200 <= status < 300):
+
+            return {
+                "success": False, "features": None,
+                "error": f"page returned HTTP {status}, not the site's real content",
+            }
         html = loaded["html"]
         final_url = loaded["final_url"]
         network_urls = loaded["network_urls"]

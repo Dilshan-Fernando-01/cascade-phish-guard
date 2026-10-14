@@ -1,0 +1,17 @@
+{
+  "train": {
+    "total": 1291,
+    "phishing": 664,
+    "legitimate": 627
+  },
+  "validation": {
+    "total": 229,
+    "phishing": 108,
+    "legitimate": 121
+  },
+  "test": {
+    "total": 264,
+    "phishing": 120,
+    "legitimate": 144
+  }
+}
