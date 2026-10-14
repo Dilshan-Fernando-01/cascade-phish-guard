@@ -1,46 +1,46 @@
 {
   "model": "layer2_logistic_regression",
-  "train_rows": 1149,
-  "validation_rows": 212,
+  "train_rows": 1291,
+  "validation_rows": 229,
   "metrics": {
-    "accuracy": 0.7075471698113207,
-    "precision": 0.8484848484848485,
-    "recall": 0.5185185185185185,
-    "f1": 0.6436781609195402,
-    "auc_roc": 0.8408564814814815
+    "accuracy": 0.7117903930131004,
+    "precision": 0.828125,
+    "recall": 0.49074074074074076,
+    "f1": 0.6162790697674418,
+    "auc_roc": 0.8338689929599021
   },
   "confusion_matrix": [
     [
-      94,
-      10
+      110,
+      11
     ],
     [
-      52,
-      56
+      55,
+      53
     ]
   ],
   "coefficients": {
-    "form_count": -1.2941679395726742,
-    "password_input_count": 0.5406257147716215,
-    "hidden_input_count": -0.560140429325819,
-    "external_script_count": 0.20827605915635208,
-    "external_form_action": -0.31448942651091966,
-    "external_resource_ratio": 1.9739449759633827,
-    "iframe_count": -0.024756283163233833,
-    "meta_redirect_present": 0.5286984440519129,
-    "link_to_text_ratio": -0.8669009535336055,
-    "dom_tree_depth": -0.35560748191496805,
-    "favicon_domain_mismatch": -1.4520100098974915,
-    "title_domain_mismatch": 0.6683158977018201,
-    "brand_keyword_mismatch": -1.8339136068805262,
-    "overlay_detected": -0.5498590200350016,
-    "css_anomaly_score": -1.113218677456428,
-    "fake_browser_chrome_detected": 0.3297441789830784,
-    "script_obfuscation_score": 0.3834282229126934,
-    "suspicious_js_pattern_count": -1.6067390721473835,
-    "social_engineering_score": 0.023386181874708898,
-    "suspicious_embedded_url_count": 0.0891676412549156,
-    "max_embedded_url_risk": 1.7593338336350444,
-    "avg_embedded_url_risk": -0.7082174783991202
+    "form_count": -2.4581052094157174,
+    "password_input_count": 0.7379170166118081,
+    "hidden_input_count": -2.3367570560094717,
+    "external_script_count": 0.19245825675077355,
+    "external_form_action": 0.3972317045069259,
+    "external_resource_ratio": 0.85499476625882,
+    "iframe_count": -0.8577915285382515,
+    "meta_redirect_present": 0.43959418808322037,
+    "link_to_text_ratio": -1.8410084169287388,
+    "dom_tree_depth": -0.6175331999674387,
+    "favicon_domain_mismatch": -1.4533308494357984,
+    "title_domain_mismatch": 0.25057961132646805,
+    "brand_keyword_mismatch": -1.673238632915072,
+    "overlay_detected": -1.909884182457909,
+    "css_anomaly_score": -2.1734545129151064,
+    "fake_browser_chrome_detected": 0.5106449468419129,
+    "script_obfuscation_score": 1.07666987186074,
+    "suspicious_js_pattern_count": -0.8183032967516802,
+    "social_engineering_score": 0.19847121450278207,
+    "suspicious_embedded_url_count": 0.6272596394948293,
+    "max_embedded_url_risk": 2.1893291378703417,
+    "avg_embedded_url_risk": -2.185285025436138
   }
 }
