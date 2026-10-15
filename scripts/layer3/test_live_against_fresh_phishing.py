@@ -25,7 +25,7 @@ NETWORK_IDLE_MS = 8000
 BANNER_BAND_PX = 300 
 
 FIELDS = [
-    "url", "loaded", "logo_found", "verdict", "layer1_score", "layer2_score",
+    "url", "loaded", "http_status", "html_length", "logo_found", "verdict", "layer1_score", "layer2_score",
     "layer3_level", "layer3_score", "combination_strength", "reasons", "sb_verdict", "status",
     "analysis_ms", "layer1_ms", "layer2_ms", "layer3_ms",
 ]
@@ -73,7 +73,7 @@ def check_one(page, finder_js, url):
     row["url"] = url
     row["loaded"] = False
     try:
-        page.goto(url, wait_until="load", timeout=PAGE_TIMEOUT_MS)
+        response = page.goto(url, wait_until="load", timeout=PAGE_TIMEOUT_MS)
         try:
             page.wait_for_load_state("networkidle", timeout=NETWORK_IDLE_MS)
         except Exception:
@@ -84,6 +84,9 @@ def check_one(page, finder_js, url):
         row["status"] = "did not load"
         return row
     row["loaded"] = True
+    
+    row["http_status"] = response.status if response is not None else ""
+    row["html_length"] = len(html)
 
     full_png = page.screenshot(full_page=False)
     shot = Image.open(io.BytesIO(full_png)).convert("RGB")
