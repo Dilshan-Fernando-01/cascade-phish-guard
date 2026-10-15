@@ -152,38 +152,80 @@ async function downscaleForPreview(dataUrl, maxWidth) {
 
 const BANNER_BAND_PX = 300;
 
+function findIframePositions() {
+  const out = [];
+  document.querySelectorAll("iframe").forEach((el) => {
+    const r = el.getBoundingClientRect();
+    let src = null;
+    try {
+      src = new URL(el.getAttribute("src") || "", location.href).href;
+    } catch (e) {
+      src = null;
+    }
+    out.push({ src, x: r.left, y: r.top });
+  });
+  return out;
+}
+
 function captureLayer3Images(tabId) {
-  return chrome.scripting
-    .executeScript({
-      target: { tabId, frameIds: [0] },
+  return Promise.all([
+    chrome.scripting.executeScript({
+      target: { tabId, allFrames: true },
       func: findLogoCandidatesInPage,
-    })
-    .then(async (results) => {
-      const found = results && results[0] ? results[0].result : null;
-      if (!found || !found.best) {
-        const stats = found || {};
-        console.log(
-          `Cascade Phish Guard logo: no logo found (looked at ${stats.considered ?? "?"} elements, ${stats.kept ?? "?"} passed size and position rules, best score ${stats.topScore ?? "none"})`,
-        );
+    }),
+    chrome.scripting
+      .executeScript({
+        target: { tabId, frameIds: [0] },
+        func: findIframePositions,
+      })
+      .then((r) => (r && r[0] ? r[0].result : []))
+      .catch(() => []),
+    chrome.webNavigation.getAllFrames({ tabId }).catch(() => []),
+  ])
+    .then(async ([frameResults, iframePositions, allFrames]) => {
+      const frameUrlById = new Map(
+        (allFrames || []).map((f) => [f.frameId, f.url]),
+      );
+
+      let best = null;
+      for (const entry of frameResults || []) {
+        const result = entry && entry.result;
+        if (!result || !result.best) continue;
+        let candidate = result.best;
+        if (entry.frameId !== 0) {
+          const frameUrl = frameUrlById.get(entry.frameId);
+          const host = (iframePositions || []).find((f) => f.src === frameUrl);
+          if (!host) continue;
+          candidate = {
+            ...candidate,
+            x: candidate.x + host.x,
+            y: candidate.y + host.y,
+          };
+        }
+        if (
+          !best ||
+          candidate.score > best.score ||
+          (candidate.score === best.score && candidate.area > best.area)
+        ) {
+          best = { ...candidate, devicePixelRatio: result.devicePixelRatio };
+        }
+      }
+      if (!best) {
+        console.log("Cascade Phish Guard logo: no logo found in any frame");
       }
       const tab = await chrome.tabs.get(tabId);
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
         format: "png",
       });
-      const dpr = found ? found.devicePixelRatio : 1;
+      const dpr = best ? best.devicePixelRatio : 1;
       const bannerPng = await cropLogoFromScreenshot(
         dataUrl,
         { x: 0, y: 0, w: 100000, h: BANNER_BAND_PX },
         dpr,
       );
-      const logoPng =
-        found && found.best
-          ? await cropLogoFromScreenshot(
-              dataUrl,
-              found.best,
-              found.devicePixelRatio,
-            )
-          : null;
+      const logoPng = best
+        ? await cropLogoFromScreenshot(dataUrl, best, dpr)
+        : null;
       const previewDataUrl = await downscaleForPreview(
         dataUrl,
         PREVIEW_MAX_WIDTH,
