@@ -80,7 +80,15 @@ function findLogoCandidatesInPage() {
     if (r.top < 220) score += 2;
     if (el.closest("footer, [role='contentinfo']")) score -= 4;
 
-    if (!labelled && !isHomeLink && (r.width < 40 || r.height < 40)) score -= 3;
+    const hasAltText = (el.getAttribute("alt") || "").trim().length > 0;
+
+    if (
+      !labelled &&
+      !hasAltText &&
+      !isHomeLink &&
+      (r.width < 40 || r.height < 40)
+    )
+      score -= 3;
 
     candidates.push({
       score,
