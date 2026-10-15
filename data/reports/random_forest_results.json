@@ -1,42 +1,42 @@
 {
   "model": "random_forest",
-  "train_rows": 18862,
-  "validation_rows": 4550,
+  "train_rows": 18877,
+  "validation_rows": 4553,
   "metrics": {
-    "accuracy": 0.985934065934066,
-    "precision": 0.9995848899958489,
-    "recall": 0.9745042492917847,
-    "f1": 0.9868852459016394,
-    "auc_roc": 0.9998837890379776
+    "accuracy": 0.9868218756863606,
+    "precision": 0.9991718426501035,
+    "recall": 0.9765277215702145,
+    "f1": 0.9877200163733115,
+    "auc_roc": 0.9998664624922879
   },
   "confusion_matrix": [
     [
-      2078,
-      1
+      2080,
+      2
     ],
     [
-      63,
-      2408
+      58,
+      2413
     ]
   ],
   "feature_importances": {
-    "url_length": 0.031121794007213897,
-    "subdomain_count": 0.0248582471423532,
-    "has_https": 0.0013484110606301095,
-    "special_char_count": 0.002841790909470047,
-    "keyword_score": 0.005660504744635684,
-    "character_entropy": 0.047351665643598904,
-    "tld_risk_score": 0.028836749156119997,
+    "url_length": 0.026520864546268508,
+    "subdomain_count": 0.024676892574227262,
+    "has_https": 0.0013048081669279575,
+    "special_char_count": 0.0032837890115791422,
+    "keyword_score": 0.005374561380801947,
+    "character_entropy": 0.05272884371710948,
+    "tld_risk_score": 0.028248588323131506,
     "has_ip_host": 0.0,
-    "has_at_symbol": 3.7176859904536787e-06,
-    "path_depth": 0.0829456714234447,
-    "query_param_count": 0.003275105602377362,
-    "digit_ratio": 0.0073898554300216015,
-    "is_punycode_or_homograph": 1.0272778350955114e-09,
-    "tranco_rank_bucket": 0.33764504376751325,
-    "brand_distance_score": 0.1298833153928924,
-    "brand_keyword_in_host": 0.000440035772985592,
-    "domain_age_days": 0.0464548042334285,
-    "domain_age_missing": 0.2499432870000464
+    "has_at_symbol": 3.84103877179575e-07,
+    "path_depth": 0.08824006349371677,
+    "query_param_count": 0.0030159844321419826,
+    "digit_ratio": 0.007254807349872226,
+    "is_punycode_or_homograph": 0.0,
+    "tranco_rank_bucket": 0.3282149699589969,
+    "brand_distance_score": 0.1354568873118637,
+    "brand_keyword_in_host": 0.00040993754278322665,
+    "domain_age_days": 0.04274711675411241,
+    "domain_age_missing": 0.25252150133259
   }
 }

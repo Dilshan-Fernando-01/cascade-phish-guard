@@ -2,57 +2,57 @@
   "comparison_table": [
     {
       "model": "logistic_regression",
-      "accuracy": 0.9663736263736263,
-      "precision": 0.9936115843270868,
-      "recall": 0.944152165115338,
-      "f1": 0.9682506744137788,
-      "auc_roc": 0.9883243994939664
+      "accuracy": 0.9661761475949923,
+      "precision": 0.9936088623775032,
+      "recall": 0.9437474706596519,
+      "f1": 0.9680365296803652,
+      "auc_roc": 0.9882463667884639
     },
     {
       "model": "random_forest",
-      "accuracy": 0.985934065934066,
-      "precision": 0.9995848899958489,
-      "recall": 0.9745042492917847,
-      "f1": 0.9868852459016394,
-      "auc_roc": 0.9998837890379776
+      "accuracy": 0.9868218756863606,
+      "precision": 0.9991718426501035,
+      "recall": 0.9765277215702145,
+      "f1": 0.9877200163733115,
+      "auc_roc": 0.9998664624922879
     },
     {
       "model": "xgboost",
-      "accuracy": 0.9870329670329671,
+      "accuracy": 0.986382604875906,
       "precision": 1.0,
-      "recall": 0.9761230271145286,
-      "f1": 0.9879172639770633,
-      "auc_roc": 0.9977277545063867
+      "recall": 0.9749089437474706,
+      "f1": 0.9872950819672132,
+      "auc_roc": 0.9983921073307231
     },
     {
       "model": "mlp",
-      "accuracy": 0.9782417582417583,
-      "precision": 0.9995787700084247,
-      "recall": 0.9603399433427762,
-      "f1": 0.9795665634674923,
-      "auc_roc": 0.9976111542279087
+      "accuracy": 0.9866022402811333,
+      "precision": 0.9995854063018242,
+      "recall": 0.9757183326588426,
+      "f1": 0.9875076797050993,
+      "auc_roc": 0.9978968328479721
     }
   ],
   "primary_metric": "f1",
   "winner": "random_forest",
-  "winner_selected_via_tiebreak": true,
-  "tie_break_reasoning": "XGBoost had a marginally higher F1 at the default 0.5 threshold (0.98792 vs 0.98689, a ~0.001 difference within normal noise for this dataset size), but random forest had a clearly higher AUC (0.99988 vs 0.99773) - a better measure of robustness across the whole score range, not just one cutoff, which matters more for avoiding erratic behaviour on inputs unlike the training data. Overridden here deliberately, not by the automatic highest-F1 rule; documented rather than silent.",
+  "winner_selected_via_tiebreak": false,
+  "tie_break_reasoning": null,
   "test_set_confirmation": {
     "metrics": {
-      "accuracy": 0.9595848056537103,
-      "precision": 1.0,
-      "recall": 0.9273809523809524,
-      "f1": 0.9623224212476837,
-      "auc_roc": 0.999448831657497
+      "accuracy": 0.9627013904215405,
+      "precision": 0.9995750106247344,
+      "recall": 0.9333333333333333,
+      "f1": 0.9653191052739586,
+      "auc_roc": 0.9993286921929387
     },
     "confusion_matrix": [
       [
-        2008,
-        0
+        2010,
+        1
       ],
       [
-        183,
-        2337
+        168,
+        2352
       ]
     ]
   }

@@ -266,18 +266,21 @@ def domain_age_days(host):
     if _is_shared_hosting(host):
         return None
 
+
+    registrable_host = _registrable_domain_guess(host)
+
     import time as _time
 
-    cached = _DOMAIN_AGE_CACHE.get(host)
+    cached = _DOMAIN_AGE_CACHE.get(registrable_host)
     if cached is not None:
         value, cached_at = cached
         if _time.monotonic() - cached_at < _DOMAIN_AGE_CACHE_TTL_SECONDS:
             return value
 
-    value = _domain_age_days_uncached(host)
+    value = _domain_age_days_uncached(registrable_host)
 
     if value is not None:
-        _DOMAIN_AGE_CACHE[host] = (value, _time.monotonic())
+        _DOMAIN_AGE_CACHE[registrable_host] = (value, _time.monotonic())
     return value
 
 
