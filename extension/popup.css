@@ -251,7 +251,7 @@ body {
 
 .dev-details-grid {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(130px, 1fr) auto;
   gap: 3px 10px;
   font-size: 11px;
 }
