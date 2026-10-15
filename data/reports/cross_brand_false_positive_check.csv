@@ -1,0 +1,256 @@
+own_brand,best_wrong_brand_similarity,confused_with
+Microsoft,0.9556421041488647,Office365
+drupal,0.8637780547142029,sharp
+bing,0.8409806489944458,Office365
+Luno,0.8199738264083862,Juno Online Services
+magazinevoce,0.8165603280067444,Magalu
+markilux,0.8070259690284729,Comcast Corporation
+nouryon,0.7923305034637451,1&1 Ionos
+resalepartners,0.7921707630157471,rakutenadvertising
+rakutenadvertising,0.7921707034111023,resalepartners
+account-royalcable,0.7888762354850769,ING
+aliexpress,0.7871366739273071,Yahoo!
+naughtyamerica,0.7799252867698669,mediapart
+mediapart,0.7799252271652222,naughtyamerica
+zoomgov,0.7799040675163269,Dropbox
+happyfox,0.771926760673523,Discover
+lenze,0.7714012861251831,Visa International Service Association
+wirexapp,0.7692791223526001,almexx
+almexx,0.7692790031433105,wirexapp
+ergoplatform,0.7689096927642822,Desjardins
+intranda,0.7685211300849915,theninehertz
+theninehertz,0.7685211300849915,intranda
+badenova,0.7661949396133423,randstad
+randstad,0.7661948800086975,badenova
+gumgum,0.7644551992416382,samsung
+samsung,0.7644551396369934,gumgum
+bbraunusa,0.759735643863678,Banco de Cordoba
+quad9,0.756256639957428,Equa bank
+innersloth,0.7558300495147705,onlinebetting
+onlinebetting,0.7558300495147705,innersloth
+ionicframework,0.7556855082511902,reviews
+reviews,0.7556855082511902,ionicframework
+appwrite,0.7552095055580139,Comcast Corporation
+voicenation,0.7526504993438721,Scotiabank
+diamondaircraft,0.7502891421318054,Bank of America
+brittanytourism,0.7492309808731079,Chase Personal Banking
+needmytranscript,0.747050940990448,Dropbox
+animesdigital,0.7456590533256531,UniCredit Bank Aktiengesellschaft
+xwiki,0.7453083395957947,almexx
+healthjade,0.745222270488739,infinisource
+techcombank,0.7450029253959656,fotoinc
+fotoinc,0.745002806186676,techcombank
+avenuesrecovery,0.7425255179405212,healthjade
+blesta,0.7404435276985168,deskera
+deskera,0.7404435276985168,blesta
+countingworkspro,0.7385956048965454,Senior People Meet
+ccli,0.7383689284324646,icecasino
+icecasino,0.7383688688278198,ccli
+synnexcorp,0.7381879687309265,MyEtherWallet
+aseaglobal,0.7380551695823669,ASB Bank Limited
+strawpoll,0.7379639744758606,timeweb
+simpleltc,0.737573504447937,Simplii Financial
+dc-unlocker,0.7367469072341919,reviews
+veluxusa,0.7363905310630798,Netflix
+topsante,0.7361843585968018,sunrise
+bluecode,0.736174464225769,Blockchain
+ovhcloud,0.7360216975212097,Yahoo!
+thinkspain,0.733373761177063,TalkTalk Communications
+pixiv,0.7332797646522522,dkb
+service,0.7311263084411621,file_transfer
+narkive,0.7310367822647095,M & T Bank Coporation
+novabench,0.7308453917503357,POF
+ecco,0.730796754360199,Zoopla
+meuguia,0.7304195761680603,ATB Financial
+novisurvey,0.730120062828064,Naver
+trainsplit,0.7295069098472595,banco_de_occidente
+global,0.7290757298469543,ecco
+shetnews,0.7290704250335693,Alaska USA Federal Credit Union
+caknowledge,0.7289069294929504,modcombo
+modcombo,0.7289069294929504,caknowledge
+homeriver,0.7284047603607178,National Bank of Canada
+amundi,0.7282755970954895,walmart
+noonlight,0.7278472781181335,zoomgov
+novonordisk,0.7265874743461609,wokwi
+wokwi,0.7265874743461609,novonordisk
+keycloak,0.7248641848564148,barclays
+securitycouncilreport,0.7246641516685486,dc-unlocker
+studentenring,0.7241050004959106,NedBank Limited
+baxter,0.723921000957489,PayPal
+Bancolombia,0.723866879940033,Spotify
+predictionhealth,0.723548948764801,Frontier Communications
+anexia,0.7233679890632629,Maersk
+emby,0.723276674747467,sensu
+sensu,0.7232766151428223,emby
+editasmedicine,0.7230603098869324,fsnb
+jamcity,0.7227010726928711,pritunl
+pritunl,0.7227010726928711,jamcity
+ebrain,0.722176194190979,BNP Paribas
+phonesites,0.7212591171264648,badenova
+freshrss,0.7205246686935425,Citrix ShareFile
+bankdirector,0.7198612689971924,file_transfer
+wezom,0.719009280204773,NBT Bank
+pulselive,0.7176351547241211,Capitec Bank Limited
+form-mailer,0.7168992161750793,funnelcockpit
+funnelcockpit,0.7168992161750793,form-mailer
+telematics,0.7155904173851013,etrade
+lainox,0.7148276567459106,wokwi
+kinsta,0.7135201096534729,LinkedIn Corporation
+discord,0.7134503126144409,crate_and_barrel
+landingcube,0.7134009599685669,db
+floodlist,0.7127252817153931,reviews
+sportengland,0.7127122282981873,Rackspace
+camptocamp,0.7121001482009888,tripsource
+tripsource,0.7121000289916992,camptocamp
+supportsystem,0.7120020985603333,Trade Me NZ
+seequent,0.7117201089859009,American Express
+calabrio,0.711138129234314,American Express
+knowledgetrain,0.711083710193634,newsnow
+newsnow,0.711083710193634,knowledgetrain
+plausible,0.7105303406715393,Match
+vietinbank,0.7103416323661804,Swisscom IT Services AG
+microcms,0.7100972533226013,Spotify
+selectra,0.7098812460899353,smartsheet
+suhaiseguradora,0.7055524587631226,Giffgaff
+colegiointeractivo,0.7054484486579895,Boxberry
+handyrecovery,0.705418586730957,Trade Me NZ
+globalvision,0.7054041028022766,Societe Generale
+lancom-systems,0.7024609446525574,Dropbox
+whmcs,0.7023348212242126,WhatsApp
+chamilo,0.7021495699882507,Trade Me NZ
+playpass,0.7019115686416626,Discover
+guidebook,0.7010766863822937,Instagram
+dometic,0.7010292410850525,workos
+workos,0.7010291814804077,dometic
+mobile-tracker-free,0.7001606225967407,Microsoft OneDrive
+thecronosgroup,0.6997268795967102,Equa bank
+zyro,0.6992455124855042,innersloth
+esrtreit,0.698111355304718,etrade
+disqus,0.6979368925094604,Singtel Optus
+opencounseling,0.6976121068000793,Mastercard International
+cloudflare,0.6974437832832336,opencounseling
+penumbrainc,0.6970640420913696,Absa Group
+copmed,0.696679413318634,Banco Safra
+verygoodsecurity,0.6961732506752014,workos
+brandnamic,0.6955647468566895,simple-help
+simple-help,0.6955647468566895,brandnamic
+onewillow,0.6943260431289673,OurTime Dating
+autarco,0.6941556930541992,synnexcorp
+playfortuna,0.693856954574585,wallcoveringsmart
+wallcoveringsmart,0.693856954574585,playfortuna
+labyrinthelab,0.6934723258018494,Neteller
+wealthyaffiliate,0.6924082636833191,LinkedIn Corporation
+rockylinux,0.6915180087089539,WhatsApp
+domainmarkt,0.690535306930542,Google
+louis-widmer,0.6891253590583801,gov_uk
+plotpad,0.6889045238494873,Discover
+hub-box,0.6880044341087341,SF Express Co
+saleshive,0.6856139302253723,onlinebetting
+paypoint,0.6855812072753906,PayPal
+highscope,0.6855563521385193,infinisource
+flexport,0.6846563816070557,Office365
+qualfon,0.6832015514373779,Bank of Montreal
+adventinternational,0.6829222440719604,novisurvey
+percolate,0.6800797581672668,chamilo
+viabenefits,0.680050790309906,MWeb
+emaillistverify,0.6793016791343689,uniphar
+uniphar,0.6793016791343689,emaillistverify
+deliveroo,0.6790843605995178,docmagic
+generalatlantic,0.6787854433059692,Credit Suisse AG
+sodexo,0.6773359775543213,nordea
+kreatio,0.6761134266853333,newsnow
+list25,0.6750205159187317,test_rite
+roblox,0.6747435927391052,HSBC Bank
+datacommons,0.6739239692687988,Bank of The Bahamas Limited
+woltlab,0.673419177532196,Suncorp Group
+sysco,0.6718182563781738,ziggo
+speedtest,0.6715351343154907,crate_and_barrel
+yellow,0.6712398529052734,Allegro
+knockcrm,0.6696635484695435,Comcast Corporation
+usc,0.6694573163986206,AutoScout24
+striim,0.6691396236419678,colegiointeractivo
+hugosystems,0.6685465574264526,First Investment Bank
+upgrad,0.6675050854682922,Giffgaff
+ceibocreditos,0.6666218638420105,BNP Paribas
+national-lottery,0.6654766798019409,Societe Generale
+connectto,0.6651816964149475,Emirates NBD
+sheetz,0.66511070728302,Netflix
+a-y-m,0.6648286581039429,PayPal
+mailrelay,0.6642187237739563,Halifax Bank of Scotland Plc
+happylilac,0.6638937592506409,SF Express Co
+f1000research,0.6634907722473145,Ooredoo QSC
+movableink,0.6632294058799744,IBC Bank
+subreg,0.6616802215576172,vtiger
+vtiger,0.6616802215576172,subreg
+maximusuk,0.6605859398841858,gumgum
+natuurmonumenten,0.660237729549408,prove2move
+prove2move,0.6602376699447632,natuurmonumenten
+mts,0.6592533588409424,IBC Bank
+vietteltelecom,0.6587170362472534,Westpac Institutional Banking
+pandamotorworks,0.6586819887161255,Navy Federal Credit Union
+katanamrp,0.6583458185195923,Apple
+jubelio,0.6582500338554382,itunes
+mediacollege,0.6580981016159058,Maersk
+recipal,0.6575961709022522,cetelem
+betrusted,0.6575579047203064,Spotify
+jfrog,0.6571396589279175,Spotify
+phishingbox,0.6570677757263184,Bank of Scotland
+fpt,0.6564168930053711,php
+php,0.6564168930053711,fpt
+visitfrenchwine,0.6562018394470215,AOL
+agadir24,0.653609037399292,Credit Suisse AG
+accurx,0.653214156627655,bbraunusa
+aifi,0.652754545211792,WeTransfer
+fosterswift,0.6524403095245361,M & T Bank Coporation
+mybusinesscourse,0.6524062752723694,wallcoveringsmart
+aerosoft,0.6506530046463013,ceibocreditos
+La Banque postale,0.6497750878334045,American Express
+onlinegambling24,0.6491572856903076,ATB Financial
+jellyfin,0.6486311554908752,OurTime Dating
+jiminny,0.6485242247581482,amundi
+bingx,0.6477207541465759,Stripe
+livehappy,0.6469619274139404,Magalu
+bosch-home,0.6465252637863159,Absa Group
+fipdigital,0.6438032984733582,MyEtherWallet
+roady-saint-andre-de-cubzac,0.6428185105323792,Bank of New Zealand
+feide,0.6422919034957886,Deutsche Telekom
+sellthetrend,0.6405332684516907,topsante
+clickbank,0.6402987837791443,TalkTalk Communications
+linklyhq,0.6400039196014404,LinkedIn Corporation
+iponweb,0.6388463377952576,Telekom Brunei
+banbif,0.6381986737251282,Cembra Money Bank AG
+worldsmarathons,0.6379274129867554,form-mailer
+github,0.6364316940307617,WhatsApp
+bahn,0.6362316012382507,IBC Bank
+shopify,0.6342326402664185,bestchange
+getchipdrop,0.6329856514930725,Orange
+ebay-kleinanzeigen,0.6326562166213989,national-lottery
+resume-example,0.6320725083351135,bing
+89grad,0.6294338703155518,Uber
+hedgedoc,0.6289035677909851,ocn
+strato,0.6265267133712769,taxact
+abbott,0.6265074610710144,phonesites
+bittium,0.6245297789573669,onlinebetting
+nationalwi-fi,0.6212379336357117,wealthyaffiliate
+kids-flashcards,0.6210227012634277,colegiointeractivo
+cloudns,0.6189844012260437,Allegro
+usefathom,0.6187348961830139,uniphar
+betterdwelling,0.6184719204902649,AT&T
+spreecommerce,0.6170493364334106,Spotify
+illuminateed,0.6157091856002808,barclays
+uvdesk,0.6105932593345642,vtiger
+allisonhouse,0.6073740124702454,UniCredit Bank Aktiengesellschaft
+bettoredge,0.6056355834007263,1&1 Ionos
+sothebys,0.6041714549064636,Government of Canada
+owncloud,0.602566659450531,Microsoft OneDrive
+witbe,0.6008175611495972,UniCredit Bank Aktiengesellschaft
+swiffer,0.6001887321472168,striim
+taillight,0.5999924540519714,timeweb
+colombotimes,0.5938999652862549,Banco do Brasil S.A
+intrepidtravel,0.5906452536582947,WeTransfer
+jazzpharma,0.5890054106712341,mdpd
+invoiceninja,0.5886252522468567,intrepidtravel
+barcelona,0.5833398103713989,livehappy
+europa,0.5486545562744141,Rabobank Nederland
+manager-go,0.5410078167915344,Giffgaff
+Apple,0.5232577323913574,github

@@ -1,0 +1,451 @@
+rank,domain,brand,status,found_logo,old_best_sim,new_best_sim
+16,twitter.com,"Twitter, Inc.",http_403,,,
+17,linkedin.com,LinkedIn Corporation,http_403,,,
+68,adobe.com,Adobe,http_403,,,
+1,google.com,Google,ok,True,0.979659378528595,0.979659378528595
+140,godaddy.com,GoDaddy,http_403,,,
+5,facebook.com,Facebook,ok,True,0.8964245319366455,0.8964245319366455
+11,instagram.com,Instagram,ok,True,0.9180184006690979,0.9180184006690979
+222,researchgate.net,researchgate,http_403,,,
+3,cloudflare.com,cloudflare,ok,True,,1.0
+10,apple.com,Apple,ok,True,0.6574631333351135,0.6574631333351135
+66,spotify.com,Spotify,ok,True,0.8030736446380615,0.8030736446380615
+6,microsoft.com,Microsoft,did_not_load,,,
+25,amazon.com,amazon,ok,True,0.9415472745895386,0.9243741035461426
+309,php.net,php,ok,True,,1.0000001192092896
+30,bing.com,bing,ok,True,,1.0000001192092896
+32,whatsapp.net,WhatsApp,ok,True,0.9155020117759705,0.9155020117759705
+54,roblox.com,roblox,ok,True,,1.0
+31,github.com,github,did_not_load,,,
+41,netflix.com,Netflix,did_not_load,,,
+97,reddit.com,reddit,no_logo_found,False,,
+397,aliexpress.com,aliexpress,ok,True,,1.0
+139,dropbox.com,Dropbox,ok,True,0.8323240876197815,0.8323240876197815
+74,vimeo.com,vimeo,did_not_load,,,
+107,t.me,substreamaddicted,ok,True,,
+100,wordpress.com,wordpress,ok,True,,
+95,samsung.com,samsung,did_not_load,,,
+115,vk.com,VKontakte,did_not_load,,,
+161,paypal.com,PayPal,ok,True,0.8364979028701782,0.8216432929039001
+154,epicgames.com,epicgames,http_403,,,
+497,blogger.com,blogger,ok,True,,
+181,webex.com,webex,http_403,,,
+167,shopify.com,shopify,ok,True,,0.9972081184387207
+198,forbes.com,forbes,did_not_load,,,
+264,myshopify.com,myshopify,http_404,,,
+172,flickr.com,flickr,ok,True,,
+261,booking.com,booking,no_logo_found,False,,
+608,amazon.fr,Amazon,no_logo_found,False,,
+155,discord.com,discord,ok,True,,1.0
+239,stripe.com,Stripe,did_not_load,,,
+292,alibaba.com,Alibaba,did_not_load,,,
+298,debian.org,debian,did_not_load,,,
+344,bilibili.com,bilibili,did_not_load,,,
+342,dell.com,dell,http_403,,,
+291,nature.com,nature,did_not_load,,,
+387,mi.com,mi,http_403,,,
+729,bandcamp.com,bandcamp,did_not_load,,,
+252,hubspot.com,hubspot,did_not_load,,,
+316,etsy.com,etsy,http_403,,,
+441,t-mobile.com,t-mobile,http_403,,,
+378,walmart.com,walmart,did_not_load,,,
+434,steamcommunity.com,Steam,did_not_load,,,
+350,slack.com,slack,did_not_load,,,
+493,shein.com,shein,did_not_load,,,
+841,pornhub.com,pornhub,did_not_load,,,
+591,comcast.com,Comcast Corporation,did_not_load,,,
+329,zendesk.com,zendesk,did_not_load,,,
+724,box.com,Box,did_not_load,,,
+409,line.me,line,did_not_load,,,
+545,atlassian.com,atlassian,did_not_load,,,
+491,sohu.com,sohu,did_not_load,,,
+820,zoho.com,zoho,did_not_load,,,
+938,odoo.com,odoo,did_not_load,,,
+534,visualstudio.com,visualstudiocode,did_not_load,,,
+448,cnbc.com,cnbc,did_not_load,,,
+1172,hugedomains.com,hugedomains,did_not_load,,,
+580,ieee.org,ieee,no_logo_found,False,,
+507,ft.com,ft,http_403,,,
+2062,squareup.com,Square,did_not_load,,,
+952,kleinanzeigen.de,ebay-kleinanzeigen,ok,True,,1.0
+419,taobao.com,taobao,did_not_load,,,
+2333,lego.com,lego,did_not_load,,,
+680,mailchimp.com,mailchimp,did_not_load,,,
+2593,technologyreview.com,technologyreview,did_not_load,,,
+2936,citrix.com,Citrix ShareFile,did_not_load,,,
+636,speedtest.net,speedtest,ok,True,,1.0
+564,teamviewer.com,teamviewer,ok,True,,
+723,stripchat.com,stripchat,did_not_load,,,
+617,redhat.com,redhat,did_not_load,,,
+3233,docusign.com,DocuSign,did_not_load,,,
+1276,ucla.edu,ucla,did_not_load,,,
+3496,boston.com,boston,did_not_load,,,
+532,time.com,time,did_not_load,,,
+776,lenovo.com,lenovo,did_not_load,,,
+4086,gm.com,gm,did_not_load,,,
+4427,kit.com,kit,did_not_load,,,
+2162,mastercard.com,Mastercard International,http_403,,,
+775,airbnb.com,"Airbnb, Inc.",did_not_load,,,
+709,uber.com,Uber,did_not_load,,,
+4976,orange.com,Orange,did_not_load,,,
+797,spectrum.com,Spectrum,did_not_load,,,
+5555,cfr.org,cfr,did_not_load,,,
+5951,hku.hk,hku,did_not_load,,,
+625,tencent.com,tencent,did_not_load,,,
+737,homedepot.com,homedepot,ok,True,,
+2424,usc.edu,usc,ok,True,,1.0
+6358,health.com,health,did_not_load,,,
+916,healthline.com,healthline,did_not_load,,,
+6826,telstra.com.au,Telstra Corporation Limited,did_not_load,,,
+887,bankofamerica.com,Bank of America,did_not_load,,,
+792,rakuten.com,Rakuten,did_not_load,,,
+2595,thehill.com,thehill,http_403,,,
+926,usps.com,usps,did_not_load,,,
+7639,dbs.com,DBS Bank,did_not_load,,,
+766,gumgum.com,gumgum,ok,True,,1.0
+8350,hudl.com,hudl,did_not_load,,,
+1062,typeform.com,typeform,did_not_load,,,
+844,disqus.com,disqus,ok,True,,1.0
+860,latimes.com,latimes,http_403,,,
+10498,ncaa.com,ncaa,did_not_load,,,
+1121,economist.com,economist,http_403,,,
+11081,theme-fusion.com,theme-fusion,did_not_load,,,
+2948,zapier.com,zapier,ok,True,,
+1005,costco.com,costco,did_not_load,,,
+925,weforum.org,weforum,did_not_load,,,
+3265,zara.com,zara,http_403,,,
+2025,timeanddate.com,timeanddate,http_403,,,
+979,rackspace.com,Rackspace,did_not_load,,,
+994,pixiv.net,pixiv,did_not_load,,,
+1957,politico.com,politico,http_403,,,
+11716,havadurumu15gunluk.xyz,havadurumu15gunluk,did_not_load,,,
+12233,tasteofhome.com,tasteofhome,did_not_load,,,
+2331,earthlink.net,EarthLink,http_403,,,
+12762,ee.co.uk,EE Limited,did_not_load,,,
+2184,sap.com,sap,http_403,,,
+1084,gofundme.com,gofundme,did_not_load,,,
+1920,blizzard.com,blizzard,did_not_load,,,
+3658,amazon.se,Amazon,ok,True,0.9415745139122009,0.9240626096725464
+13969,swisscom.com,Swisscom IT Services AG,did_not_load,,,
+1491,ovhcloud.com,ovhcloud,did_not_load,,,
+1832,nps.gov,nps,did_not_load,,,
+14825,wm.com,wmservices,did_not_load,,,
+2019,mobile.de,Mobile.de,http_403,,,
+4098,mercadopago.com,mercadopago,http_403,,,
+2589,visa.com,Visa International Service Association,did_not_load,,,
+2526,wetransfer.com,WeTransfer,did_not_load,,,
+2180,metamask.io,metamask,did_not_load,,,
+2178,sony.com,sony,http_403,,,
+2466,unity.com,unity,http_403,,,
+15479,danfoss.com,danfoss,did_not_load,,,
+2462,made-in-china.com,Made-In-China,http_403,,,
+2850,bet365.com,Bet365,did_not_load,,,
+2861,panasonic.com,panasonic,http_403,,,
+15955,mweb.co.za,MWeb,did_not_load,,,
+3079,ziggo.nl,ziggo,did_not_load,,,
+2167,americanexpress.com,American Express,error: Error,,,
+3299,delta.com,Delta Air Lines,did_not_load,,,
+3784,bitwarden.com,bitwarden,did_not_load,,,
+2274,laravel.com,laravel,did_not_load,,,
+16972,kpn.com,Royal KPN N.V,did_not_load,,,
+2931,ti.com,ti,did_not_load,,,
+2896,airtable.com,airtable,did_not_load,,,
+4484,realme.com,realme,ok,True,,
+4240,opentable.com,opentable,did_not_load,,,
+19100,exprealty.com,exprealty,did_not_load,,,
+2581,match.com,Match,http_403,,,
+3201,brandbucket.com,brandbucket,http_403,,,
+20180,reamaze.com,reamaze,did_not_load,,,
+3125,chase.com,Chase Personal Banking,ok,True,0.9822368025779724,0.9822368025779724
+2459,ey.com,ey,did_not_load,,,
+4597,etrade.com,etrade,did_not_load,,,
+21472,rbcroyalbank.com,RBC Royal Bank,did_not_load,,,
+3152,vanguard.com,The Vanguard Group,did_not_load,,,
+5003,softbank.jp,softbank,ok,True,,
+3427,smartsheet.com,smartsheet,http_404,,,
+2908,capitalone.com,Capital One Financial Corporation,did_not_load,,,
+3484,bahn.de,bahn,ok,True,,1.0000001192092896
+5028,ameli.fr,ameli_fr,http_403,,,
+3301,georgetown.edu,georgetown,did_not_load,,,
+2682,bt.com,BT Group plc,did_not_load,,,
+23091,axisbank.com,axisbank,did_not_load,,,
+3879,plausible.io,plausible,ok,True,,1.0
+5781,telus.com,Telus,http_403,,,
+3934,creditkarma.com,creditkarma,did_not_load,,,
+3182,freshdesk.com,freshdesk,did_not_load,,,
+24347,cushmanwakefield.com,cushmanwakefield,http_403,,,
+5630,crypto.com,crypto,ok,True,,
+3963,cyberark.com,cyberark,did_not_load,,,
+3051,wellsfargo.com,Wells Fargo & Company,did_not_load,,,
+6022,vultr.com,vultr,http_403,,,
+3287,tradingeconomics.com,tradingeconomics,http_403,,,
+4243,fnac.com,fnac,http_403,,,
+5966,networksolutions.com,networksolutions,http_403,,,
+6631,eaton.com,eatonelectric,did_not_load,,,
+4622,latamairlines.com,latam,http_403,,,
+3448,go.dev,go,ok,True,,
+4294,sonicwall.com,sonicwall,did_not_load,,,
+6416,telegram.com,telegram,http_402,,,
+7234,verizonwireless.com,Verizon Wireless,did_not_load,,,
+25369,workos.com,workos,ok,True,,1.0
+5115,laposte.fr,La Poste,http_403,,,
+7928,chronopost.fr,Chronopost International,did_not_load,,,
+9200,f-secure.com,f-secure,did_not_load,,,
+3716,over-blog.com,over-blog,did_not_load,,,
+4415,foreignpolicy.com,foreignpolicy,ok,True,,
+4825,directadmin.com,directadmin,ok,True,,
+5808,honda.com,honda,http_403,,,
+10692,baidu.cn,baidu,did_not_load,,,
+11257,snap.com,snapchat,did_not_load,,,
+26687,riamoneytransfer.com,riamoneytransfer,http_403,,,
+3936,pchome.com.tw,pchome,did_not_load,,,
+6906,alz.org,alzheimers,did_not_load,,,
+11912,desjardins.com,Desjardins,did_not_load,,,
+4392,phpbb.com,phpbb,http_403,,,
+12322,ing.com,ING,did_not_load,,,
+27848,econstor.eu,econstor,http_429,,,
+7751,bayer.com,bayer,http_403,,,
+4235,zoominfo.com,zoominfo,did_not_load,,,
+4924,bradesco.com.br,bradesco,did_not_load,,,
+5233,epfl.ch,epfl,did_not_load,,,
+6033,cricketwireless.com,cricketwireless,did_not_load,,,
+13269,smiles.com.br,smiles,did_not_load,,,
+4494,milanuncios.com,milanuncios,http_403,,,
+5830,blockchain.com,Blockchain,http_403,,,
+14090,huntington.com,Huntington Bank,did_not_load,,,
+5347,upi.com,upi,http_403,,,
+30237,smbc-comics.com,SMBC,did_not_load,,,
+4862,runescape.com,RuneScape,ok,True,0.4757492244243622,0.4482823610305786
+15102,optus.com.au,Singtel Optus,did_not_load,,,
+32418,safran-group.com,safran-group,http_403,,,
+15573,nationwide.com,Nationwide Building Society,did_not_load,,,
+6215,xfree.com,xfree,http_403,,,
+8643,ucf.edu,ucfrussian,ok,True,,
+16375,bouyguestelecom.fr,Bouygues Telecom,did_not_load,,,
+6649,navyfederal.org,Navy Federal Credit Union,did_not_load,,,
+17872,uni-potsdam.de,uni-potsdam,did_not_load,,,
+5008,shopee.com,shopee,no_logo_found,False,,
+19529,musicradar.com,musicradar,did_not_load,,,
+20709,timeweb.com,timeweb,did_not_load,,,
+5904,manageengine.com,manageengine,did_not_load,,,
+5263,zyxel.com,zyxel,did_not_load,,,
+7262,allegro.com,Allegro,http_403,,,
+33547,astrology.com,astrology,did_not_load,,,
+6674,dior.com,dior,did_not_load,,,
+10671,idrive.com,idrive,ok,True,,
+5707,splunk.com,splunk,did_not_load,,,
+11188,rockylinux.org,rockylinux,ok,True,,1.0
+21861,onlyoffice.com,onlyoffice,did_not_load,,,
+6355,lazada.com,lazada,ok,True,,
+5877,td.com,TD Bank Group,did_not_load,,,
+7956,swatch.com,swatch,did_not_load,,,
+9798,livejasmin.com,livejasmin,did_not_load,,,
+35938,appspace.com,appspace,did_not_load,,,
+7341,hsbc.com,HSBC,did_not_load,,,
+23894,columbia.com,columbia,http_403,,,
+10834,asurion.com,asurion,did_not_load,,,
+5990,ionos.com,1&1 Ionos,did_not_load,,,
+11796,metlife.com,metlife,did_not_load,,,
+6332,uni-koeln.de,uni-koeln,ok,True,,
+6818,maersk.com,Maersk,did_not_load,,,
+37088,atb.com,ATB Financial,did_not_load,,,
+8090,flexport.com,flexport,did_not_load,,,
+24636,deutschebahn.com,bahn,did_not_load,,,
+6722,housing.com,housing,http_406,,,
+11333,scotiabank.com,Scotiabank,did_not_load,,,
+6435,willhaben.at,willhaben,did_not_load,,,
+12247,whmcs.com,whmcs,did_not_load,,,
+7359,vodafone.com,Vodafone,did_not_load,,,
+9941,mobile-tracker-free.com,mobile-tracker-free,ok,True,,1.0000001192092896
+39633,thunderforest.com,thunderforest,no_logo_found,False,,
+25608,flexera.com,flexera,did_not_load,,,
+7349,discover.com,Discover,did_not_load,,,
+7167,8x8.com,8x8,did_not_load,,,
+11947,telekom.com,Deutsche Telekom,ok,True,0.9191822409629822,0.9191822409629822
+12888,weezevent.com,weezevent,did_not_load,,,
+8334,clips4sale.com,clips4sale,ok,True,,
+10909,zabbix.com,zabbix,did_not_load,,,
+8221,lexmark.com,lexmark,no_logo_found,False,,
+26895,pulselive.com,pulselive,ok,True,,1.0000001192092896
+10185,ihk.de,ihkdigital,no_logo_found,False,,
+41668,ringover.com,ringover,ok,True,,
+11366,icicibank.com,ICICI Bank Limited,ok,True,0.6573486328125,0.6573486328125
+7852,dan.com,dan,ok,True,,
+12463,business.com,business,ok,True,,
+12111,instyle.com,instyle,http_402,,,
+29070,eharmony.com,eharmony,ok,True,0.5630214810371399,0.5630214810371399
+10910,gmx.com,GMX Mail,ok,True,0.7394887804985046,0.7394887804985046
+10197,uni-goettingen.de,uni-goettingen,ok,True,,
+13981,unibas.ch,unibas,ok,True,,
+8935,thalesgroup.com,thalesgroup,no_logo_found,False,,
+11038,cloudns.com,cloudns,ok,True,,1.0000001192092896
+31925,oeko-tex.com,oeko-tex,ok,True,,
+43522,artofliving.org,artofliving,ok,True,,
+11412,zoomgov.com,zoomgov,ok,True,,1.0
+13459,epik.com,epik,did_not_load,,,
+12491,crowdin.com,crowdin,did_not_load,,,
+10680,bingx.com,bingx,ok,True,,0.9957581758499146
+45644,cevalogistics.com,cevalogistics,http_403,,,
+14939,nordea.com,nordea,ok,True,0.9084902405738831,0.9084902405738831
+33127,albacross.com,albacross,ok,True,,
+11674,auspost.com.au,auspost,ok,True,,
+47966,pchelpsoft.com,pchelpsoft,ok,True,,
+11196,sothebys.com,sothebys,ok,True,,1.0
+12134,remax.com,remax,ok,True,,
+14253,ispmanager.com,ispmanager,did_not_load,,,
+15512,cloudways.com,cloudways,http_403,,,
+12183,cloudconvert.com,cloudconvert,ok,True,0.8375020027160645,0.8375020027160645
+13658,townhall.com,townhall,did_not_load,,,
+12553,oprah.com,oprah,http_403,,,
+34213,iinet.com,iiNet Limited,did_not_load,,,
+51467,suncorp.com.au,Suncorp Metway Limited,did_not_load,,,
+15289,resideo.com,resideo,did_not_load,,,
+12715,illuminateed.com,illuminateed,ok,True,,1.0000001192092896
+16048,pubg.com,pubg,did_not_load,,,
+14320,antena3.com,antena3,did_not_load,,,
+11906,naver.net,Naver,ok,True,0.841292679309845,0.8351587057113647
+12311,1xbet.com,1xbet,did_not_load,,,
+12949,globalsources.com,Global Sources HK,did_not_load,,,
+14082,wallpapercave.com,wallpapercave,did_not_load,,,
+13797,kinsta.com,kinsta,ok,True,,1.0
+36502,enel.com,Enel Energia S.p.A,ok,True,0.9388705492019653,0.9388705492019653
+15601,rbc.com,RBC Royal Bank,ok,True,0.9745744466781616,0.9745744466781616
+14946,canada.com,Government of Canada,did_not_load,,,
+17194,sysco.com,sysco,ok,True,,0.3968624174594879
+19388,sf-express.com,SF Express Co,did_not_load,,,
+15371,jfrog.com,jfrog,ok,True,,1.0
+15559,hdfcbank.com,hdfcbank,did_not_load,,,
+37640,domainmarkt.de,domainmarkt,ok,True,,1.0
+20286,mbank.pl,mbank,did_not_load,,,
+13875,soundtrackyourbrand.com,soundtrackyourbrand,did_not_load,,,
+15616,podchaser.com,podchaser,http_403,,,
+16106,credit-suisse.com,Credit Suisse AG,did_not_load,,,
+21592,seismic.com,seismic,did_not_load,,,
+14742,clickfunnels.com,clickfunnels,http_403,,,
+14623,mediapart.fr,mediapart,ok,True,,1.0000001192092896
+17665,urssaf.fr,URSSAF,did_not_load,,,
+19500,squadhelp.com,squadhelp,did_not_load,,,
+15386,rolex.com,rolex,http_403,,,
+20454,emiratesnbd.com,Emirates NBD,did_not_load,,,
+16420,osticket.com,osticket,did_not_load,,,
+16734,hemnet.se,hemnet,http_403,,,
+15845,ionicframework.com,ionicframework,ok,True,,1.0
+18427,etisalat.ae,Etisalat,no_logo_found,False,,
+15375,trustwallet.com,trustwallet,ok,True,,
+21718,nissanusa.com,nissanusa,http_403,,,
+23207,jellyfin.org,jellyfin,ok,True,,1.0
+40449,nortonlifelock.com,norton,did_not_load,,,
+24413,golfgenius.com,golfgenius,http_403,,,
+18512,owncloud.com,owncloud,ok,True,,1.0000001192092896
+15676,global.com,global,ok,True,,0.9992220401763916
+19872,rabobank.com,Rabobank Nederland,http_403,,,
+42756,postfinance.ch,PostFinance,ok,True,0.6602476835250854,0.6602476835250854
+16908,liberty.edu,liberty,did_not_load,,,
+16900,pof.com,POF,ok,True,0.39686301350593567,0.3668033182621002
+25452,bosch-home.com,bosch-home,ok,True,,1.0
+18680,usefathom.com,usefathom,ok,True,,1.0
+23712,centurylink.com,CenturyLink,did_not_load,,,
+19729,23andme.com,23andme,ok,True,,
+24454,a2hosted.com,a2hosted,did_not_load,,,
+20116,viabcp.com,bcp,did_not_load,,,
+20969,postbank.de,postbank,ok,True,0.814726710319519,0.7967149019241333
+21353,codeigniter.com,codeigniter,did_not_load,,,
+25476,coinex.com,coinex,did_not_load,,,
+26816,rws.com,rws,did_not_load,,,
+20828,natwest.com,NatWest Personal Banking,ok,True,0.8851200938224792,0.8851200938224792
+44165,sonnenklar.tv,sonnenklar,did_not_load,,,
+18617,topsante.com,topsante,ok,True,,1.0
+28618,hotnewhiphop.com,hotnewhiphop,did_not_load,,,
+26799,okcoin.com,okcoin,did_not_load,,,
+31582,astonmartin.com,aston,did_not_load,,,
+20108,orange-business.com,orange-business,http_403,,,
+21937,strato.com,strato,ok,True,,1.0
+46431,boconcept.com,boconcept,http_403,,,
+32771,liferay.com,liferay,did_not_load,,,
+22397,aktualne.cz,aktualne,ok,True,,
+22113,newspicks.com,newspicks,ok,True,,
+23976,kohler.com,kohler,http_403,,,
+33690,urlgeni.us,urlgeni,did_not_load,,,
+49044,keycloak.org,keycloak,ok,True,,1.0
+36447,bombich.com,bombich,did_not_load,,,
+21062,westpac.com.au,Westpac Institutional Banking,no_logo_found,False,,
+37521,examine.com,examine,did_not_load,,,
+27849,mega.io,megadrop,ok,True,,
+22239,minted.com,minted,http_403,,,
+52886,photographylife.com,photographylife,http_403,,,
+24090,cogeco.ca,cogeco,http_403,,,
+24336,narkive.com,narkive,ok,True,,1.0
+40366,intrepidtravel.com,intrepidtravel,ok,True,,1.0
+24671,kornferry.com,kornferry,did_not_load,,,
+25364,key.com,Key Bank,did_not_load,,,
+26568,mezmo.com,mezmo,did_not_load,,,
+31362,spark.co.nz,Spark New Zealand,ok,True,0.9815930128097534,0.9815930128097534
+27579,alwaysdata.com,alwaysdata,did_not_load,,,
+24806,innersloth.com,innersloth,ok,True,,1.0000001192092896
+24240,cox.com,Cox Communications,no_logo_found,False,,
+42551,magazinevoce.com.br,magazinevoce,ok,True,,1.0
+30210,finishline.com,finishline,did_not_load,,,
+25633,assaabloy.com,assaabloy,ok,True,,
+32319,olivegarden.com,olivegarden,http_403,,,
+32451,backerkit.com,backerkit,http_403,,,
+25693,novonordisk.com,novonordisk,ok,True,,1.0000001192092896
+25111,deliveroo.com,deliveroo,no_logo_found,False,,
+43995,taxact.com,taxact,did_not_load,,,
+27086,viasat.com,viasat,ok,True,,
+33555,rdstation.com,rdstation,ok,True,,
+27246,ingenico.com,ingenico,ok,True,,
+26073,adidas.de,adidas,http_403,,,
+46407,naughtyamerica.com,naughtyamerica,ok,True,,1.000000238418579
+33490,tdbank.com,TD Bank Group,ok,True,0.9111958742141724,0.9111958742141724
+36141,sodexo.com,sodexo,ok,True,,1.0000001192092896
+29403,tradekey.com,TradeKey,did_not_load,,,
+37464,luxurypresence.com,luxurypresence,http_403,,,
+29879,societegenerale.com,Societe Generale,did_not_load,,,
+27550,gvsu.edu,gvsu,did_not_load,,,
+35642,marketresearch.com,marketresearch,http_403,,,
+48851,vietinbank.vn,vietinbank,ok,True,,1.0000001192092896
+36845,ourtime.com,OurTime Dating,http_403,,,
+32033,weworkremotely.com,remotely,http_403,,,
+31945,form-mailer.jp,form-mailer,ok,True,,1.0
+39911,blackstone.com,blackstone,http_403,,,
+52501,wokwi.com,wokwi,ok,True,,1.0
+38799,componentsearchengine.com,componentsearchengine,http_403,,,
+33272,clickbank.com,clickbank,ok,True,,0.998409628868103
+30090,rebrandly.com,rebrandly,ok,True,,
+41427,sharp.com,sharp,ok,True,0.6252790689468384,0.6252790689468384
+33238,unilim.fr,unilim,did_not_load,,,
+42373,ocbc.com,OCBC,ok,True,,
+32115,baxter.com,baxter,ok,True,,1.0
+34917,santander.com,Grupo Santander,ok,True,0.5857375860214233,0.5857375860214233
+43362,upgrad.com,upgrad,did_not_load,,,
+34453,juno.com,Juno Online Services,ok,True,0.9590594172477722,0.9590594172477722
+43726,dometic.com,dometic,did_not_load,,,
+36676,lionsclubs.org,lionsclubs,http_403,,,
+33456,sidearmsports.com,sidearmsports,did_not_load,,,
+46286,ed2go.com,ed2go,http_403,,,
+45062,theskylive.com,theskylive,http_403,,,
+35487,strawpoll.com,strawpoll,ok,True,,1.0
+36730,dentsu.com,dentsu,ok,True,,
+48828,dealnews.com,dealnews,no_logo_found,False,,
+37820,brivity.com,brivity,did_not_load,,,
+36838,showingtime.com,showingtime,ok,True,,
+47871,f1000research.com,f1000research,ok,True,,1.0000001192092896
+40907,edgepilot.com,edgepilot,no_logo_found,False,,
+38453,nedbank.co.za,NedBank Limited,did_not_load,,,
+52290,kiwibank.co.nz,Kiwibank Limited,ok,True,0.7288730144500732,0.7288730144500732
+38797,ecco.com,ecco,ok,True,,1.0
+41048,randstad.com,randstad,ok,True,,1.0
+50901,azul.com,Azul,ok,True,0.7365041971206665,0.7365041971206665
+42864,zum.com,zum,did_not_load,,,
+41251,tenorshare.com,tenorshare,ok,True,,
+42938,alorica.com,alorica,ok,True,,
+44350,boxberry.ru,Boxberry,ok,True,0.4391847252845764,0.4391847252845764
+44435,pritunl.com,pritunl,ok,True,,1.0
+43080,dkb.de,dkb,did_not_load,,,
+47102,subwallet.app,subwallet,ok,True,,1.0000001192092896
+46772,sspai.com,sspai,did_not_load,,,
+45044,movableink.com,movableink,ok,True,,1.0
+50147,vtiger.com,vtiger,ok,True,,1.0
+49448,newsnow.com,newsnow,ok,True,,1.0
+47818,luno.com,Luno,ok,True,,0.9999999403953552
+50557,cookingclassy.com,cookingclassy,http_403,,,

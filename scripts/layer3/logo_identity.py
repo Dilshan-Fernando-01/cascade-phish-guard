@@ -59,9 +59,16 @@ def l2_norm(x):
 
 @torch.no_grad()
 def get_embedding(img, model):
-    """img: a file path or a PIL.Image. Returns a (2048,) L2-normalized numpy vector."""
+    
     img = Image.open(img) if isinstance(img, str) else img
-    img = img.convert("RGB")
+    if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
+   
+        img = img.convert("RGBA")
+        white_bg = Image.new("RGB", img.size, (255, 255, 255))
+        white_bg.paste(img, mask=img.split()[-1])
+        img = white_bg
+    else:
+        img = img.convert("RGB")
 
     pad_color = (255, 255, 255)
     w, h = img.size

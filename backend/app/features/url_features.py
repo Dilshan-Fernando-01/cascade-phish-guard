@@ -213,13 +213,11 @@ def brand_keyword_in_host(host):
     return 0
 
 
-def domain_age_days(host):
-    host = host.lower()
-    if _is_shared_hosting(host):
-
-        return None
+_DOMAIN_AGE_CACHE = {}
+_DOMAIN_AGE_CACHE_TTL_SECONDS = 24 * 60 * 60
 
 
+def _domain_age_days_uncached(host):
     try:
         resp = requests.get(f"https://rdap.org/domain/{host}", timeout=5)
         if resp.status_code == 200:
@@ -261,6 +259,26 @@ def domain_age_days(host):
         pass
 
     return None
+
+
+def domain_age_days(host):
+    host = host.lower()
+    if _is_shared_hosting(host):
+        return None
+
+    import time as _time
+
+    cached = _DOMAIN_AGE_CACHE.get(host)
+    if cached is not None:
+        value, cached_at = cached
+        if _time.monotonic() - cached_at < _DOMAIN_AGE_CACHE_TTL_SECONDS:
+            return value
+
+    value = _domain_age_days_uncached(host)
+
+    if value is not None:
+        _DOMAIN_AGE_CACHE[host] = (value, _time.monotonic())
+    return value
 
 
 def extract_all_features(url):
