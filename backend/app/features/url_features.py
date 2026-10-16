@@ -1,6 +1,7 @@
 import concurrent.futures
 import ipaddress
 import math
+import threading
 import unicodedata
 from collections import Counter
 from datetime import datetime, timezone
@@ -217,6 +218,10 @@ _DOMAIN_AGE_CACHE = {}
 _DOMAIN_AGE_CACHE_TTL_SECONDS = 24 * 60 * 60
 
 
+_DOMAIN_AGE_INFLIGHT = {}
+_DOMAIN_AGE_INFLIGHT_LOCK = threading.Lock()
+
+
 def _domain_age_days_uncached(host):
     try:
         resp = requests.get(f"https://rdap.org/domain/{host}", timeout=5)
@@ -266,7 +271,6 @@ def domain_age_days(host):
     if _is_shared_hosting(host):
         return None
 
-
     registrable_host = _registrable_domain_guess(host)
 
     import time as _time
@@ -277,11 +281,28 @@ def domain_age_days(host):
         if _time.monotonic() - cached_at < _DOMAIN_AGE_CACHE_TTL_SECONDS:
             return value
 
-    value = _domain_age_days_uncached(registrable_host)
+    with _DOMAIN_AGE_INFLIGHT_LOCK:
+        inflight = _DOMAIN_AGE_INFLIGHT.get(registrable_host)
+        is_leader = inflight is None
+        if is_leader:
+            inflight = {"event": threading.Event(), "value": None}
+            _DOMAIN_AGE_INFLIGHT[registrable_host] = inflight
 
-    if value is not None:
-        _DOMAIN_AGE_CACHE[registrable_host] = (value, _time.monotonic())
-    return value
+    if not is_leader:
+
+        inflight["event"].wait(timeout=12)
+        return inflight["value"]
+
+    try:
+        value = _domain_age_days_uncached(registrable_host)
+        inflight["value"] = value
+        if value is not None:
+            _DOMAIN_AGE_CACHE[registrable_host] = (value, _time.monotonic())
+        return value
+    finally:
+        with _DOMAIN_AGE_INFLIGHT_LOCK:
+            del _DOMAIN_AGE_INFLIGHT[registrable_host]
+        inflight["event"].set()
 
 
 def extract_all_features(url):

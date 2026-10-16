@@ -56,6 +56,8 @@ let lastResult = null;
 let lastFullScanMode = false;
 let lastCapturedLogoPng = null;
 
+let scanGeneration = 0;
+
 function setBadge(key, icon, text) {
   badge.className = `badge badge-${key}`;
   badge.innerHTML = `<span class="badge-icon">${icon}</span>${text}`;
@@ -439,7 +441,10 @@ const QUALITY_BAND_META = {
 
 function pageQualityHtml(pageQuality) {
   if (!pageQuality) return "";
-  const meta = QUALITY_BAND_META[pageQuality.band] || { label: pageQuality.band, key: "neutral" };
+  const meta = QUALITY_BAND_META[pageQuality.band] || {
+    label: pageQuality.band,
+    key: "neutral",
+  };
   const findings = pageQuality.findings
     .map((f) => `<li>${escapeHtml(f.label)}</li>`)
     .join("");
@@ -494,10 +499,16 @@ function devDetailsHtml(title, data, { asJson = false } = {}) {
       <pre class="dev-details-json">${escapeHtml(JSON.stringify(data, null, 2))}</pre>
     </div>`;
   }
+  const formatValue = (value) => {
+    if (value !== null && typeof value === "object") {
+      return JSON.stringify(value);
+    }
+    return String(value);
+  };
   const rows = Object.entries(data)
     .map(
       ([key, value]) =>
-        `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(String(value))}</dd>`,
+        `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(formatValue(value))}</dd>`,
     )
     .join("");
   return `<div class="dev-details">
@@ -974,6 +985,9 @@ const VERDICT_META = {
 
 function escalateNoteHtml(result) {
   if (!result.would_escalate) return "";
+  const layer2Resolved =
+    result.layer_scores && result.layer_scores.layer2 !== undefined;
+  if (layer2Resolved) return "";
   return `<div class="note-box">
      <span class="note-icon">${ICON_INFO}</span>
      <span>This page falls in a gray zone our deeper checks aren't built yet to resolve - treat it with extra caution.</span>
@@ -1091,7 +1105,10 @@ function renderDoneKeepingSteps(steps, result, fullScanMode, target = content) {
   );
   updateSteps(steps, target);
   updateQuality(pageQualityHtml(result.page_quality), target);
-  updateEmbeddedWarning(embeddedUrlWarningHtml(result.embedded_url_warning), target);
+  updateEmbeddedWarning(
+    embeddedUrlWarningHtml(result.embedded_url_warning),
+    target,
+  );
   animateResultGauges(result, fullScanMode, ns);
 }
 
@@ -1121,7 +1138,14 @@ function renderInitialChecking(fullScanMode, target = content) {
   updateSteps(steps, target);
 }
 
-function handleResolvedStatus(status, payload, tabId, target = content) {
+function handleResolvedStatus(
+  status,
+  payload,
+  tabId,
+  target = content,
+  generation = scanGeneration,
+) {
+  if (generation !== scanGeneration) return;
   const fullScanMode = scanMode === "full";
   if (status === "done") {
     finishWithResult(
@@ -1135,7 +1159,7 @@ function handleResolvedStatus(status, payload, tabId, target = content) {
   } else if (status === "error") {
     renderError(payload.message, target);
   } else if (status === "analyzing" && tabId != null) {
-    pollUntilDone(tabId, 0, target);
+    pollUntilDone(tabId, 0, target, generation);
   } else {
     renderUnknown(target);
   }
@@ -1143,19 +1167,33 @@ function handleResolvedStatus(status, payload, tabId, target = content) {
 
 const MAX_POLL_ATTEMPTS = 220;
 
-function pollUntilDone(tabId, attempt = 0, target = content) {
+function pollUntilDone(
+  tabId,
+  attempt = 0,
+  target = content,
+  generation = scanGeneration,
+) {
+  if (generation !== scanGeneration) return;
   if (attempt > MAX_POLL_ATTEMPTS) {
     renderError("Taking longer than expected.");
     return;
   }
   setTimeout(() => {
+    if (generation !== scanGeneration) return;
     chrome.runtime.sendMessage({ type: "getTabResult", tabId }, (response) => {
+      if (generation !== scanGeneration) return;
       if (!response) return;
       if (response.status === "analyzing") {
         applyLiveProgress(response, scanMode === "full", target);
-        pollUntilDone(tabId, attempt + 1, target);
+        pollUntilDone(tabId, attempt + 1, target, generation);
       } else {
-        handleResolvedStatus(response.status, response, tabId, target);
+        handleResolvedStatus(
+          response.status,
+          response,
+          tabId,
+          target,
+          generation,
+        );
       }
     });
   }, 500);
@@ -1173,6 +1211,7 @@ function setScanModeUI(mode) {
 }
 
 function requestRescan(tab) {
+  const generation = ++scanGeneration;
   renderInitialChecking(scanMode === "full");
 
   chrome.runtime.sendMessage({
@@ -1180,7 +1219,7 @@ function requestRescan(tab) {
     tabId: tab.id,
     url: tab.url,
   });
-  pollUntilDone(tab.id);
+  pollUntilDone(tab.id, 0, content, generation);
 }
 
 scanModeToggle.addEventListener("click", (event) => {
@@ -1234,12 +1273,14 @@ async function loadActiveTab() {
   currentTab = tab;
   setSubtitle(hostFromUrl(tab.url));
   renderInitialChecking(scanMode === "full");
+  const generation = ++scanGeneration;
 
   chrome.runtime.sendMessage(
     { type: "getTabResult", tabId: tab.id },
     (response) => {
+      if (generation !== scanGeneration) return;
       if (response && response.status === "analyzing") {
-        pollUntilDone(tab.id);
+        pollUntilDone(tab.id, 0, content, generation);
         return;
       }
 
@@ -1249,7 +1290,7 @@ async function loadActiveTab() {
           tabId: tab.id,
           url: tab.url,
         });
-        pollUntilDone(tab.id);
+        pollUntilDone(tab.id, 0, content, generation);
         return;
       }
 
@@ -1258,7 +1299,13 @@ async function loadActiveTab() {
         return;
       }
 
-      handleResolvedStatus(response.status, response, tab.id);
+      handleResolvedStatus(
+        response.status,
+        response,
+        tab.id,
+        content,
+        generation,
+      );
     },
   );
 }
@@ -1271,10 +1318,6 @@ async function main() {
 
   await loadActiveTab();
 
-  // A popup is short-lived (closes on blur) so these never fire in that
-  // context. A side panel stays open across tab switches, so without this it
-  // would keep showing whichever tab was active when it was first opened -
-  // these keep it following the tab the user is actually looking at.
   chrome.tabs.onActivated.addListener(() => loadActiveTab());
   chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.status === "complete" && tabId === currentTab?.id) {

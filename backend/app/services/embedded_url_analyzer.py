@@ -9,8 +9,33 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.layer1_model import predict as layer1_predict
 
 MAX_URLS_PER_PAGE = 30
-TIME_BUDGET_SECONDS = 10
+MAX_URLS_CHECKED = 10
+TIME_BUDGET_SECONDS = 30
 SUSPICIOUS_THRESHOLD = 0.5
+
+
+EMBEDDED_UNRANKED_CAP = 0.5
+EMBEDDED_UNRANKED_MIN_AGE_DAYS = 365
+
+
+def _embedded_url_looks_unranked_but_clean(raw_features):
+    if raw_features.get("tranco_rank_bucket") != 0:
+        return False
+    if (raw_features.get("tld_risk_score") or 0) > 0:
+        return False
+    if raw_features.get("has_ip_host") or raw_features.get("is_punycode_or_homograph"):
+        return False
+    if raw_features.get("has_at_symbol"):
+        return False
+    brand_distance = raw_features.get("brand_distance_score")
+    if brand_distance is not None and brand_distance <= 2:
+        return False
+    if (raw_features.get("keyword_score") or 0) > 0:
+        return False
+    domain_age = raw_features.get("domain_age_days")
+    if domain_age is None or domain_age < EMBEDDED_UNRANKED_MIN_AGE_DAYS:
+        return False
+    return True
 
 
 KNOWN_WAF_VENDOR_HOSTS = {
@@ -76,11 +101,13 @@ def analyze_embedded_urls(html, base_url, network_urls=None):
 
     scored = []
     start = time.monotonic()
-    for embedded_url in urls:
+    for embedded_url in urls[:MAX_URLS_CHECKED]:
         if time.monotonic() - start > TIME_BUDGET_SECONDS:
             break
         try:
-            score, _features = layer1_predict(embedded_url)
+            score, features = layer1_predict(embedded_url)
+            if _embedded_url_looks_unranked_but_clean(features):
+                score = min(score, EMBEDDED_UNRANKED_CAP)
             scored.append((embedded_url, score))
         except Exception:
 

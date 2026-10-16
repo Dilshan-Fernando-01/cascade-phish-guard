@@ -3,6 +3,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "backend", "app"))
 from services.layer3_rule import (  # noqa: E402
+    MULTI_LAYER_FLOOR,
     STRONG_FLOOR,
     SUSPICIOUS_FLOOR,
     apply_layer3_rule,
@@ -24,8 +25,11 @@ def l3(level):
     return {"identity_note": {"level": level, "text": "", "disclaimer": ""}}
 
 
-def run(score, level, features, layer2_score, html):
-    return apply_layer3_rule(score, l3(level) if level else None, features, layer2_score, html)
+def run(score, level, features, layer2_score, html, layer1_score=None):
+    return apply_layer3_rule(
+        score, l3(level) if level else None, features, layer2_score, html,
+        layer1_score=layer1_score,
+    )
 
 
 PASSWORD_HTML = '<form><input type="password" name="pw"></form>'
@@ -84,6 +88,19 @@ score, comb = run(0.10, None, {"password_input_count": 1}, 0.10, TEXT_HTML)
 check("no Layer 3 result changes nothing", score == 0.10 and comb["brand_mismatch"] is False)
 score, comb = apply_layer3_rule(0.10, {"error": "could not run"}, {"password_input_count": 1}, 0.10, TEXT_HTML)
 check("a Layer 3 error changes nothing", score == 0.10 and comb["brand_mismatch"] is False)
+
+
+score, comb = run(0.50, "closely resembles", {}, None, None, layer1_score=0.87)
+check("layer1 confident + mismatch (no input) reaches the multi-layer floor", score == MULTI_LAYER_FLOOR)
+check("strength is confirmed", comb["strength"] == "confirmed" and comb["raised"] is True)
+score, comb = run(0.50, "closely resembles", {"password_input_count": 1}, 0.10, None, layer1_score=0.90)
+check("layer1 confident + mismatch + input still lands at the multi-layer floor, not higher", score == MULTI_LAYER_FLOOR)
+score, comb = run(0.50, "matches", {}, None, None, layer1_score=0.90)
+check("layer1 confident alone, no mismatch, changes nothing", score == 0.50 and comb["strength"] == "none")
+score, comb = run(0.10, "closely resembles", {}, 0.10, PLAIN_HTML, layer1_score=0.50)
+check("layer1 not confident + mismatch without input: old behaviour unchanged (notice only)", score == 0.10 and comb["notice"] is True)
+score, comb = run(0.95, "closely resembles", {}, None, None, layer1_score=0.95)
+check("the multi-layer floor never lowers an already-higher score", score == 0.95 and comb["raised"] is False)
 
 check("a matching brand displays as 0", identity_level_score(l3("matches")) == 0.0)
 check("may be imitating displays at the suspicious floor", identity_level_score(l3("may be imitating")) == SUSPICIOUS_FLOOR)
