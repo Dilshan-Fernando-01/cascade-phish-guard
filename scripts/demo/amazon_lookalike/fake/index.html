@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Amazon.com - Sign In</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Amazon Ember", Arial, sans-serif; color: #0f1111; background: #ffffff; }
+  header { display: flex; align-items: center; gap: 24px; padding: 10px 18px; background: #131921; }
+  header .logo { height: 35px; display: block; }
+  header .search { flex: 1; display: flex; height: 36px; border-radius: 4px; overflow: hidden; max-width: 640px; }
+  header .search input { flex: 1; border: none; padding: 0 10px; font-size: 14px; }
+  header .search button { width: 42px; background: #febd69; border: none; cursor: pointer; }
+  header .account { color: #fff; font-size: 12px; margin-left: auto; white-space: nowrap; }
+  .hero { width: 100%; display: block; }
+  .content { max-width: 350px; margin: -140px auto 40px; padding: 20px 26px 26px; background: #ffffff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); position: relative; }
+  .content h1 { font-size: 20px; margin: 4px 0 14px; font-weight: 500; }
+  .content label { display: block; font-size: 13px; font-weight: 700; color: #111; margin: 10px 0 3px; }
+  .content input { width: 100%; padding: 9px 10px; border: 1px solid #a6a6a6; border-radius: 3px; font-size: 14px; }
+  .content button { width: 100%; margin-top: 16px; padding: 9px; background: #ffd814; border: 1px solid #fcd200; border-radius: 6px; font-size: 13px; font-weight: 400; cursor: pointer; }
+  footer { text-align: center; color: #8a949c; font-size: 12px; padding: 32px 0; }
+  .note { margin-top: 20px; padding: 14px 18px; background: #fff7e0; border: 1px solid #e8d79a; border-radius: 8px; font-size: 13px; color: #5a4a10; max-width: 420px; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo-link"><img src="logo.png" class="logo" alt="Amazon logo"></a>
+    <div class="search">
+      <input type="text" placeholder="Search Amazon">
+      <button type="button" aria-label="search">&#128269;</button>
+    </div>
+    <div class="account">Hello, sign in<br>Account &amp; Lists</div>
+  </header>
+  <img class="hero" src="hero.png" alt="">
+  <form class="content" onsubmit="return false;">
+    <h1>Sign in</h1>
+    <label for="u">Email or mobile phone number</label>
+    <input id="u" name="username" type="text" autocomplete="off">
+    <label for="p">Password</label>
+    <input id="p" name="password" type="password" autocomplete="off">
+    <button type="submit">Continue</button>
+  </form>
+  <div class="note">
+    Demo page only: this form does not submit anywhere, nothing you type is sent or
+    stored, and this address only exists on this computer (via <code>/etc/hosts</code>).
+    It reuses a real, freshly-captured Amazon logo to exercise the visual-identity
+    check the same way a real typosquat phishing page would.
+  </div>
+  <footer>&copy; Not Amazon &mdash; local demo only, never published</footer>
+</body>
+</html>

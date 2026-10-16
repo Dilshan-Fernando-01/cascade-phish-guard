@@ -9,29 +9,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from features.url_features import extract_all_features, FEATURE_COLUMNS  
 
 NEW_URLS = [
-    # Universities -- UGC official list (ugc.ac.lk 2024 statistics document)
-    "https://cmb.ac.lk/",
-    "https://www.pdn.ac.lk/",
-    "https://www.sjp.ac.lk/",
-    "https://www.kln.ac.lk/",
-    "https://www.jfn.ac.lk/",
-    "https://www.ruh.ac.lk/",
-    "https://www.sab.ac.lk/",
-    "https://www.wyb.ac.lk/",
-    "https://www.ou.ac.lk/",
-    # Banks/finance -- CBSL official notice, "LICENSED COMMERCIAL BANKS... as at 31.12.2025"
-    "https://www.amanabank.lk/",
-    "https://www.dfcc.lk/",
-    "https://www.nationstrust.com/",
-    "https://www.ndbbank.com/",
-    "https://www.sampath.lk/",
-    "https://www.combank.lk/",
-    "https://www.hnb.lk/",
-    "https://www.sc.com/lk/",
-    "https://www.boc.lk/",
-    "https://www.seylan.lk/",
-    "https://www.lolcfinance.com/",
-    "https://www.nsb.lk/",
+
+    "https://nibm.ac.lk/",
+    "https://circuito.nibm.lk/Payment/Portal/PaymentPortalHome",
 ]
 
 OUT_PREFIX = "data/processed/layer1"

@@ -11,6 +11,7 @@ HIGH_THRESHOLD = 0.8
 
 SUSPICIOUS_FLOOR = 0.5
 STRONG_FLOOR = 0.7
+MULTI_LAYER_FLOOR = 0.85
 
 NON_INPUT_TYPES = {"hidden", "submit", "button", "reset", "image", "checkbox", "radio"}
 
@@ -60,24 +61,37 @@ def identity_level_score(layer3_results):
     return IDENTITY_LEVEL_SCORE.get(level)
 
 
-def apply_layer3_rule(score, layer3_results, layer2_features, layer2_score, html):
+def apply_layer3_rule(score, layer3_results, layer2_features, layer2_score, html, layer1_score=None):
     """Return (score, combination). The combination is recorded in the response,
     so the popup and the log can say what happened."""
     mismatch = is_brand_mismatch(layer3_results)
     password_count = (layer2_features or {}).get("password_input_count") or 0
     input_signal = password_count > 0 or html_has_user_input(html)
     layer2_suspicious = layer2_score is not None and LOW_THRESHOLD <= layer2_score <= HIGH_THRESHOLD
+    layer1_confident = layer1_score is not None and layer1_score > HIGH_THRESHOLD
 
     combination = {
         "brand_mismatch": mismatch,
         "input_signal": input_signal,
         "strength": "none",
         "raised": False,
-        "notice": mismatch and not input_signal,
+        "notice": mismatch and not input_signal and not layer1_confident,
     }
+
+    candidate_floors = []
     if mismatch and input_signal:
-        floor = STRONG_FLOOR if layer2_suspicious else SUSPICIOUS_FLOOR
-        combination["strength"] = "strong" if layer2_suspicious else "suspicious"
+        candidate_floors.append(STRONG_FLOOR if layer2_suspicious else SUSPICIOUS_FLOOR)
+    if mismatch and layer1_confident:
+
+        candidate_floors.append(MULTI_LAYER_FLOOR)
+
+    if candidate_floors:
+        floor = max(candidate_floors)
+        combination["strength"] = (
+            "confirmed" if floor == MULTI_LAYER_FLOOR
+            else "strong" if floor == STRONG_FLOOR
+            else "suspicious"
+        )
         raised = max(score, floor)
         combination["raised"] = raised > score
         score = raised
