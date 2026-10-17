@@ -102,6 +102,31 @@ def _unranked_aged_domain_adjustment(raw_features, score, model, X_row, feature_
     return min(score, float(adjusted_score))
 
 
+
+LOW_RANK_SUBDOMAIN_BUCKETS = (3, 4)
+LOW_RANK_SUBDOMAIN_BOOST_FRACTION = 0.75
+
+
+def _low_rank_subdomain_adjustment(raw_features, score, model, X_row, feature_names):
+    if raw_features.get("tranco_rank_bucket") not in LOW_RANK_SUBDOMAIN_BUCKETS:
+        return score
+    if (raw_features.get("subdomain_count") or 0) < 1:
+        return score
+
+    booster = model.get_booster()
+    dmat = xgb.DMatrix(X_row, feature_names=feature_names)
+    contribs = booster.predict(dmat, pred_contribs=True)[0]
+    tranco_idx = feature_names.index("tranco_rank_bucket")
+    tranco_contrib = contribs[tranco_idx]
+    if tranco_contrib >= 0:
+        return score
+
+    margin = float(contribs.sum())
+    adjusted_margin = margin - tranco_contrib * LOW_RANK_SUBDOMAIN_BOOST_FRACTION
+    adjusted_score = 1.0 / (1.0 + np.exp(-adjusted_margin))
+    return max(score, float(adjusted_score))
+
+
 def predict(url):
 
     artifact = _load_artifact()
@@ -118,6 +143,9 @@ def predict(url):
     phishing_probability = float(model.predict_proba(X)[0][1])
     phishing_probability = _institutional_unranked_adjustment(url, raw_features, phishing_probability)
     phishing_probability = _unranked_aged_domain_adjustment(
+        raw_features, phishing_probability, model, X, feature_names
+    )
+    phishing_probability = _low_rank_subdomain_adjustment(
         raw_features, phishing_probability, model, X, feature_names
     )
     return phishing_probability, raw_features

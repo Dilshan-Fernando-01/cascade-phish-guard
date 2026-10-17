@@ -54,7 +54,7 @@ def layer2_reasons(features):
     if (features.get("suspicious_embedded_url_count") or 0) > 0:
         reasons.append("Some links on this page lead to suspicious addresses.")
     if features.get("fake_browser_chrome_detected") == 1:
-        reasons.append("The page imitates a browser window.")
+        reasons.append("The page draws a fake address bar or browser toolbar as part of its own content, to look more trustworthy than it is.")
     if features.get("overlay_detected") == 1:
         reasons.append("Part of the page is covered by an overlay.")
     if features.get("meta_redirect_present") == 1:
@@ -62,7 +62,7 @@ def layer2_reasons(features):
     if features.get("favicon_domain_mismatch") == 1:
         reasons.append("The page's icon is loaded from a different site than the one you're on.")
     if features.get("brand_keyword_mismatch") == 1:
-        reasons.append("The page mentions a known brand, but isn't hosted on that brand's address.")
+        reasons.append("The page's text names a well-known brand (e.g. \"Roblox\", \"Amazon\"), but the web address isn't that brand's real site.")
     return _limit(reasons)
 
 

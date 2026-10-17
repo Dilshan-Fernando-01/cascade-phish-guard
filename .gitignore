@@ -12,6 +12,7 @@ extension/.dev-key.pem
 data/raw/*
 data/processed/*
 data/backups/
+data/cache/
 
 !data/raw/tranco.csv
 

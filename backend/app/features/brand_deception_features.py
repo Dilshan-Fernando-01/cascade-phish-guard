@@ -91,4 +91,5 @@ def extract_brand_features(html, final_url):
         "overlay_detected": overlay_detected,
         "css_anomaly_score": css_anomaly_score,
         "fake_browser_chrome_detected": fake_browser_chrome_detected,
+        "title_brand_domain": title_brand_domain,
     }
