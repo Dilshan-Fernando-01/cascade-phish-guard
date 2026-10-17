@@ -83,7 +83,7 @@ def _unranked_aged_domain_adjustment(raw_features, score, model, X_row, feature_
         return score
 
     booster = model.get_booster()
-    dmat = xgb.DMatrix(X_row, feature_names=feature_names)
+    dmat = xgb.DMatrix(np.asarray(X_row, dtype=np.float64), feature_names=feature_names)
     contribs = booster.predict(dmat, pred_contribs=True)[0]
     tranco_idx = feature_names.index("tranco_rank_bucket")
     tranco_contrib = contribs[tranco_idx]
@@ -114,7 +114,7 @@ def _low_rank_subdomain_adjustment(raw_features, score, model, X_row, feature_na
         return score
 
     booster = model.get_booster()
-    dmat = xgb.DMatrix(X_row, feature_names=feature_names)
+    dmat = xgb.DMatrix(np.asarray(X_row, dtype=np.float64), feature_names=feature_names)
     contribs = booster.predict(dmat, pred_contribs=True)[0]
     tranco_idx = feature_names.index("tranco_rank_bucket")
     tranco_contrib = contribs[tranco_idx]
