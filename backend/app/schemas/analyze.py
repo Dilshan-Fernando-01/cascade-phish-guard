@@ -64,6 +64,10 @@ class AnalyzeResponse(BaseModel):
         default=None,
         description="Plain-language signals behind each layer's result (no thresholds or values)",
     )
+    layer_explanations: Optional[dict] = Field(
+        default=None,
+        description="Always-populated, evidence-based plain-language explanation per layer (layer1/layer2/layer3), including both concerning and reassuring signals - unlike `reasons`, not gated by verdict. Intended for the developer-mode panel, not the default popup display.",
+    )
     layer3_results: Optional[dict] = Field(
         default=None,
         description="Layer 3 checks, reported separately (logo_check, banner_wording_check). Present only when Layer 3 actually ran.",

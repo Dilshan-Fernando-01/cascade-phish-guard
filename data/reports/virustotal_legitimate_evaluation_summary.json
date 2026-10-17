@@ -1,0 +1,9 @@
+{
+  "total": 500,
+  "checked": 500,
+  "malicious": 54,
+  "clean": 259,
+  "not_found": 151,
+  "errors": 36,
+  "clean_rate": 0.8274760383386581
+}
