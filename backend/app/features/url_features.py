@@ -437,7 +437,7 @@ def prepare_features(df, median_domain_age):
 
     X = df[FEATURE_COLUMNS].copy()
     X["domain_age_missing"] = X["domain_age_days"].isna().astype(int)
-    X["domain_age_days"] = X["domain_age_days"].fillna(median_domain_age)
+    X["domain_age_days"] = X["domain_age_days"].fillna(median_domain_age).astype(float)
     return X
 
 
