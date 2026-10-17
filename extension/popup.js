@@ -517,6 +517,16 @@ function devDetailsHtml(title, data, { asJson = false } = {}) {
   </div>`;
 }
 
+function devExplanationHtml(items) {
+  if (!devMode) return "";
+  if (!items || !items.length) return "";
+  const rows = items.map((text) => `<li>${escapeHtml(text)}</li>`).join("");
+  return `<div class="dev-details dev-explanation">
+    <p class="dev-details-title">Why this score</p>
+    <ul class="dev-explanation-list">${rows}</ul>
+  </div>`;
+}
+
 function devLogoCaptureHtml(capturedLogoPng) {
   if (!devMode || !capturedLogoPng) return "";
   return `<div class="dev-details">
@@ -559,7 +569,8 @@ function deriveStepOutcomes(result, fullScanMode, capturedLogoPng) {
         devDetailsHtml(
           "Layer 1 captured (score decided from these)",
           devScoreFirst(result, "layer1", result.layer1_features),
-        ),
+        ) +
+        devExplanationHtml((result.layer_explanations || {}).layer1),
     },
     {
       status: layer2Status,
@@ -570,7 +581,8 @@ function deriveStepOutcomes(result, fullScanMode, capturedLogoPng) {
         devDetailsHtml(
           "Layer 2 captured (score decided from these)",
           devScoreFirst(result, "layer2", result.layer2_features),
-        ),
+        ) +
+        devExplanationHtml((result.layer_explanations || {}).layer2),
     },
     layer3Outcome(result, fullScanMode, capturedLogoPng),
   ];
@@ -730,7 +742,8 @@ function layer3Outcome(result, fullScanMode, capturedLogoPng) {
         "Layer 3 full detail (score decided from this)",
         devScoreFirst(result, "layer3", layer3),
         { asJson: true },
-      ),
+      ) +
+      devExplanationHtml((result.layer_explanations || {}).layer3),
   };
 }
 

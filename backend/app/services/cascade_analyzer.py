@@ -159,7 +159,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
     else:
         verdict = Verdict.suspicious
 
-    from services.reasons import layer1_reasons, layer2_reasons, layer3_reasons, public_reasons
+    from services.reasons import layer1_reasons, layer2_reasons, layer3_reasons, public_reasons, dev_explanation
 
    
     layer1_safe = layer1_score < LOW_THRESHOLD
@@ -170,6 +170,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         "layer3": layer3_reasons(layer3_results),
     }
     reasons = public_reasons(detailed_reasons, verdict.value)
+    layer_explanations = dev_explanation(layer1_features, layer2_features, layer3_results)
 
     embedded_url_warning = None
     if layer2_features and (layer2_features.get("suspicious_embedded_url_count") or 0) > 0:
@@ -191,6 +192,7 @@ def analyze(url, full_scan=False, request_id=None, html=None, skip_layer2=False,
         layer3_results=layer3_results,
         layer_timings_ms=layer_timings_ms,
         reasons=reasons,
+        layer_explanations=layer_explanations,
         page_quality=page_quality,
         embedded_url_warning=embedded_url_warning,
     )

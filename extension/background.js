@@ -207,38 +207,46 @@ function analyzeAndStore(tabId, url, { force = false } = {}) {
             return imageLookup.then(
               ({ logoPng, bannerPng, previewDataUrl }) => {
                 if (tabGeneration.get(tabId) !== generation) return;
-                return runBackendCall(tabId, generation, url, {
-                  fullScan,
-                  html,
-                  skipLayer2: false,
-                  logoPng,
-                  bannerPng,
-                  previewDataUrl,
-                }).then((finalOutcome) => {
-                  if (!finalOutcome) return;
-                  if (tabGeneration.get(tabId) !== generation) return;
-                  if (
-                    finalOutcome.status === "done" &&
-                    finalOutcome.result.layer3_results
-                  ) {
-                    console.log(
-                      `Cascade Phish Guard layer 3 for ${url}:`,
-                      finalOutcome.result.layer3_results,
-                    );
-                  }
-                  if (finalOutcome.status !== "done") {
-                    console.warn(
-                      `Cascade Phish Guard: analysis for ${url} resolved as "${finalOutcome.status}"`,
-                      finalOutcome.message || finalOutcome,
-                    );
-                  }
 
-                  tabResults.set(tabId, {
-                    ...finalOutcome,
-                    modeUsed: mode,
-                    capturedLogoPng: logoPng,
+                return chrome.tabs
+                  .get(tabId)
+                  .then((tab) => tab.url || url)
+                  .catch(() => url)
+                  .then((currentUrl) => {
+                    if (tabGeneration.get(tabId) !== generation) return;
+                    return runBackendCall(tabId, generation, currentUrl, {
+                      fullScan,
+                      html,
+                      skipLayer2: false,
+                      logoPng,
+                      bannerPng,
+                      previewDataUrl,
+                    }).then((finalOutcome) => {
+                      if (!finalOutcome) return;
+                      if (tabGeneration.get(tabId) !== generation) return;
+                      if (
+                        finalOutcome.status === "done" &&
+                        finalOutcome.result.layer3_results
+                      ) {
+                        console.log(
+                          `Cascade Phish Guard layer 3 for ${currentUrl}:`,
+                          finalOutcome.result.layer3_results,
+                        );
+                      }
+                      if (finalOutcome.status !== "done") {
+                        console.warn(
+                          `Cascade Phish Guard: analysis for ${currentUrl} resolved as "${finalOutcome.status}"`,
+                          finalOutcome.message || finalOutcome,
+                        );
+                      }
+
+                      tabResults.set(tabId, {
+                        ...finalOutcome,
+                        modeUsed: mode,
+                        capturedLogoPng: logoPng,
+                      });
+                    });
                   });
-                });
               },
             );
           });
@@ -267,7 +275,7 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
     return;
   }
 
-  analyzeAndStore(details.tabId, details.url);
+  analyzeAndStore(details.tabId, details.url, { force: true });
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {

@@ -250,18 +250,41 @@ def _domain_age_days_uncached(host):
         t = threading.Thread(target=_lookup, daemon=True)
         t.start()
         t.join(timeout=6)
-        if t.is_alive() or "result" not in box:
-            return None
-        w = box["result"]
-        creation = w.creation_date
-        if isinstance(creation, list):
-            creation = creation[0]
-        if creation:
-            if creation.tzinfo is None:
-                creation = creation.replace(tzinfo=timezone.utc)
-            return (datetime.now(timezone.utc) - creation).days
+        if not t.is_alive() and "result" in box:
+            w = box["result"]
+            creation = w.creation_date
+            if isinstance(creation, list):
+                creation = creation[0]
+            if creation:
+                if creation.tzinfo is None:
+                    creation = creation.replace(tzinfo=timezone.utc)
+                return (datetime.now(timezone.utc) - creation).days
     except Exception:
         pass
+
+
+    for attempt in range(2):
+        try:
+            resp = requests.get(
+                "http://web.archive.org/cdx/search/cdx",
+                params={
+                    "url": host,
+                    "output": "json",
+                    "limit": 1,
+                    "fl": "timestamp",
+                    "filter": "statuscode:200",
+                },
+                timeout=20,
+            )
+            if resp.status_code == 200:
+                rows = resp.json()
+                if len(rows) > 1:
+                    timestamp = rows[1][0]
+                    first_seen = datetime.strptime(timestamp[:8], "%Y%m%d").replace(tzinfo=timezone.utc)
+                    return (datetime.now(timezone.utc) - first_seen).days
+                break
+        except Exception:
+            continue
 
     return None
 

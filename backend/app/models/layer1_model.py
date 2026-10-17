@@ -4,7 +4,9 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import joblib
+import numpy as np
 import pandas as pd
+import xgboost as xgb
 
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -57,6 +59,49 @@ def _institutional_unranked_adjustment(url, raw_features, score):
     return min(score, INSTITUTIONAL_UNRANKED_CAP)
 
 
+
+UNRANKED_AGE_CAP_DAYS = 3950
+UNRANKED_AGE_MAX_DAYS = 8978
+UNRANKED_AGE_MAX_REDUCTION = 0.85
+
+
+def _unranked_aged_domain_adjustment(raw_features, score, model, X_row, feature_names):
+
+    if raw_features.get("tranco_rank_bucket") != 0:
+        return score
+    domain_age = raw_features.get("domain_age_days")
+    if domain_age is None or domain_age < UNRANKED_AGE_CAP_DAYS:
+        return score
+    if raw_features.get("has_ip_host") or raw_features.get("is_punycode_or_homograph"):
+        return score
+    if raw_features.get("has_at_symbol"):
+        return score
+    brand_distance = raw_features.get("brand_distance_score")
+    if brand_distance is not None and brand_distance <= 2:
+        return score
+    if (raw_features.get("keyword_score") or 0) > 0:
+        return score
+
+    booster = model.get_booster()
+    dmat = xgb.DMatrix(X_row, feature_names=feature_names)
+    contribs = booster.predict(dmat, pred_contribs=True)[0]
+    tranco_idx = feature_names.index("tranco_rank_bucket")
+    tranco_contrib = contribs[tranco_idx]
+    if tranco_contrib <= 0:
+        return score
+
+    age_fraction = min(
+        1.0,
+        (domain_age - UNRANKED_AGE_CAP_DAYS) / (UNRANKED_AGE_MAX_DAYS - UNRANKED_AGE_CAP_DAYS),
+    )
+    reduction_fraction = age_fraction * UNRANKED_AGE_MAX_REDUCTION
+
+    margin = float(contribs.sum())
+    adjusted_margin = margin - tranco_contrib * reduction_fraction
+    adjusted_score = 1.0 / (1.0 + np.exp(-adjusted_margin))
+    return min(score, float(adjusted_score))
+
+
 def predict(url):
 
     artifact = _load_artifact()
@@ -65,10 +110,14 @@ def predict(url):
 
     raw_features = extract_all_features(url)
     X = prepare_features(pd.DataFrame([raw_features]), median_domain_age)
+    feature_names = list(X.columns)
 
     if "scaler" in artifact:
         X = artifact["scaler"].transform(X)
 
     phishing_probability = float(model.predict_proba(X)[0][1])
     phishing_probability = _institutional_unranked_adjustment(url, raw_features, phishing_probability)
+    phishing_probability = _unranked_aged_domain_adjustment(
+        raw_features, phishing_probability, model, X, feature_names
+    )
     return phishing_probability, raw_features
