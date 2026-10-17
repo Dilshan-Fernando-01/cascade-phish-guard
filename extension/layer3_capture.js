@@ -175,7 +175,7 @@ function findIframePositions() {
   return out;
 }
 
-function captureLayer3Images(tabId) {
+function findBestLogoInPage(tabId) {
   return Promise.all([
     chrome.scripting.executeScript({
       target: { tabId, allFrames: true },
@@ -189,34 +189,51 @@ function captureLayer3Images(tabId) {
       .then((r) => (r && r[0] ? r[0].result : []))
       .catch(() => []),
     chrome.webNavigation.getAllFrames({ tabId }).catch(() => []),
-  ])
-    .then(async ([frameResults, iframePositions, allFrames]) => {
-      const frameUrlById = new Map(
-        (allFrames || []).map((f) => [f.frameId, f.url]),
-      );
+  ]).then(([frameResults, iframePositions, allFrames]) => {
+    const frameUrlById = new Map(
+      (allFrames || []).map((f) => [f.frameId, f.url]),
+    );
 
-      let best = null;
-      for (const entry of frameResults || []) {
-        const result = entry && entry.result;
-        if (!result || !result.best) continue;
-        let candidate = result.best;
-        if (entry.frameId !== 0) {
-          const frameUrl = frameUrlById.get(entry.frameId);
-          const host = (iframePositions || []).find((f) => f.src === frameUrl);
-          if (!host) continue;
-          candidate = {
-            ...candidate,
-            x: candidate.x + host.x,
-            y: candidate.y + host.y,
-          };
-        }
-        if (
-          !best ||
-          candidate.score > best.score ||
-          (candidate.score === best.score && candidate.area > best.area)
-        ) {
-          best = { ...candidate, devicePixelRatio: result.devicePixelRatio };
-        }
+    let best = null;
+    for (const entry of frameResults || []) {
+      const result = entry && entry.result;
+      if (!result || !result.best) continue;
+      let candidate = result.best;
+      if (entry.frameId !== 0) {
+        const frameUrl = frameUrlById.get(entry.frameId);
+        const host = (iframePositions || []).find((f) => f.src === frameUrl);
+        if (!host) continue;
+        candidate = {
+          ...candidate,
+          x: candidate.x + host.x,
+          y: candidate.y + host.y,
+        };
+      }
+      if (
+        !best ||
+        candidate.score > best.score ||
+        (candidate.score === best.score && candidate.area > best.area)
+      ) {
+        best = { ...candidate, devicePixelRatio: result.devicePixelRatio };
+      }
+    }
+    return best;
+  });
+}
+
+const LOGO_RETRY_DELAY_MS = 900;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function captureLayer3Images(tabId) {
+  return findBestLogoInPage(tabId)
+    .catch(() => null)
+    .then(async (best) => {
+      if (!best) {
+        await sleep(LOGO_RETRY_DELAY_MS);
+        best = await findBestLogoInPage(tabId).catch(() => null);
       }
       if (!best) {
         console.log("Cascade Phish Guard logo: no logo found in any frame");

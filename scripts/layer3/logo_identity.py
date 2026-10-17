@@ -14,7 +14,8 @@ NUM_CLASSES = 277
 IMG_SIZE = 128
 MEAN = [0.5, 0.5, 0.5]
 STD = [0.5, 0.5, 0.5]
-SIMILARITY_THRESHOLD = 0.87  # Phishpedia's own published MATCH_THRE
+SIMILARITY_THRESHOLD = 0.87  
+GRAY_ZONE_SIMILARITY_LOW = 0.576
 
 SKIP_FILENAME_PREFIXES = ("loginpage", "homepage")
 VALID_EXTENSIONS = (".png", ".PNG", ".jpeg", ".jpg", ".JPG", ".JPEG")
@@ -183,8 +184,7 @@ def _brand_of(file_path):
 
 
 def predict_brand(crop_img, model, ref_embeddings, ref_file_paths, domain_map, similarity_threshold=SIMILARITY_THRESHOLD):
-    """Given a cropped candidate logo image, returns (brand, known_domains, similarity)
-    or (None, None, top1_similarity) if no confident match."""
+   
     img_feat = get_embedding(crop_img, model)
     sims = ref_embeddings.dot(img_feat)
 
@@ -197,14 +197,15 @@ def predict_brand(crop_img, model, ref_embeddings, ref_file_paths, domain_map, s
             continue
         if top_sims[j] >= similarity_threshold:
             brand = top_brands[j]
-            return brand, domain_map.get(brand, []), float(top_sims[j])
+            return brand, domain_map.get(brand, []), float(top_sims[j]), top_brands[0]
 
-    return None, None, float(top_sims[0]) if len(top_sims) else 0.0
+    weak_brand = top_brands[0] if len(top_brands) else None
+    return None, None, float(top_sims[0]) if len(top_sims) else 0.0, weak_brand
 
 
 def check_domain_brand_mismatch(crop_img, page_url, model, ref_embeddings, ref_file_paths, domain_map,
                                  similarity_threshold=SIMILARITY_THRESHOLD):
-    brand, known_domains, similarity = predict_brand(
+    brand, known_domains, similarity, weak_brand = predict_brand(
         crop_img, model, ref_embeddings, ref_file_paths, domain_map, similarity_threshold
     )
 
@@ -214,9 +215,12 @@ def check_domain_brand_mismatch(crop_img, page_url, model, ref_embeddings, ref_f
         "similarity": similarity,
         "page_domain": None,
         "mismatch": False,
+        "weak_candidate_brand": None,
     }
 
     if not brand or not known_domains:
+        if weak_brand and GRAY_ZONE_SIMILARITY_LOW <= similarity < similarity_threshold:
+            result["weak_candidate_brand"] = weak_brand
         return result
 
     extracted = tldextract.extract(page_url)

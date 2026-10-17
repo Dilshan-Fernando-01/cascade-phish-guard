@@ -1,7 +1,9 @@
 import concurrent.futures
 import ipaddress
+import json
 import math
 import threading
+import time
 import unicodedata
 from collections import Counter
 from datetime import datetime, timezone
@@ -216,10 +218,43 @@ def brand_keyword_in_host(host):
 
 _DOMAIN_AGE_CACHE = {}
 _DOMAIN_AGE_CACHE_TTL_SECONDS = 24 * 60 * 60
+_DOMAIN_AGE_CACHE_PATH = Path(__file__).resolve().parents[3] / "data" / "cache" / "domain_age_cache.json"
+_DOMAIN_AGE_CACHE_LOADED = False
+_DOMAIN_AGE_CACHE_DISK_LOCK = threading.Lock()
 
 
 _DOMAIN_AGE_INFLIGHT = {}
 _DOMAIN_AGE_INFLIGHT_LOCK = threading.Lock()
+
+
+def _load_domain_age_cache_from_disk():
+
+    global _DOMAIN_AGE_CACHE_LOADED
+    if _DOMAIN_AGE_CACHE_LOADED:
+        return
+    with _DOMAIN_AGE_CACHE_DISK_LOCK:
+        if _DOMAIN_AGE_CACHE_LOADED:
+            return
+        try:
+            with open(_DOMAIN_AGE_CACHE_PATH) as f:
+                raw = json.load(f)
+            now = time.time()
+            for host, entry in raw.items():
+                value, cached_at = entry
+                if now - cached_at < _DOMAIN_AGE_CACHE_TTL_SECONDS:
+                    _DOMAIN_AGE_CACHE[host] = (value, cached_at)
+        except Exception:
+            pass
+        _DOMAIN_AGE_CACHE_LOADED = True
+
+
+def _save_domain_age_cache_to_disk():
+    try:
+        _DOMAIN_AGE_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(_DOMAIN_AGE_CACHE_PATH, "w") as f:
+            json.dump(_DOMAIN_AGE_CACHE, f)
+    except Exception:
+        pass
 
 
 def _domain_age_days_uncached(host):
@@ -296,12 +331,12 @@ def domain_age_days(host):
 
     registrable_host = _registrable_domain_guess(host)
 
-    import time as _time
+    _load_domain_age_cache_from_disk()
 
     cached = _DOMAIN_AGE_CACHE.get(registrable_host)
     if cached is not None:
         value, cached_at = cached
-        if _time.monotonic() - cached_at < _DOMAIN_AGE_CACHE_TTL_SECONDS:
+        if time.time() - cached_at < _DOMAIN_AGE_CACHE_TTL_SECONDS:
             return value
 
     with _DOMAIN_AGE_INFLIGHT_LOCK:
@@ -320,7 +355,8 @@ def domain_age_days(host):
         value = _domain_age_days_uncached(registrable_host)
         inflight["value"] = value
         if value is not None:
-            _DOMAIN_AGE_CACHE[registrable_host] = (value, _time.monotonic())
+            _DOMAIN_AGE_CACHE[registrable_host] = (value, time.time())
+            _save_domain_age_cache_to_disk()
         return value
     finally:
         with _DOMAIN_AGE_INFLIGHT_LOCK:

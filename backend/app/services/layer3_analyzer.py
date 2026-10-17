@@ -54,7 +54,7 @@ def _load_logo_state():
     return _logo_state
 
 
-def _logo_check(url, logo_png):
+def _logo_check(url, logo_png, title_brand_domain=None):
     if logo_png is None:
         return {"status": STATUS_NO_LOGO}
     if not os.path.exists(WEIGHTS_PATH) or not os.path.exists(CACHE_PATH):
@@ -77,6 +77,12 @@ def _logo_check(url, logo_png):
         state["ref_file_paths"],
         state["domain_map"],
     )
+
+
+    weak_brand = result.get("weak_candidate_brand")
+    if weak_brand and title_brand_domain:
+        if title_brand_domain in state["domain_map"].get(weak_brand, []):
+            result["weak_candidate_title_corroborated"] = True
 
     if result.get("mismatch") and result.get("identified_brand"):
         from features.official_domains import is_official
@@ -188,6 +194,14 @@ def _identity_note(logo_result, url_hints=()):
                 f"This page closely resembles {brand}. Its address is not {brand}'s. "
                 "Check the address before entering personal details."
             )
+    elif status == STATUS_CHECKED and logo_result.get("weak_candidate_title_corroborated"):
+        brand = logo_result.get("weak_candidate_brand")
+        level = LEVEL_MAY_BE_IMITATING
+        text = (
+            f"The page's own title names {brand}, and its logo has a partial visual "
+            f"resemblance to {brand}'s, though not a confirmed match. "
+            "Check the address before entering personal details."
+        )
     elif url_hints:
         brand = url_hints[0]["brand"]
         level = LEVEL_MAY_BE_IMITATING
@@ -248,8 +262,9 @@ def _background_upgrade(url, url_hints, identity):
     return background, identity
 
 
-def analyze_layer3(url, screenshot_png, html=None, logo_png=None, background=False):
-    logo_result = _logo_check(url, logo_png)
+def analyze_layer3(url, screenshot_png, html=None, logo_png=None, background=False, layer2_features=None):
+    title_brand_domain = (layer2_features or {}).get("title_brand_domain")
+    logo_result = _logo_check(url, logo_png, title_brand_domain)
     url_hints = url_brand_hints(urlparse(url).netloc.split(":")[0])
     identity = _identity_note(logo_result, url_hints)
     results = {
@@ -258,7 +273,8 @@ def analyze_layer3(url, screenshot_png, html=None, logo_png=None, background=Fal
         ORIGINAL_COMPARISON: _original_comparison(logo_png, url_hints),
         "url_brand_hints": url_hints,
     }
-    if background and identity["level"] == LEVEL_MAY_BE_IMITATING:
+ 
+    if background and identity["level"] == LEVEL_MAY_BE_IMITATING and url_hints:
         background_result, identity = _background_upgrade(url, url_hints, identity)
         if background_result is not None:
             results["background"] = background_result
