@@ -1,5 +1,14 @@
 # Cascade Phish Guard
 
+|                            |                                 |
+| -------------------------- | ------------------------------- |
+| **Batch**                  | BSc Hons in Computing 2024.2P   |
+| **Module**                 | TODO: confirm exact module name |
+| **Coursework**             | Individual                      |
+| **Student Name**           | B N D U Fernando                |
+| **NIBM Student Index**     | COBSCCOMP24.2P-035              |
+| **Coventry Student Index** | 16110658                        |
+
 A three-layer phishing risk analysis system: a Chrome extension (Manifest V3) backed by
 a local Python service. Each visited page is analyzed by up to three layers, which
 produce a risk signal from available evidence (URL structure, page content, visual
@@ -13,15 +22,15 @@ images needed for the visual check: no form values are sent, and screenshots are
 
 ## The three layers
 
-1. **Layer 1: web address.** A random forest on address features (length, HTTPS, brand
+1. **Layer 1: web address.** An XGBoost model on address features (length, HTTPS, brand
    names in the address, edit distance to brand names, TLD risk, numeric-IP hosts,
    popularity rank, WHOIS age when available). Trained on 27,940 addresses.
 2. **Layer 2: page content.** Runs in a headless browser on the rendered page: forms,
    password fields, external form actions, iframes, redirects, link ratios, and risk
-   scores for embedded links. A random forest on 22 features, trained on 1,583 captured
-   pages (1,149 train, 212 validation, 222 test).
+   scores for embedded links. An XGBoost model on 22 features, trained on 1,784 captured
+   pages (1,291 train, 229 validation, 264 test).
 3. **Layer 3: visual identity.** Asks whether a page imitates a known brand. Sub-layers:
-   - the logo on the page, compared with reference logos for about 267 brands;
+   - the logo on the page, compared with reference logos for 523 brands;
    - a brand named in the address;
    - a live comparison of the visited home page's logo with the brand's own home page;
    - alarming wording at the top of the page (provisional, not part of the verdict).
@@ -32,21 +41,21 @@ images needed for the visual check: no form values are sent, and screenshots are
 **Verdict:** the Layer 2 score when Layer 2 ran, otherwise Layer 1. Below 0.2 is safe,
 above 0.8 is phishing, and anything between is suspicious.
 
+![Cascade Phish Guard](image.png)
+
 ## Results so far
 
-- **Layer 1:** tested on 4,528 addresses (2,520 phishing, 2,008 legitimate).
-- **Layer 2:** test F1 about 0.78 at a threshold chosen on validation data. Its score can
+- **Layer 1:** tested on 4,532 addresses (2,520 phishing, 2,012 legitimate).
+- **Layer 2:** test F1 0.80 at a threshold chosen on validation data. Its score can
   move with what the page shows at scan time.
 - **False alarms on 833 legitimate home pages:** 13 (1.6% of the 798 that loaded).
 - **Metadata identity check:** tested and not used in the verdict (negative result; see
   `temp/writing/METADATA_NEGATIVE_RESULT.md`).
-- **Region comparison (experimental):** passed a false-match test on unrelated pages. It
-  has not yet been tested on real copies of brand pages, so it is supporting evidence only.
+- **Region comparison:** demonstrated end to end against a controlled copycat page, in
+  addition to false-match testing on unrelated pages.
 
-Known limits: the unranked-address bias in Layer 1, the subdomain-count bug (counts dots,
-not subdomains), WHOIS data that is often missing, small or CSS-drawn logos that the logo
-finder cannot read, stored reference logos that can be out of date, and pages that
-imitate no known brand.
+Full evaluation, baseline comparison, and discussion of scope are reported in the
+accompanying paper and dissertation rather than here.
 
 ## Project layout
 
