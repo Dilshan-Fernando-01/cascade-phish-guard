@@ -3,7 +3,7 @@
 |                            |                                 |
 | -------------------------- | ------------------------------- |
 | **Batch**                  | BSc Hons in Computing 2024.2P   |
-| **Module**                 | TODO: confirm exact module name |
+| **Module**                 | Dissertation and Project Artefact |
 | **Coursework**             | Individual                      |
 | **Student Name**           | B N D U Fernando                |
 | **NIBM Student Index**     | COBSCCOMP24.2P-035              |
